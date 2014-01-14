@@ -33,28 +33,6 @@ sub eat_token_langs_statement {
     }
 }
 
-sub eat_list_langs_statement {
-    my ($list_ref, $list_line_no, $lang) = @_;
-    if ($lang eq $LANG_SH) {
-        return eat_list_sh_statement($list_ref);
-    }
-    my @list = @$list_ref;
-    my $head = shift(@list);
-    unless (defined($head)) {
-        die "Unexpected empty list (Line: $list_line_no)";
-    }
-    my ($type, $line_no, $token, $token_str) = @$head;
-    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
-        if ($token eq 'apply') {
-            eat_list_langs_apply(\@list, $list_line_no, $lang);
-        } else {
-            die "Unexpected token: `$token_str` (Line: $line_no)";
-        }
-    } else {
-        die "Unexpected token: `$token_str` (Line: $line_no)";
-    }
-}
-
 sub eat_token_langs_expr {
     my ($token_ref, $lang) = @_;
     die if ($lang eq $LANG_SH);
@@ -70,9 +48,56 @@ sub eat_token_langs_expr {
     } elsif ($type eq $TOKEN_TYPE_INTEGER) {
         $token;
     } elsif ($type eq $TOKEN_TYPE_LIST) {
-        die "TODO";
+        eat_list_langs_expr($token, $line_no, $lang);
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no)";
+    }
+}
+
+sub eat_list_langs_expr {
+    my ($list_ref, $list_line_no, $lang) = @_;
+    die if ($lang eq $LANG_SH);
+    my @list = @$list_ref;
+    my $head = shift(@list);
+    unless (defined($head)) {
+        die "Unexpected empty list (Line: $list_line_no)";
+    }
+    my ($type, $line_no, $token, $token_str) = @$head;
+    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
+        if ($token eq 'apply') {
+            eat_list_langs_apply(\@list, $list_line_no, $lang);
+        } elsif ($token eq '+' || $token eq '-') {
+            eat_list_langs_binop($token, \@list, $lang);
+        } else {
+            unshift(@list, $head);
+            eat_list_langs_apply(\@list, $list_line_no, $lang);
+        }
+    } else {
+        die "Unexpected token: `$token_str` (Line: $line_no)";
+    }
+}
+
+sub eat_list_langs_statement {
+    my ($list_ref, $list_line_no, $lang) = @_;
+    if ($lang eq $LANG_SH) {
+        return eat_list_sh_statement($list_ref);
+    }
+    my @list = @$list_ref;
+    my $head = shift(@list);
+    unless (defined($head)) {
+        die "Unexpected empty list (Line: $list_line_no)";
+    }
+    my ($type, $line_no, $token, $token_str) = @$head;
+    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
+        if ($token eq 'if') {
+            die "TODO";
+        } else {
+            unshift(@list, $head);
+            eat_list_langs_expr(\@list, $list_line_no, $lang) . ';';
+        }
+    } else {
+        unshift(@list, $head);
+        eat_list_langs_expr(\@list, $list_line_no, $lang) . ';';
     }
 }
 
@@ -108,6 +133,22 @@ sub eat_list_langs_apply_1 {
         $result = $result . $source;
     }
     "$funcname($result)";
+}
+
+sub eat_list_langs_binop {
+    my ($op, $list_ref, $lang) = @_;
+    die if ($lang eq $LANG_SH);
+    my @list = @$list_ref;
+    my $result = '';
+    while () {
+        my $head = shift(@list);
+        unless (defined($head)) {
+            return $result;
+        }
+        my $source = eat_token_langs_argument($head, $lang);
+        $result = $result . " $op " if ($result);
+        $result = $result . $source;
+    }
 }
 
 sub eat_token_langs_argument {
