@@ -14,7 +14,7 @@ sub eat_list_exec {
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
-        die "Unexpected token: `)` (Line: $list_line_no)";
+        die "Unexpected empty list (Line: $list_line_no)";
     }
     my ($type, $line_no, $token, $token_str) = @$head;
     if ($type eq $TOKEN_TYPE_LIST) {
@@ -29,7 +29,7 @@ sub eat_list_exec_0 {
     my @lang = @$lang_ref;
     my $head = shift(@lang);
     unless (defined($head)) {
-        die "Unexpected token: `)` (Line: $list_line_no)";
+        die "Unexpected empty list (Line: $list_line_no)";
     }
     my ($type, $line_no, $token, $token_str) = @$head;
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {

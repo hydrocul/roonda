@@ -4,41 +4,7 @@ sub eat_list_exec_sh {
     unless (defined($bin_path)) {
         $bin_path = '/bin/sh';
     }
-    ($bin_path, eat_list_sh($list_ref));
-}
-
-sub eat_token_sh {
-    my ($token_ref) = @_;
-    my ($type, $line_no, $token, $token_str) = @$token_ref;
-    if ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_sh($token);
-    } else {
-        die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
-    }
-}
-
-sub eat_list_sh {
-    my ($list_ref) = @_;
-    my @list = @$list_ref;
-    my $result = '';
-    while () {
-        my $head = shift(@list);
-        unless (defined($head)) {
-            return $result;
-        }
-        my $source = eat_token_sh_statement($head);
-        $result = $result . $source . "\n";
-    }
-}
-
-sub eat_token_sh_statement {
-    my ($token_ref) = @_;
-    my ($type, $line_no, $token, $token_str) = @$token_ref;
-    if ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_sh_statement($token);
-    } else {
-        die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
-    }
+    ($bin_path, eat_list_langs($list_ref, $LANG_SH));
 }
 
 sub eat_list_sh_statement {

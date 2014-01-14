@@ -7,12 +7,18 @@ cd `dirname $0`
 rm -r actual 2>/dev/null
 mkdir -p actual
 
-echo ./testdata/basic-01.rd
-cat ./testdata/basic-01.rd | ./target/roonda --output-code > ./actual/basic-01.sh
-diff -u expected/basic-01.sh actual/basic-01.sh && \
-( sh actual/basic-01.sh > actual/basic-01.txt; diff -u expected/basic-01.txt actual/basic-01.txt )
-cat ./testdata/basic-01.rd | ./target/roonda  > ./actual/basic-01-2.txt
-diff -u expected/basic-01-2.txt actual/basic-01-2.txt
+echo ./testdata/basic-sh.rd
+cat ./testdata/basic-sh.rd | ./target/roonda --output-code > ./actual/basic-sh.sh
+diff -u expected/basic-sh.sh actual/basic-sh.sh && \
+( sh actual/basic-sh.sh > actual/basic-sh.txt; diff -u expected/basic-sh.txt actual/basic-sh.txt )
+cat ./testdata/basic-sh.rd | ./target/roonda  > ./actual/basic-sh-2.txt
+diff -u expected/basic-sh-2.txt actual/basic-sh-2.txt
+
+echo ./testdata/basic-perl.rd
+cat ./testdata/basic-perl.rd | ./target/roonda --output-code > ./actual/basic-perl.pl
+diff -u expected/basic-perl.pl actual/basic-perl.pl
+cat ./testdata/basic-perl.rd | ./target/roonda  > ./actual/basic-perl.txt
+diff -u expected/basic-perl.txt actual/basic-perl.txt
 
 echo ./testdata/sh-backticks.rd
 cat ./testdata/sh-backticks.rd | ./target/roonda --output-code > ./actual/sh-backticks.sh
