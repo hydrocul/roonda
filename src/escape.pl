@@ -7,7 +7,6 @@ sub escape_sh_string {
     "'" . $str . "'";
 }
 
-=begin
 sub escape_sh_backticks {
     my ($str) = @_;
     $str =~ s/\\/\\\\/g;
@@ -17,6 +16,7 @@ sub escape_sh_backticks {
     "`" . $str . "`";
 }
 
+=begin
 sub escape_perl_string {
     my ($str) = @_;
     $str =~ s/\\/\\\\/g;
