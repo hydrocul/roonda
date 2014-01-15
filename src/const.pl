@@ -13,3 +13,9 @@ my $LANG_PERL   = 2;
 #my $LANG_RUBY   = 4;
 #my $LANG_PYTHON = 5;
 
+my $OP_ORDER_MIN = 0;
+my $OP_ORDER_ARG_COMMA = 5;
+my $OP_ORDER_PLUS = 10;
+my $OP_ORDER_MULTIPLY = 20;
+
+

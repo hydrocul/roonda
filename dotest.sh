@@ -24,6 +24,11 @@ echo ./testdata/sh-backticks.rd
 cat ./testdata/sh-backticks.rd | ./target/roonda --output-code > ./actual/sh-backticks.sh
 diff -u expected/sh-backticks.sh actual/sh-backticks.sh
 
+echo ./testdata/order-of-operations.rd
+cat ./testdata/order-of-operations.rd | ./target/roonda --output-code > ./actual/order-of-operations.pl
+diff -u expected/order-of-operations.pl actual/order-of-operations.pl
+
+
 if diff -u -r expected actual >/dev/null; then
     echo "Success!"
 else

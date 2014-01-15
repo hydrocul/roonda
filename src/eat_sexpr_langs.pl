@@ -34,7 +34,7 @@ sub eat_token_langs_statement {
 }
 
 sub eat_token_langs_expr {
-    my ($token_ref, $lang) = @_;
+    my ($token_ref, $op_order, $lang) = @_;
     die if ($lang eq $LANG_SH);
     my ($type, $line_no, $token, $token_str) = @$token_ref;
     if ($type eq $TOKEN_TYPE_SYMBOL) {
@@ -48,14 +48,14 @@ sub eat_token_langs_expr {
     } elsif ($type eq $TOKEN_TYPE_INTEGER) {
         $token;
     } elsif ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_langs_expr($token, $line_no, $lang);
+        eat_list_langs_expr($token, $op_order, $line_no, $lang);
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no)";
     }
 }
 
 sub eat_list_langs_expr {
-    my ($list_ref, $list_line_no, $lang) = @_;
+    my ($list_ref, $op_order, $list_line_no, $lang) = @_;
     die if ($lang eq $LANG_SH);
     my @list = @$list_ref;
     my $head = shift(@list);
@@ -67,7 +67,9 @@ sub eat_list_langs_expr {
         if ($token eq 'apply') {
             eat_list_langs_apply(\@list, $list_line_no, $lang);
         } elsif ($token eq '+' || $token eq '-') {
-            eat_list_langs_binop($token, \@list, $lang);
+            eat_list_langs_binop($token, $OP_ORDER_PLUS, $op_order, \@list, $lang);
+        } elsif ($token eq '*' || $token eq '/') {
+            eat_list_langs_binop($token, $OP_ORDER_MULTIPLY, $op_order, \@list, $lang);
         } else {
             unshift(@list, $head);
             eat_list_langs_apply(\@list, $list_line_no, $lang);
@@ -93,11 +95,11 @@ sub eat_list_langs_statement {
             die "TODO";
         } else {
             unshift(@list, $head);
-            eat_list_langs_expr(\@list, $list_line_no, $lang) . ';';
+            eat_list_langs_expr(\@list, $OP_ORDER_MIN, $list_line_no, $lang) . ';';
         }
     } else {
         unshift(@list, $head);
-        eat_list_langs_expr(\@list, $list_line_no, $lang) . ';';
+        eat_list_langs_expr(\@list, $OP_ORDER_MIN, $list_line_no, $lang) . ';';
     }
 }
 
@@ -128,7 +130,7 @@ sub eat_list_langs_apply_1 {
         unless (defined($head)) {
             last;
         }
-        my $source = eat_token_langs_argument($head, $lang);
+        my $source = eat_token_langs_argument($head, $OP_ORDER_ARG_COMMA, $lang);
         $result = $result . ', ' if ($result);
         $result = $result . $source;
     }
@@ -136,24 +138,28 @@ sub eat_list_langs_apply_1 {
 }
 
 sub eat_list_langs_binop {
-    my ($op, $list_ref, $lang) = @_;
+    my ($op, $op_order, $outer_op_order, $list_ref, $lang) = @_;
     die if ($lang eq $LANG_SH);
     my @list = @$list_ref;
     my $result = '';
     while () {
         my $head = shift(@list);
         unless (defined($head)) {
-            return $result;
+            if ($op_order <= $outer_op_order) {
+                return "($result)";
+            } else {
+                return $result;
+            }
         }
-        my $source = eat_token_langs_argument($head, $lang);
+        my $source = eat_token_langs_argument($head, $op_order, $lang);
         $result = $result . " $op " if ($result);
         $result = $result . $source;
     }
 }
 
 sub eat_token_langs_argument {
-    my ($token_ref, $lang) = @_;
+    my ($token_ref, $op_order, $lang) = @_;
     die if ($lang eq $LANG_SH);
-    eat_token_langs_expr($token_ref, $lang);
+    eat_token_langs_expr($token_ref, $op_order, $lang);
 }
 
