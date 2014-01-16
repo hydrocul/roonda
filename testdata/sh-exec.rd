@@ -1,0 +1,4 @@
+(sh)
+
+(exec ls -al)
+

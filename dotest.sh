@@ -28,6 +28,10 @@ echo ./testdata/order-of-operations.rd
 cat ./testdata/order-of-operations.rd | ./target/roonda --output-code > ./actual/order-of-operations.pl
 diff -u expected/order-of-operations.pl actual/order-of-operations.pl
 
+echo ./testdata/sh-exec.rd
+cat ./testdata/sh-exec.rd | ./target/roonda --output-code > ./actual/sh-exec.sh
+diff -u expected/sh-exec.sh actual/sh-exec.sh
+
 
 if diff -u -r expected actual >/dev/null; then
     echo "Success!"

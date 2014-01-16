@@ -33,19 +33,27 @@ sub eat_list_exec_0 {
     }
     my ($type, $line_no, $token, $token_str) = @$head;
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
-        if ($token =~ /\/sh\Z/) {
-            eat_list_exec_sh($token, \@lang, $list_ref);
-        } elsif ($token eq 'sh') {
-            eat_list_exec_sh(undef, \@lang, $list_ref);
-        } elsif ($token =~ /\/perl\Z/) {
-            eat_list_exec_perl($token, \@lang, $list_ref);
-        } elsif ($token eq 'perl') {
-            eat_list_exec_perl(undef, \@lang, $list_ref);
-        } else {
-            die "Unexpected token: `$token_str` (Line: $line_no)";
-        }
+        my ($lang, $bin_path) = bin_path_to_lang($token);
+        die "Unexpected token: `$token_str` (Line: $line_no)" unless (defined($lang));
+        my $source = eat_list_langs($list_ref, $lang);
+        ($bin_path, $source);
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no)";
+    }
+}
+
+sub bin_path_to_lang {
+    my ($bin_path) = @_;
+    if ($bin_path =~ /\/sh\Z/) {
+        ($LANG_SH, $bin_path);
+    } elsif ($bin_path eq 'sh') {
+        ($LANG_SH, '/bin/sh');
+    } elsif ($bin_path =~ /\/perl\Z/) {
+        ($LANG_PERL, $bin_path);
+    } elsif ($bin_path eq 'perl') {
+        ($LANG_PERL, '/usr/bin/perl');
+    } else {
+        (undef, undef);
     }
 }
 

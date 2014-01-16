@@ -1,4 +1,5 @@
 
+=comment
 sub eat_list_exec_sh {
     my ($bin_path, $lang_opts_ref, $list_ref) = @_;
     unless (defined($bin_path)) {
@@ -6,8 +7,30 @@ sub eat_list_exec_sh {
     }
     ($bin_path, eat_list_langs($list_ref, $LANG_SH));
 }
+=cut
 
 sub eat_list_sh_statement {
+    my ($list_ref) = @_;
+    my @list = @$list_ref;
+    my $head = shift(@list);
+    unless (defined($head)) {
+        return '';
+    }
+    my ($type, $line_no, $token, $token_str) = @$head;
+    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
+        if ($token eq 'exec') {
+            'exec ' . eat_list_sh_call(\@list);
+        } else {
+            unshift(@list, $head);
+            eat_list_sh_call(\@list);
+        }
+    } else {
+        unshift(@list, $head);
+        eat_list_sh_call(\@list);
+    }
+}
+
+sub eat_list_sh_call {
     my ($list_ref) = @_;
     my @list = @$list_ref;
     my $result = '';
@@ -55,7 +78,7 @@ sub eat_list_sh_argument {
 
 sub eat_list_sh_argument_backticks {
     my ($list_ref) = @_;
-    my $source = eat_list_sh_statement($list_ref);
+    my $source = eat_list_sh_call($list_ref);
     escape_sh_backticks($source);
 }
 
