@@ -1,0 +1,1 @@
+echo $ROONDA_TEST

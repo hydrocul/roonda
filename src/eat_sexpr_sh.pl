@@ -68,6 +68,8 @@ sub eat_list_sh_argument {
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
         if ($token eq 'backticks') {
             eat_list_sh_argument_backticks(\@list);
+        } elsif ($token eq 'ref') {
+            eat_list_sh_argument_ref(\@list);
         } else {
             die "Unexpected token: `$token_str` (Line: $line_no)";
         }
@@ -80,5 +82,23 @@ sub eat_list_sh_argument_backticks {
     my ($list_ref) = @_;
     my $source = eat_list_sh_call($list_ref);
     escape_sh_backticks($source);
+}
+
+sub eat_list_sh_argument_ref {
+    my ($list_ref) = @_;
+    my @list = @$list_ref;
+    my $head = shift(@list);
+    die "Unexpected endo of list" unless (defined($head));
+    my ($type, $line_no, $token, $token_str) = @$head;
+    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
+        if (@list) {
+            my $head = shift(@list);
+            my ($type, $line_no, $token, $token_str) = @$head;
+            die "Unexpected token: `$token_str` (Line: $line_no)";
+        }
+        '$' . $token;
+    } else {
+        die "Unexpected token: `$token_str` (Line: $line_no)";
+    }
 }
 

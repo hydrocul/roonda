@@ -14,6 +14,15 @@ diff -u expected/basic-sh.sh actual/basic-sh.sh && \
 cat ./testdata/basic-sh.rd | ./target/roonda  > ./actual/basic-sh-2.txt
 diff -u expected/basic-sh-2.txt actual/basic-sh-2.txt
 
+echo ./testdata/sh-env.rd
+cat ./testdata/sh-env.rd | ./target/roonda --output-code > ./actual/sh-env.sh
+diff -u expected/sh-env.sh actual/sh-env.sh
+(
+    export ROONDA_TEST="Hello"
+    cat ./testdata/sh-env.rd | ./target/roonda > ./actual/sh-env.txt
+    diff -u expected/sh-env.txt actual/sh-env.txt
+)
+
 echo ./testdata/basic-perl.rd
 cat ./testdata/basic-perl.rd | ./target/roonda --output-code > ./actual/basic-perl.pl
 diff -u expected/basic-perl.pl actual/basic-perl.pl
