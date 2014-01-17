@@ -23,6 +23,10 @@ diff -u expected/sh-env.sh actual/sh-env.sh
     diff -u expected/sh-env.txt actual/sh-env.txt
 )
 
+echo ./testdata/roonda-tmp-path.rd
+cat ./testdata/roonda-tmp-path.rd | ./target/roonda > ./actual/roonda-tmp-path.txt
+diff -u expected/roonda-tmp-path.txt actual/roonda-tmp-path.txt
+
 echo ./testdata/basic-perl.rd
 cat ./testdata/basic-perl.rd | ./target/roonda --output-code > ./actual/basic-perl.pl
 diff -u expected/basic-perl.pl actual/basic-perl.pl

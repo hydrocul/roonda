@@ -36,6 +36,14 @@ if ($output_code) {
     print encode('utf-8', $source);
 } else {
     my $script_path = save_file($source, 'sh');
-    exec($bin_path, $script_path);
+    $ENV{$ENV_TMP_PATH} = tempdir(CLEANUP => 1);
+    my $pid = fork;
+    if ($pid) {
+        wait;
+    } elsif (defined $pid) {
+        exec($bin_path, $script_path);
+    } else {
+        die;
+    }
 }
 
