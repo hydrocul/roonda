@@ -35,8 +35,8 @@ my ($bin_path, $source) = eat_token_exec($sexpr);
 if ($output_code) {
     print encode('utf-8', $source);
 } else {
-    my $script_path = save_file($source, 'sh');
     $ENV{$ENV_TMP_PATH} = tempdir(CLEANUP => 1);
+    my $script_path = save_file($source, 'sh', $ENV{$ENV_TMP_PATH});
     my $pid = fork;
     if ($pid) {
         wait;
