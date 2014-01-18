@@ -45,6 +45,12 @@ echo ./testdata/sh-exec.rd
 cat ./testdata/sh-exec.rd | ./target/roonda --output-code > ./actual/sh-exec.sh
 diff -u expected/sh-exec.sh actual/sh-exec.sh
 
+echo ./testdata/sh-exec-perl.rd
+cat ./testdata/sh-exec-perl.rd | ./target/roonda --output-code > ./actual/sh-exec-perl.sh
+diff -u expected/sh-exec-perl.sh actual/sh-exec-perl.sh
+cat ./testdata/sh-exec-perl.rd | ./target/roonda > ./actual/sh-exec-perl.txt
+diff -u expected/sh-exec-perl.txt actual/sh-exec-perl.txt
+
 
 if diff -u -r expected actual >/dev/null; then
     echo "Success!"

@@ -19,18 +19,37 @@ sub eat_list_sh_statement {
     my ($type, $line_no, $token, $token_str) = @$head;
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
         if ($token eq 'exec') {
-            'exec ' . eat_list_sh_call(\@list);
+            'exec ' . eat_list_sh_command(\@list);
         } else {
             unshift(@list, $head);
-            eat_list_sh_call(\@list);
+            eat_list_sh_command(\@list);
         }
     } else {
         unshift(@list, $head);
-        eat_list_sh_call(\@list);
+        eat_list_sh_command(\@list);
     }
 }
 
-sub eat_list_sh_call {
+sub eat_list_sh_command {
+    my ($list_ref) = @_;
+    my @list = @$list_ref;
+    my $head = shift(@list);
+    unless (defined($head)) {
+        return '';
+    }
+    my ($type, $line_no, $token, $token_str) = @$head;
+    if ($type eq $TOKEN_TYPE_LIST) {
+        my ($bin_path, $source, $ext) = eat_list_exec_a($token, \@list, $line_no);
+        my $bin_path_escaped = escape_sh_string($bin_path);
+        my $script_path_escaped = escape_sh_string(save_file($source, $ext));
+        "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
+    } else {
+        unshift(@list, $head);
+        eat_list_sh_command_normal(\@list);
+    }
+}
+
+sub eat_list_sh_command_normal {
     my ($list_ref) = @_;
     my @list = @$list_ref;
     my $result = '';
@@ -80,7 +99,7 @@ sub eat_list_sh_argument {
 
 sub eat_list_sh_argument_backticks {
     my ($list_ref) = @_;
-    my $source = eat_list_sh_call($list_ref);
+    my $source = eat_list_sh_command($list_ref);
     escape_sh_backticks($source);
 }
 

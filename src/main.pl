@@ -28,15 +28,16 @@ if ($source_filepath) {
 }
 @lines = map { decode('utf-8', $_) } @lines;
 
+$ENV{$ENV_TMP_PATH} = tempdir(CLEANUP => 1);
+
 my $tokens = parse_source(@lines);
 my $sexpr = build_sexpr($tokens);
-my ($bin_path, $source) = eat_token_exec($sexpr);
+my ($bin_path, $source, $ext) = eat_token_exec($sexpr);
 
 if ($output_code) {
     print encode('utf-8', $source);
 } else {
-    $ENV{$ENV_TMP_PATH} = tempdir(CLEANUP => 1);
-    my $script_path = save_file($source, 'sh', $ENV{$ENV_TMP_PATH});
+    my $script_path = $ENV{$ENV_TMP_PATH} . '/' . save_file($source, $ext);
     my $pid = fork;
     if ($pid) {
         wait;
