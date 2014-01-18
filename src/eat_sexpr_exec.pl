@@ -1,35 +1,35 @@
 
 sub eat_token_exec {
     my ($token_ref) = @_;
-    my ($type, $line_no, $token, $token_str) = @$token_ref;
+    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
     if ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_exec($token, $line_no);
+        eat_list_exec($token, $line_no_2);
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
     }
 }
 
 sub eat_list_exec {
-    my ($list_ref, $list_line_no) = @_;
+    my ($list_ref, $close_line_no) = @_;
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
-        die "Unexpected empty list (Line: $list_line_no)";
+        die "Unexpected token: `)` (Line: $close_line_no)";
     }
-    my ($type, $line_no, $token, $token_str) = @$head;
+    my ($type, $line_no, $token, $token_str, $line_no_2) = @$head;
     if ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_exec_a($token, \@list, $line_no);
+        eat_list_exec_a($token, \@list, $line_no_2);
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
     }
 }
 
 sub eat_list_exec_a {
-    my ($lang_opts_ref, $list_ref, $lang_list_line_no) = @_;
+    my ($lang_opts_ref, $list_ref, $lang_close_line_no) = @_;
     my @lang_opts = @$lang_opts_ref;
     my $head = shift(@lang_opts);
     unless (defined($head)) {
-        die "Unexpected empty list (Line: $lang_list_line_no)";
+        die "Unexpected token: `)` (Line: $lang_close_line_no)";
     }
     my ($type, $line_no, $token, $token_str) = @$head;
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {

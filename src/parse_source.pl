@@ -7,7 +7,7 @@ sub parse_source {
         push(@tokens, _parse_source_line($line, $line_no));
         $line_no++;
     }
-    # push(@tokens, _parse_source_eof($line_no);
+    push(@tokens, _parse_source_eof($line_no));
     \@tokens;
 }
 
@@ -59,12 +59,10 @@ sub _parse_source_line {
     @tokens;
 }
 
-=comment
 sub _parse_source_eof {
-    my ($line, $line_no) = @_;
+    my ($line_no) = @_;
     my @tokens = ();
     push(@tokens, [$TOKEN_TYPE_EOF, $line_no, 'EOF', 'EOF']);
     @tokens;
 }
-=cut
 

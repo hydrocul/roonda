@@ -7,6 +7,7 @@ my $TOKEN_TYPE_INTEGER = 3;
 #my $TOKEN_TYPE_FLOAT  = 4;
 my $TOKEN_TYPE_OPEN    = 5;
 my $TOKEN_TYPE_CLOSE   = 6;
+my $TOKEN_TYPE_EOF     = 7;
 my $TOKEN_TYPE_LIST    = 8;
 
 my $LANG_SH     = 1;

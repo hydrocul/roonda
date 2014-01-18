@@ -10,7 +10,7 @@ sub eat_list_exec_sh {
 =cut
 
 sub eat_list_sh_statement {
-    my ($list_ref) = @_;
+    my ($list_ref, $close_line_no) = @_;
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
@@ -21,7 +21,7 @@ sub eat_list_sh_statement {
         if ($token eq 'exec') {
             'exec ' . eat_list_sh_command(\@list);
         } elsif ($token eq 'assign') {
-            eat_list_sh_assign(\@list, $line_no);
+            eat_list_sh_assign(\@list, $close_line_no);
         } else {
             unshift(@list, $head);
             eat_list_sh_command(\@list);
@@ -33,23 +33,23 @@ sub eat_list_sh_statement {
 }
 
 sub eat_list_sh_assign {
-    my ($list_ref, $list_line_no) = @_;
+    my ($list_ref, $close_line_no) = @_;
     my @list = @$list_ref;
     my $head = shift(@list);
-    die "Unexpected empty list (Line: $list_line_no)" unless (defined($head));
+    die "Unexpected token: `)` (Line: $close_line_no)" unless (defined($head));
     my ($type, $line_no, $token, $token_str) = @$head;
     if ($type eq $TOKEN_TYPE_SYMBOL) {
-        eat_list_sh_assign_1($token, \@list, $list_line_no);
+        eat_list_sh_assign_1($token, \@list, $close_line_no);
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no)";
     }
 }
 
 sub eat_list_sh_assign_1 {
-    my ($varname, $list_ref, $list_line_no) = @_;
+    my ($varname, $list_ref, $close_line_no) = @_;
     my @list = @$list_ref;
     my $head = shift(@list);
-    die "Unexpected empty list (Line: $list_line_no)" unless (defined($head));
+    die "Unexpected token: `)` (Line: $close_line_no)" unless (defined($head));
     if (@list) {
         my $head = shift(@list);
         my ($type, $line_no, $token, $token_str) = @$head;
@@ -71,9 +71,9 @@ sub eat_list_sh_command {
     unless (defined($head)) {
         return '';
     }
-    my ($type, $line_no, $token, $token_str) = @$head;
+    my ($type, $line_no, $token, $token_str, $line_no_2) = @$head;
     if ($type eq $TOKEN_TYPE_LIST) {
-        my ($bin_path, $source, $ext) = eat_list_exec_a($token, \@list, $line_no);
+        my ($bin_path, $source, $ext) = eat_list_exec_a($token, \@list, $line_no_2);
         my $bin_path_escaped = escape_sh_string($bin_path);
         my $script_path_escaped = escape_sh_string(save_file($source, $ext));
         "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";

@@ -25,9 +25,9 @@ sub eat_list_langs {
 
 sub eat_token_langs_statement {
     my ($token_ref, $lang) = @_;
-    my ($type, $line_no, $token, $token_str) = @$token_ref;
+    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
     if ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_langs_statement($token, $line_no, $lang);
+        eat_list_langs_statement($token, $line_no_2, $lang);
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
     }
@@ -36,7 +36,7 @@ sub eat_token_langs_statement {
 sub eat_token_langs_expr {
     my ($token_ref, $op_order, $lang) = @_;
     die if ($lang eq $LANG_SH);
-    my ($type, $line_no, $token, $token_str) = @$token_ref;
+    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
     if ($type eq $TOKEN_TYPE_SYMBOL) {
         $token;
     } elsif ($type eq $TOKEN_TYPE_STRING) {
@@ -48,31 +48,31 @@ sub eat_token_langs_expr {
     } elsif ($type eq $TOKEN_TYPE_INTEGER) {
         $token;
     } elsif ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_langs_expr($token, $op_order, $line_no, $lang);
+        eat_list_langs_expr($token, $op_order, $line_no_2, $lang);
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no)";
     }
 }
 
 sub eat_list_langs_expr {
-    my ($list_ref, $op_order, $list_line_no, $lang) = @_;
+    my ($list_ref, $op_order, $close_line_no, $lang) = @_;
     die if ($lang eq $LANG_SH);
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
-        die "Unexpected empty list (Line: $list_line_no)";
+        die "Unexpected token: `)` (Line: $close_line_no)";
     }
     my ($type, $line_no, $token, $token_str) = @$head;
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
         if ($token eq 'apply') {
-            eat_list_langs_apply(\@list, $list_line_no, $lang);
+            eat_list_langs_apply(\@list, $close_line_no, $lang);
         } elsif ($token eq '+' || $token eq '-') {
             eat_list_langs_binop($token, $OP_ORDER_PLUS, $op_order, \@list, $lang);
         } elsif ($token eq '*' || $token eq '/') {
             eat_list_langs_binop($token, $OP_ORDER_MULTIPLY, $op_order, \@list, $lang);
         } else {
             unshift(@list, $head);
-            eat_list_langs_apply(\@list, $list_line_no, $lang);
+            eat_list_langs_apply(\@list, $close_line_no, $lang);
         }
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no)";
@@ -80,14 +80,14 @@ sub eat_list_langs_expr {
 }
 
 sub eat_list_langs_statement {
-    my ($list_ref, $list_line_no, $lang) = @_;
+    my ($list_ref, $close_line_no, $lang) = @_;
     if ($lang eq $LANG_SH) {
-        return eat_list_sh_statement($list_ref);
+        return eat_list_sh_statement($list_ref, $close_line_no);
     }
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
-        die "Unexpected empty list (Line: $list_line_no)";
+        die "Unexpected token: `)` (Line: $close_line_no)";
     }
     my ($type, $line_no, $token, $token_str) = @$head;
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
@@ -95,21 +95,21 @@ sub eat_list_langs_statement {
             die "TODO";
         } else {
             unshift(@list, $head);
-            eat_list_langs_expr(\@list, $OP_ORDER_MIN, $list_line_no, $lang) . ';';
+            eat_list_langs_expr(\@list, $OP_ORDER_MIN, $close_line_no, $lang) . ';';
         }
     } else {
         unshift(@list, $head);
-        eat_list_langs_expr(\@list, $OP_ORDER_MIN, $list_line_no, $lang) . ';';
+        eat_list_langs_expr(\@list, $OP_ORDER_MIN, $close_line_no, $lang) . ';';
     }
 }
 
 sub eat_list_langs_apply {
-    my ($list_ref, $list_line_no, $lang) = @_;
+    my ($list_ref, $close_line_no, $lang) = @_;
     die if ($lang eq $LANG_SH);
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
-        die "Unexpected empty list (Line: $list_line_no)";
+        die "Unexpected token: `)` (Line: $close_line_no)";
     }
     my ($type, $line_no, $token, $token_str) = @$head;
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
