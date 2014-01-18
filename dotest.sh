@@ -27,19 +27,9 @@ echo ./testdata/roonda-tmp-path.rd
 cat ./testdata/roonda-tmp-path.rd | ./target/roonda > ./actual/roonda-tmp-path.txt
 diff -u expected/roonda-tmp-path.txt actual/roonda-tmp-path.txt
 
-echo ./testdata/basic-perl.rd
-cat ./testdata/basic-perl.rd | ./target/roonda --output-code > ./actual/basic-perl.pl
-diff -u expected/basic-perl.pl actual/basic-perl.pl
-cat ./testdata/basic-perl.rd | ./target/roonda  > ./actual/basic-perl.txt
-diff -u expected/basic-perl.txt actual/basic-perl.txt
-
 echo ./testdata/sh-backticks.rd
 cat ./testdata/sh-backticks.rd | ./target/roonda --output-code > ./actual/sh-backticks.sh
 diff -u expected/sh-backticks.sh actual/sh-backticks.sh
-
-echo ./testdata/order-of-operations.rd
-cat ./testdata/order-of-operations.rd | ./target/roonda --output-code > ./actual/order-of-operations.pl
-diff -u expected/order-of-operations.pl actual/order-of-operations.pl
 
 echo ./testdata/sh-exec.rd
 cat ./testdata/sh-exec.rd | ./target/roonda --output-code > ./actual/sh-exec.sh
@@ -50,6 +40,16 @@ cat ./testdata/sh-exec-perl.rd | ./target/roonda --output-code > ./actual/sh-exe
 diff -u expected/sh-exec-perl.sh actual/sh-exec-perl.sh
 cat ./testdata/sh-exec-perl.rd | ./target/roonda > ./actual/sh-exec-perl.txt
 diff -u expected/sh-exec-perl.txt actual/sh-exec-perl.txt
+
+echo ./testdata/basic-perl.rd
+cat ./testdata/basic-perl.rd | ./target/roonda --output-code > ./actual/basic-perl.pl
+diff -u expected/basic-perl.pl actual/basic-perl.pl
+cat ./testdata/basic-perl.rd | ./target/roonda  > ./actual/basic-perl.txt
+diff -u expected/basic-perl.txt actual/basic-perl.txt
+
+echo ./testdata/order-of-operations.rd
+cat ./testdata/order-of-operations.rd | ./target/roonda --output-code > ./actual/order-of-operations.pl
+diff -u expected/order-of-operations.pl actual/order-of-operations.pl
 
 
 if diff -u -r expected actual >/dev/null; then
