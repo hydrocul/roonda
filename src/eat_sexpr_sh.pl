@@ -20,6 +20,8 @@ sub eat_list_sh_statement {
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
         if ($token eq 'exec') {
             'exec ' . eat_list_sh_command(\@list);
+        } elsif ($token eq 'assign') {
+            eat_list_sh_assign(\@list, $line_no);
         } else {
             unshift(@list, $head);
             eat_list_sh_command(\@list);
@@ -27,6 +29,38 @@ sub eat_list_sh_statement {
     } else {
         unshift(@list, $head);
         eat_list_sh_command(\@list);
+    }
+}
+
+sub eat_list_sh_assign {
+    my ($list_ref, $list_line_no) = @_;
+    my @list = @$list_ref;
+    my $head = shift(@list);
+    die "Unexpected empty list (Line: $list_line_no)" unless (defined($head));
+    my ($type, $line_no, $token, $token_str) = @$head;
+    if ($type eq $TOKEN_TYPE_SYMBOL) {
+        eat_list_sh_assign_1($token, \@list, $list_line_no);
+    } else {
+        die "Unexpected token: `$token_str` (Line: $line_no)";
+    }
+}
+
+sub eat_list_sh_assign_1 {
+    my ($varname, $list_ref, $list_line_no) = @_;
+    my @list = @$list_ref;
+    my $head = shift(@list);
+    die "Unexpected empty list (Line: $list_line_no)" unless (defined($head));
+    if (@list) {
+        my $head = shift(@list);
+        my ($type, $line_no, $token, $token_str) = @$head;
+        die "Unexpected token: `$token_str` (Line: $line_no)";
+    }
+    my ($type, $line_no, $token, $token_str) = @$head;
+    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
+        my $value_escaped = escape_sh_string($token);
+        "$varname=$value_escaped";
+    } else {
+        die "Unexpected token: `$token_str` (Line: $line_no)";
     }
 }
 
@@ -109,7 +143,7 @@ sub eat_list_sh_argument_ref {
     my $head = shift(@list);
     die "Unexpected endo of list" unless (defined($head));
     my ($type, $line_no, $token, $token_str) = @$head;
-    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
+    if ($type eq $TOKEN_TYPE_SYMBOL) {
         if (@list) {
             my $head = shift(@list);
             my ($type, $line_no, $token, $token_str) = @$head;
