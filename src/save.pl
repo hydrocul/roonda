@@ -1,4 +1,6 @@
 
+my @saved_files = ();
+
 sub save_file {
     my ($content, $ext) = @_;
 
@@ -34,6 +36,36 @@ sub save_file_from_tempfile {
         `mv $filename $target_path`;
     }
 
+    push(@saved_files, $target_name);
+
     $target_name;
 }
+
+sub get_comments_about_saved_files {
+    my ($lang) = @_;
+    my $roonda_tmp_path = $ENV{$ENV_TMP_PATH};
+    my $result = "";
+    foreach my $file_name (@saved_files) {
+        open(IN, '<', "$roonda_tmp_path/$file_name") or die "Cannot open";
+        my @lines = <IN>;
+        close IN;
+        $result = $result . "\n";
+        my $source = join('', @lines);
+        my $source_comment;
+        if ($lang eq $LANG_SH) {
+            my $splitter = "##########################################";
+            my $header = "$splitter\n# $file_name:\n$splitter\n";
+            $source_comment = $header . escape_sh_multiline_comment($source);
+        } elsif ($lang eq $LANG_PERL) {
+            my $splitter = "##########################################";
+            my $header = "$splitter\n# $file_name:\n$splitter\n";
+            $source_comment = $header . escape_perl_multiline_comment($source);
+        } else {
+            die;
+        }
+        $result = $result . $source_comment;
+    }
+    $result;
+}
+
 

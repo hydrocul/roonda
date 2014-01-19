@@ -36,7 +36,7 @@ sub eat_list_exec_a {
         my ($lang, $bin_path, $ext) = bin_path_to_lang($token);
         die "Unexpected token: `$token_str` (Line: $line_no)" unless (defined($lang));
         my $source = eat_list_exec_b($lang, \@lang_opts, $list_ref);
-        ($bin_path, $source, $ext);
+        ($lang, $bin_path, $source, $ext);
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no)";
     }

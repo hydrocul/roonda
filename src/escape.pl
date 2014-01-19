@@ -16,6 +16,15 @@ sub escape_sh_backticks {
     "`" . $str . "`";
 }
 
+sub escape_sh_multiline_comment {
+    my ($str) = @_;
+    $str =~ s/\n/\n# /g;
+    $str =~ s/# \Z//g;
+    $str =~ s/[^\n]\Z/\n/g;
+    $str = '# ' . $str;
+    $str;
+}
+
 sub escape_perl_string {
     my ($str) = @_;
     $str =~ s/\\/\\\\/g;
@@ -30,5 +39,14 @@ sub escape_perl_string {
     $str =~ s/\@/\\\@/g;
     $str =~ s/"/\\"/g;
     "\"" . $str . "\"";
+}
+
+sub escape_perl_multiline_comment {
+    my ($str) = @_;
+    $str =~ s/\n/\n# /g;
+    $str =~ s/# \Z//g;
+    $str =~ s/[^\n]\Z/\n/g;
+    $str = '# ' . $str;
+    $str;
 }
 

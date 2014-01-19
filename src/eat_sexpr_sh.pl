@@ -1,14 +1,4 @@
 
-=comment
-sub eat_list_exec_sh {
-    my ($bin_path, $lang_opts_ref, $list_ref) = @_;
-    unless (defined($bin_path)) {
-        $bin_path = '/bin/sh';
-    }
-    ($bin_path, eat_list_langs($list_ref, $LANG_SH));
-}
-=cut
-
 sub eat_list_sh_statement {
     my ($list_ref, $close_line_no) = @_;
     my @list = @$list_ref;
@@ -73,9 +63,10 @@ sub eat_list_sh_command {
     }
     my ($type, $line_no, $token, $token_str, $line_no_2) = @$head;
     if ($type eq $TOKEN_TYPE_LIST) {
-        my ($bin_path, $source, $ext) = eat_list_exec_a($token, \@list, $line_no_2);
+        my ($lang, $bin_path, $source, $ext) = eat_list_exec_a($token, \@list, $line_no_2);
         my $bin_path_escaped = escape_sh_string($bin_path);
-        my $script_path_escaped = escape_sh_string(save_file($source, $ext));
+        my $script_path = save_file($source, $ext);
+        my $script_path_escaped = escape_sh_string($script_path);
         "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
     } else {
         unshift(@list, $head);

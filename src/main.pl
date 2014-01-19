@@ -32,7 +32,9 @@ $ENV{$ENV_TMP_PATH} = tempdir(CLEANUP => 1);
 
 my $tokens = parse_source(@lines);
 my $sexpr = build_sexpr($tokens);
-my ($bin_path, $source, $ext) = eat_token_exec($sexpr);
+my ($lang, $bin_path, $source, $ext) = eat_token_exec($sexpr);
+
+$source = $source . get_comments_about_saved_files($lang);
 
 if ($output_code) {
     print encode('utf-8', $source);
