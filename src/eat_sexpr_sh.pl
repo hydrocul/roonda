@@ -54,6 +54,16 @@ sub eat_list_sh_assign_1 {
     }
 }
 
+sub eat_token_sh_command {
+    my ($token_ref) = @_;
+    my ($type, $line_no, $token, $token_str) = @$token_ref;
+    if ($type eq $TOKEN_TYPE_LIST) {
+        eat_list_sh_command($token);
+    } else {
+        die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
+    }
+}
+
 sub eat_list_sh_command {
     my ($list_ref) = @_;
     my @list = @$list_ref;
@@ -62,7 +72,14 @@ sub eat_list_sh_command {
         return '';
     }
     my ($type, $line_no, $token, $token_str, $line_no_2) = @$head;
-    if ($type eq $TOKEN_TYPE_LIST) {
+    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
+        if ($token eq 'pipe') {
+            eat_list_sh_pipe(\@list);
+        } else {
+            unshift(@list, $head);
+            eat_list_sh_command_normal(\@list);
+        }
+    } elsif ($type eq $TOKEN_TYPE_LIST) {
         my ($lang, $bin_path, $source, $ext) = eat_list_exec_a($token, \@list, $line_no_2);
         my $bin_path_escaped = escape_sh_string($bin_path);
         my $script_path = save_file($source, $ext);
@@ -71,6 +88,21 @@ sub eat_list_sh_command {
     } else {
         unshift(@list, $head);
         eat_list_sh_command_normal(\@list);
+    }
+}
+
+sub eat_list_sh_pipe {
+    my ($list_ref) = @_;
+    my @list = @$list_ref;
+    my $result = '';
+    while () {
+        my $head = shift(@list);
+        unless (defined($head)) {
+            return $result;
+        }
+        my $source = eat_token_sh_command($head);
+        $result = $result . ' | ' if ($result);
+        $result = $result . $source;
     }
 }
 

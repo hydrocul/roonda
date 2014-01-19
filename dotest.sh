@@ -27,6 +27,12 @@ echo ./testdata/roonda-tmp-path.rd
 cat ./testdata/roonda-tmp-path.rd | ./target/roonda > ./actual/roonda-tmp-path.txt
 diff -u expected/roonda-tmp-path.txt actual/roonda-tmp-path.txt
 
+echo ./testdata/sh-pipe.rd
+cat ./testdata/sh-pipe.rd | ./target/roonda --output-code > ./actual/sh-pipe.sh
+diff -u expected/sh-pipe.sh actual/sh-pipe.sh
+cat ./testdata/sh-pipe.rd | ./target/roonda > ./actual/sh-pipe.txt
+diff -u expected/sh-pipe.txt actual/sh-pipe.txt
+
 echo ./testdata/sh-backticks.rd
 cat ./testdata/sh-backticks.rd | ./target/roonda --output-code > ./actual/sh-backticks.sh
 diff -u expected/sh-backticks.sh actual/sh-backticks.sh
