@@ -20,7 +20,8 @@ sub escape_sh_multiline_comment {
     my ($str) = @_;
     $str =~ s/\n/\n# /g;
     $str =~ s/# \Z//g;
-    $str =~ s/[^\n]\Z/\n/g;
+    $str = $str . "\n";
+    $str =~ s/\n\n\Z/\n/g;
     $str = '# ' . $str;
     $str;
 }
@@ -45,7 +46,8 @@ sub escape_perl_multiline_comment {
     my ($str) = @_;
     $str =~ s/\n/\n# /g;
     $str =~ s/# \Z//g;
-    $str =~ s/[^\n]\Z/\n/g;
+    $str = $str . "\n";
+    $str =~ s/\n\n\Z/\n/g;
     $str = '# ' . $str;
     $str;
 }
