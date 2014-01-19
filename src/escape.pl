@@ -1,7 +1,7 @@
 
 sub escape_sh_string {
     my ($str) = @_;
-    return $str if ($str =~ /\A[-.\/0-9A-Za-z]+\Z/);
+    return $str if ($str =~ /\A[-.\/_0-9A-Za-z]+\Z/);
     $str =~ s/'/'\\''/g;
     "'" . $str . "'";
     "'" . $str . "'";

@@ -19,15 +19,16 @@ sub save_file_from_tempfile {
     $key = $1;
 
     my $roonda_tmp_path = $ENV{$ENV_TMP_PATH};
+    my $prefix = 'roonda_';
 
     my $target_path;
     my $target_name;
     if ($ext) {
-        $target_path = "$roonda_tmp_path/$key.$ext";
-        $target_name = "$key.$ext";
+        $target_path = "$roonda_tmp_path/$prefix$key.$ext";
+        $target_name = "$prefix$key.$ext";
     } else {
-        $target_path = "$roonda_tmp_path/$key";
-        $target_name = "$key";
+        $target_path = "$roonda_tmp_path/$prefix$key";
+        $target_name = "$prefix$key";
     }
 
     if ( -e $target_path) {
@@ -53,11 +54,11 @@ sub get_comments_about_saved_files {
         my $source = join('', @lines);
         my $source_comment;
         if ($lang eq $LANG_SH) {
-            my $splitter = "##########################################";
+            my $splitter = "#################################################";
             my $header = "$splitter\n# $file_name:\n$splitter\n";
             $source_comment = $header . escape_sh_multiline_comment($source);
         } elsif ($lang eq $LANG_PERL) {
-            my $splitter = "##########################################";
+            my $splitter = "#################################################";
             my $header = "$splitter\n# $file_name:\n$splitter\n";
             $source_comment = $header . escape_perl_multiline_comment($source);
         } else {
