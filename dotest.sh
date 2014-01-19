@@ -41,17 +41,23 @@ echo ./testdata/sh-exec.rd
 cat ./testdata/sh-exec.rd | ./target/roonda --output-code > ./actual/sh-exec.sh
 diff -u expected/sh-exec.sh actual/sh-exec.sh
 
-echo ./testdata/sh-exec-perl.rd
-cat ./testdata/sh-exec-perl.rd | ./target/roonda --output-code > ./actual/sh-exec-perl.sh
-diff -u expected/sh-exec-perl.sh actual/sh-exec-perl.sh
-cat ./testdata/sh-exec-perl.rd | ./target/roonda > ./actual/sh-exec-perl.txt
-diff -u expected/sh-exec-perl.txt actual/sh-exec-perl.txt
+echo ./testdata/sh-call-langs.rd
+cat ./testdata/sh-call-langs.rd | ./target/roonda --output-code > ./actual/sh-call-langs.sh
+diff -u expected/sh-call-langs.sh actual/sh-call-langs.sh
+cat ./testdata/sh-call-langs.rd | ./target/roonda > ./actual/sh-call-langs.txt
+diff -u expected/sh-call-langs.txt actual/sh-call-langs.txt
 
 echo ./testdata/basic-perl.rd
 cat ./testdata/basic-perl.rd | ./target/roonda --output-code > ./actual/basic-perl.pl
 diff -u expected/basic-perl.pl actual/basic-perl.pl
 cat ./testdata/basic-perl.rd | ./target/roonda  > ./actual/basic-perl.txt
 diff -u expected/basic-perl.txt actual/basic-perl.txt
+
+echo ./testdata/basic-ruby.rd
+cat ./testdata/basic-ruby.rd | ./target/roonda --output-code > ./actual/basic-ruby.rb
+diff -u expected/basic-ruby.rb actual/basic-ruby.rb
+cat ./testdata/basic-ruby.rd | ./target/roonda  > ./actual/basic-ruby.txt
+diff -u expected/basic-ruby.txt actual/basic-ruby.txt
 
 echo ./testdata/order-of-operations.rd
 cat ./testdata/order-of-operations.rd | ./target/roonda --output-code > ./actual/order-of-operations.pl

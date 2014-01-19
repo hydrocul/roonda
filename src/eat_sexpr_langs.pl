@@ -42,6 +42,8 @@ sub eat_token_langs_expr {
     } elsif ($type eq $TOKEN_TYPE_STRING) {
         if ($lang eq $LANG_PERL) {
             escape_perl_string($token);
+        } elsif ($lang eq $LANG_RUBY) {
+            escape_ruby_string($token);
         } else {
             die;
         }
@@ -90,16 +92,24 @@ sub eat_list_langs_statement {
         die "Unexpected token: `)` (Line: $close_line_no)";
     }
     my ($type, $line_no, $token, $token_str) = @$head;
+    my $expr_source;
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
         if ($token eq 'if') {
             die "TODO";
         } else {
             unshift(@list, $head);
-            eat_list_langs_expr(\@list, $OP_ORDER_MIN, $close_line_no, $lang) . ';';
+            $expr_source = eat_list_langs_expr(\@list, $OP_ORDER_MIN, $close_line_no, $lang);
         }
     } else {
         unshift(@list, $head);
-        eat_list_langs_expr(\@list, $OP_ORDER_MIN, $close_line_no, $lang) . ';';
+        $expr_source = eat_list_langs_expr(\@list, $OP_ORDER_MIN, $close_line_no, $lang);
+    }
+    if ($lang eq $LANG_PERL) {
+        $expr_source . ';';
+    } elsif ($lang eq $LANG_RUBY) {
+        $expr_source;
+    } else {
+        die;
     }
 }
 

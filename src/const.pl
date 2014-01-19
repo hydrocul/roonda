@@ -12,8 +12,8 @@ my $TOKEN_TYPE_LIST    = 8;
 
 my $LANG_SH     = 1;
 my $LANG_PERL   = 2;
-#my $LANG_PHP    = 3;
-#my $LANG_RUBY   = 4;
+my $LANG_RUBY   = 3;
+#my $LANG_PHP    = 4;
 #my $LANG_PYTHON = 5;
 
 my $OP_ORDER_MIN = 0;

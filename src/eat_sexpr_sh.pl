@@ -80,7 +80,7 @@ sub eat_list_sh_command {
             eat_list_sh_command_normal(\@list);
         }
     } elsif ($type eq $TOKEN_TYPE_LIST) {
-        my ($lang, $bin_path, $source, $ext) = eat_list_exec_a($token, \@list, $line_no_2);
+        my ($lang, $bin_path, $source, $ext) = eat_list_exec_for_sh($token, \@list, $line_no_2);
         my $bin_path_escaped = escape_sh_string($bin_path);
         my $script_path = save_file($source, $ext);
         my $script_path_escaped = escape_sh_string($script_path);
