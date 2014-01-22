@@ -1,17 +1,17 @@
 
-sub parse_source {
+sub parse_sexpr {
     my @lines = @_;
     my @tokens = ();
     my $line_no = 1;
     foreach my $line (@lines) {
-        push(@tokens, _parse_source_line($line, $line_no));
+        push(@tokens, _parse_sexpr_line($line, $line_no));
         $line_no++;
     }
-    push(@tokens, _parse_source_eof($line_no));
-    \@tokens;
+    push(@tokens, _parse_sexpr_eof($line_no));
+    build_ast(\@tokens);
 }
 
-sub _parse_source_line {
+sub _parse_sexpr_line {
     my ($line, $line_no) = @_;
     my @tokens = ();
     while ($line =~ ('\A\s*(' . '\(' . '|' .
@@ -59,7 +59,7 @@ sub _parse_source_line {
     @tokens;
 }
 
-sub _parse_source_eof {
+sub _parse_sexpr_eof {
     my ($line_no) = @_;
     my @tokens = ();
     push(@tokens, [$TOKEN_TYPE_EOF, $line_no, 'EOF', 'EOF']);

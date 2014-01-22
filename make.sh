@@ -8,8 +8,9 @@ mkdir -p target
     cat ./src/head.pl
     cat ./src/const.pl
     cat ./src/save.pl
-    cat ./src/parse_source.pl
-    cat ./src/build_sexpr.pl
+    cat ./src/parse_sexpr.pl
+    cat ./src/parse_json.pl
+    cat ./src/build_ast.pl
     cat ./src/escape.pl
     cat ./src/eat_sexpr_exec.pl
     cat ./src/eat_sexpr_langs.pl

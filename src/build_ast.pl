@@ -1,8 +1,8 @@
 
-sub build_sexpr {
+sub build_ast {
     my ($tokens_ref) = @_;
     my @tokens = @$tokens_ref;
-    my ($sexpr, $tail_tokens_ref) = _build_sexpr_list(0, \@tokens);
+    my ($sexpr, $tail_tokens_ref) = _build_ast_list(0, \@tokens);
     @tokens = @$tail_tokens_ref;
     if (@tokens) {
         my $head = shift(@tokens);
@@ -14,7 +14,7 @@ sub build_sexpr {
     $sexpr;
 }
 
-sub _build_sexpr_list {
+sub _build_ast_list {
     my ($list_line_no, $tokens_ref) = @_;
     my @tokens = @$tokens_ref;
     my @result = ();
@@ -22,7 +22,7 @@ sub _build_sexpr_list {
         my $head = shift(@tokens);
         my ($type, $line_no, $token, $token_str) = @$head;
         if ($type eq $TOKEN_TYPE_OPEN) {
-            my ($sexpr, $tail_tokens_ref) = _build_sexpr_list($line_no, \@tokens);
+            my ($sexpr, $tail_tokens_ref) = _build_ast_list($line_no, \@tokens);
             push(@result, $sexpr);
             @tokens = @$tail_tokens_ref;
         } elsif ($type eq $TOKEN_TYPE_CLOSE) {

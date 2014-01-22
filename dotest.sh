@@ -7,12 +7,19 @@ cd `dirname $0`
 rm -r actual 2>/dev/null
 mkdir -p actual
 
-echo ./testdata/basic-sh.rd
-cat ./testdata/basic-sh.rd | ./target/roonda --output-code > ./actual/basic-sh.sh
-diff -u expected/basic-sh.sh actual/basic-sh.sh && \
-( sh actual/basic-sh.sh > actual/basic-sh.txt; diff -u expected/basic-sh.txt actual/basic-sh.txt )
-cat ./testdata/basic-sh.rd | ./target/roonda  > ./actual/basic-sh-2.txt
-diff -u expected/basic-sh-2.txt actual/basic-sh-2.txt
+echo ./testdata/sexpr.rd
+cat ./testdata/sexpr.rd | ./target/roonda --output-code > ./actual/sexpr.sh
+diff -u expected/sexpr.sh actual/sexpr.sh && \
+( sh actual/sexpr.sh > actual/sexpr.txt; diff -u expected/sexpr.txt actual/sexpr.txt )
+cat ./testdata/sexpr.rd | ./target/roonda  > ./actual/sexpr.2.txt
+diff -u expected/sexpr.2.txt actual/sexpr.2.txt
+
+echo ./testdata/json.js
+cat ./testdata/json.js | ./target/roonda --from-json --output-code > ./actual/json.sh
+diff -u expected/json.sh actual/json.sh && \
+( sh actual/json.sh > actual/json.txt; diff -u expected/json.txt actual/json.txt )
+cat ./testdata/json.js | ./target/roonda --from-json > ./actual/json.2.txt
+diff -u expected/json.2.txt actual/json.2.txt
 
 echo ./testdata/sh-env.rd
 cat ./testdata/sh-env.rd | ./target/roonda --output-code > ./actual/sh-env.sh
