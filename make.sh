@@ -12,10 +12,10 @@ mkdir -p target
     cat ./src/parse_json.pl
     cat ./src/build_ast.pl
     cat ./src/escape.pl
-    cat ./src/eat_sexpr_exec.pl
-    cat ./src/eat_sexpr_langs.pl
-    cat ./src/eat_sexpr_sh.pl
-    cat ./src/eat_sexpr_perl.pl
+    cat ./src/eatast_exec.pl
+    cat ./src/eatast_langs.pl
+    cat ./src/eatast_sh.pl
+    cat ./src/eatast_perl.pl
     cat ./src/main.pl
 } > ./target/roonda
 
