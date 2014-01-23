@@ -1,4 +1,4 @@
-(ruby)
+(ruby v1)
 
 (apply print "Hello, world!\n")
 

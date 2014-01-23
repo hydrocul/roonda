@@ -1,6 +1,6 @@
 
 sub eat_list_sh_statement {
-    my ($list_ref, $close_line_no) = @_;
+    my ($list_ref, $close_line_no, $ver) = @_;
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {

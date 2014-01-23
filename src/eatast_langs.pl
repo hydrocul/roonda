@@ -1,16 +1,16 @@
 
 sub eat_token_langs {
-    my ($token_ref, $lang) = @_;
+    my ($token_ref, $lang, $ver) = @_;
     my ($type, $line_no, $token, $token_str) = @$token_ref;
     if ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_langs($token, $lang);
+        eat_list_langs($token, $lang, $ver);
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
     }
 }
 
 sub eat_list_langs {
-    my ($list_ref, $lang) = @_;
+    my ($list_ref, $lang, $ver) = @_;
     my @list = @$list_ref;
     my $result = '';
     while () {
@@ -18,18 +18,50 @@ sub eat_list_langs {
         unless (defined($head)) {
             return $result;
         }
-        my $source = eat_token_langs_statement($head, $lang);
+        my $source = eat_token_langs_statement($head, $lang, $ver);
         $result = $result . $source . "\n";
     }
 }
 
 sub eat_token_langs_statement {
-    my ($token_ref, $lang) = @_;
+    my ($token_ref, $lang, $ver) = @_;
     my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
     if ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_langs_statement($token, $line_no_2, $lang);
+        eat_list_langs_statement($token, $line_no_2, $lang, $ver);
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
+    }
+}
+
+sub eat_list_langs_statement {
+    my ($list_ref, $close_line_no, $lang, $ver) = @_;
+    if ($lang eq $LANG_SH) {
+        return eat_list_sh_statement($list_ref, $close_line_no, $ver);
+    }
+    my @list = @$list_ref;
+    my $head = shift(@list);
+    unless (defined($head)) {
+        die "Unexpected token: `)` (Line: $close_line_no)";
+    }
+    my ($type, $line_no, $token, $token_str) = @$head;
+    my $expr_source;
+    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
+        if ($token eq 'if') {
+            die "TODO";
+        } else {
+            unshift(@list, $head);
+            $expr_source = eat_list_langs_expr(\@list, $OP_ORDER_MIN, $close_line_no, $lang);
+        }
+    } else {
+        unshift(@list, $head);
+        $expr_source = eat_list_langs_expr(\@list, $OP_ORDER_MIN, $close_line_no, $lang);
+    }
+    if ($lang eq $LANG_PERL) {
+        $expr_source . ';';
+    } elsif ($lang eq $LANG_RUBY) {
+        $expr_source;
+    } else {
+        die;
     }
 }
 
@@ -91,38 +123,6 @@ sub eat_list_langs_expr {
         }
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no)";
-    }
-}
-
-sub eat_list_langs_statement {
-    my ($list_ref, $close_line_no, $lang) = @_;
-    if ($lang eq $LANG_SH) {
-        return eat_list_sh_statement($list_ref, $close_line_no);
-    }
-    my @list = @$list_ref;
-    my $head = shift(@list);
-    unless (defined($head)) {
-        die "Unexpected token: `)` (Line: $close_line_no)";
-    }
-    my ($type, $line_no, $token, $token_str) = @$head;
-    my $expr_source;
-    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
-        if ($token eq 'if') {
-            die "TODO";
-        } else {
-            unshift(@list, $head);
-            $expr_source = eat_list_langs_expr(\@list, $OP_ORDER_MIN, $close_line_no, $lang);
-        }
-    } else {
-        unshift(@list, $head);
-        $expr_source = eat_list_langs_expr(\@list, $OP_ORDER_MIN, $close_line_no, $lang);
-    }
-    if ($lang eq $LANG_PERL) {
-        $expr_source . ';';
-    } elsif ($lang eq $LANG_RUBY) {
-        $expr_source;
-    } else {
-        die;
     }
 }
 

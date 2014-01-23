@@ -41,7 +41,7 @@ sub _eat_list_exec_a {
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
         my ($lang, $bin_path, $bin_path_for_sh, $ext) = _bin_path_to_lang($token);
         die "Unexpected token: `$token_str` (Line: $line_no)" unless (defined($lang));
-        my $source = _eat_list_exec_b($lang, \@lang_opts, $list_ref);
+        my $source = _eat_list_exec_b($lang, \@lang_opts, $list_ref, $lang_close_line_no);
         ($lang, $bin_path, $bin_path_for_sh, $source, $ext);
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no)";
@@ -49,8 +49,28 @@ sub _eat_list_exec_a {
 }
 
 sub _eat_list_exec_b {
-    my ($lang, $lang_opts_ref, $list_ref) = @_;
-    eat_list_langs($list_ref, $lang);
+    my ($lang, $lang_opts_ref, $list_ref, $lang_close_line_no) = @_;
+    my @lang_opts = @$lang_opts_ref;
+    my $head = shift(@lang_opts);
+    unless (defined($head)) {
+        die "Unexpected token: `)` (Line: $lang_close_line_no), but expected symbol `v...`";
+    }
+    my ($type, $line_no, $token, $token_str) = @$head;
+    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
+        if ($token =~ /\Av([1-9][0-9]*)\Z/) {
+            my $ver = $1;
+            _eat_list_exec_c($lang, $ver, \@lang_opts, $list_ref);
+        } else {
+            die "Unexpected token: `$token_str` (Line: $line_no), but expected symbol `v...`";
+        }
+    } else {
+        die "Unexpected token: `$token_str` (Line: $line_no), but expected symbol `v...`";
+    }
+}
+
+sub _eat_list_exec_c {
+    my ($lang, $ver, $lang_opts_ref, $list_ref) = @_;
+    eat_list_langs($list_ref, $lang, $ver);
 }
 
 my %bin_path_map = ();
