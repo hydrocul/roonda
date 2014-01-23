@@ -72,6 +72,19 @@ sub eat_list_langs_expr {
             eat_list_langs_binop($token, $OP_ORDER_PLUS, $op_order, \@list, $lang);
         } elsif ($token eq '*' || $token eq '/') {
             eat_list_langs_binop($token, $OP_ORDER_MULTIPLY, $op_order, \@list, $lang);
+        } elsif ($token eq 'strcat') {
+            my $op;
+            my $op_order_plus;
+            if ($lang eq $LANG_PERL) {
+                $op = '.';
+                $op_order_plus = $OP_ORDER_PLUS;
+            } elsif ($lang eq $LANG_RUBY) {
+                $op = '+';
+                $op_order_plus = $OP_ORDER_PLUS;
+            } else {
+                die;
+            }
+            eat_list_langs_binop($op, $op_order_plus, $op_order, \@list, $lang);
         } else {
             unshift(@list, $head);
             eat_list_langs_apply(\@list, $close_line_no, $lang);

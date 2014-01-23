@@ -77,9 +77,17 @@ diff -u expected/basic-ruby.rb actual/basic-ruby.rb
 cat ./testdata/basic-ruby.rd | ./target/roonda  > ./actual/basic-ruby.txt
 diff -u expected/basic-ruby.txt actual/basic-ruby.txt
 
-echo ./testdata/order-of-operations.rd
-cat ./testdata/order-of-operations.rd | ./target/roonda --output-code > ./actual/order-of-operations.pl
-diff -u expected/order-of-operations.pl actual/order-of-operations.pl
+echo ./testdata/operators-perl.rd
+cat ./testdata/operators-perl.rd | ./target/roonda --output-code > ./actual/operators-perl.pl
+diff -u expected/operators-perl.pl actual/operators-perl.pl
+cat ./testdata/operators-perl.rd | ./target/roonda > ./actual/operators-perl.txt
+diff -u expected/operators-perl.txt actual/operators-perl.txt
+
+echo ./testdata/operators-ruby.rd
+cat ./testdata/operators-ruby.rd | ./target/roonda --output-code > ./actual/operators-ruby.rb
+diff -u expected/operators-ruby.rb actual/operators-ruby.rb
+cat ./testdata/operators-ruby.rd | ./target/roonda > ./actual/operators-ruby.txt
+diff -u expected/operators-ruby.txt actual/operators-ruby.txt
 
 
 if diff -u -r expected actual >/dev/null; then
