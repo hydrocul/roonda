@@ -3,7 +3,7 @@
 (echo Hello   World)
 (echo "Hello   World!")
 
-(echo attachedfile.txt)
+(cat (strcat (ref ROONDA_TMP_PATH) / attachedfile.txt))
 
 << attachedfile.txt
 

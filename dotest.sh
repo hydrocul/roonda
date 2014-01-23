@@ -9,15 +9,17 @@ mkdir -p actual
 
 echo ./testdata/sexpr.rd
 cat ./testdata/sexpr.rd | ./target/roonda --output-code > ./actual/sexpr.sh
-diff -u expected/sexpr.sh actual/sexpr.sh && \
-( sh actual/sexpr.sh > actual/sexpr.txt; diff -u expected/sexpr.txt actual/sexpr.txt )
+diff -u expected/sexpr.sh actual/sexpr.sh
+sh actual/sexpr.sh > actual/sexpr.txt 2>/dev/null
+diff -u expected/sexpr.txt actual/sexpr.txt
 cat ./testdata/sexpr.rd | ./target/roonda  > ./actual/sexpr.2.txt
 diff -u expected/sexpr.2.txt actual/sexpr.2.txt
 
 echo ./testdata/json.js
 cat ./testdata/json.js | ./target/roonda --from-json --output-code > ./actual/json.sh
-diff -u expected/json.sh actual/json.sh && \
-( sh actual/json.sh > actual/json.txt; diff -u expected/json.txt actual/json.txt )
+diff -u expected/json.sh actual/json.sh
+sh actual/json.sh > actual/json.txt 2>/dev/null
+diff -u expected/json.txt actual/json.txt
 cat ./testdata/json.js | ./target/roonda --from-json > ./actual/json.2.txt
 diff -u expected/json.2.txt actual/json.2.txt
 
@@ -27,8 +29,8 @@ diff -u expected/sh-env.sh actual/sh-env.sh
 (
     export ROONDA_TEST="Hello"
     cat ./testdata/sh-env.rd | ./target/roonda > ./actual/sh-env.txt
-    diff -u expected/sh-env.txt actual/sh-env.txt
 )
+diff -u expected/sh-env.txt actual/sh-env.txt
 
 echo ./testdata/roonda-tmp-path.rd
 cat ./testdata/roonda-tmp-path.rd | ./target/roonda > ./actual/roonda-tmp-path.txt
@@ -43,6 +45,15 @@ diff -u expected/sh-pipe.txt actual/sh-pipe.txt
 echo ./testdata/sh-backticks.rd
 cat ./testdata/sh-backticks.rd | ./target/roonda --output-code > ./actual/sh-backticks.sh
 diff -u expected/sh-backticks.sh actual/sh-backticks.sh
+
+echo ./testdata/sh-strcat.rd
+cat ./testdata/sh-strcat.rd | ./target/roonda --output-code > ./actual/sh-strcat.sh
+diff -u expected/sh-strcat.sh actual/sh-strcat.sh
+(
+    export ROONDA_TEST="Hello"
+    cat ./testdata/sh-strcat.rd | ./target/roonda > ./actual/sh-strcat.txt
+)
+diff -u expected/sh-strcat.txt actual/sh-strcat.txt
 
 echo ./testdata/sh-exec.rd
 cat ./testdata/sh-exec.rd | ./target/roonda --output-code > ./actual/sh-exec.sh

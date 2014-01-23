@@ -146,6 +146,8 @@ sub eat_list_sh_argument {
             eat_list_sh_argument_backticks(\@list);
         } elsif ($token eq 'ref') {
             eat_list_sh_argument_ref(\@list);
+        } elsif ($token eq 'strcat') {
+            eat_list_sh_argument_strcat(\@list);
         } else {
             die "Unexpected token: `$token_str` (Line: $line_no)";
         }
@@ -175,6 +177,20 @@ sub eat_list_sh_argument_ref {
         '$' . $token;
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no)";
+    }
+}
+
+sub eat_list_sh_argument_strcat {
+    my ($list_ref) = @_;
+    my @list = @$list_ref;
+    my $result = '';
+    while () {
+        my $head = shift(@list);
+        unless (defined($head)) {
+            return $result;
+        }
+        my $source = eat_token_sh_argument($head);
+        $result = $result . $source;
     }
 }
 
