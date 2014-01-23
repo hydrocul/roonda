@@ -1,27 +1,64 @@
 
 sub parse_sexpr {
     my @lines = @_;
+    my ($lines_ref, $fname_map_ref) = _parse_sexpr_get_heredoc(@lines);
+    @lines = @$lines_ref;
     my @tokens = ();
     my $line_no = 1;
     foreach my $line (@lines) {
-        push(@tokens, _parse_sexpr_line($line, $line_no));
+        push(@tokens, _parse_sexpr_line($line, $line_no, $fname_map_ref));
         $line_no++;
     }
     push(@tokens, _parse_sexpr_eof($line_no));
     build_ast(\@tokens);
 }
 
+sub _parse_sexpr_get_heredoc {
+    my @lines = @_;
+    my @new_lines = ();
+    my %fname_map = ();
+    my $heredoc = '';
+    my $heredoc_content = '';
+    foreach my $line (@lines) {
+        if ($heredoc) {
+            if ($line =~ ('\A' . quotemeta($heredoc) . '\s*>>\s*\Z')) {
+                my $ext = '';
+                $ext = $1 if ($heredoc =~ /\.([-_a-zA-Z0-9]+)\Z/);
+                my $fname = save_file($heredoc_content, $ext);
+                $fname_map{$heredoc} = $fname;
+                push(@new_lines, "\n");
+                next;
+            }
+            $heredoc_content .= $line;
+            push(@new_lines, "\n");
+            next;
+        }
+        if ($line =~ '\A<<\s*([-+*/._a-zA-Z0-9]+)\s*\Z') {
+            $heredoc = $1;
+            push(@new_lines, "\n");
+            next;
+        }
+        push(@new_lines, $line);
+    }
+    (\@new_lines, \%fname_map);
+}
+
 sub _parse_sexpr_line {
-    my ($line, $line_no) = @_;
+    my ($line, $line_no, $fname_map_ref) = @_;
     my @tokens = ();
-    while ($line =~ ('\A\s*(' . '\(' . '|' .
-                                '\)' . '|' .
-                                '0' . '|' .
-                                '-?[1-9][0-9]*' . '|' .
-                                '"(([^"\\\\]|\\\\[nrt"u])*)"' . '|' .
-                                ':[^ ]+' . '|' .
-                                '[-+*/._a-zA-Z0-9]+' .
-                     ')')) {
+    while () {
+        my $f = ($line =~ ('\A\s*(' . '\(' . '|' .
+                                      '\)' . '|' .
+                                      '0' . '|' .
+                                      '-?[1-9][0-9]*' . '|' .
+                                      '"(([^"\\\\]|\\\\[nrt"u])*)"' . '|' .
+                                      ':[^ ]+' . '|' .
+                                      '[-+*/._a-zA-Z0-9]+' .
+                           ')'));
+        unless ($f) {
+            die "Unknown token: $line (Line: $line_no)" if ($line !~ /\A\s*\Z/);
+            last;
+        }
         my $token = $1;
         my $token_str = $token;
         my $token_type;
@@ -51,10 +88,12 @@ sub _parse_sexpr_line {
         } else {
             $token_type = $TOKEN_TYPE_SYMBOL;
         }
+        if ($token_type eq $TOKEN_TYPE_SYMBOL) {
+            if (defined($fname_map_ref->{$token})) {
+                $token = $fname_map_ref->{$token};
+            }
+        }
         push(@tokens, [$token_type, $line_no, $token, $token_str]);
-    }
-    if ($line !~ /\A\s*\Z/) {
-        die "Unknown token: $line (Line: $line_no)";
     }
     @tokens;
 }
