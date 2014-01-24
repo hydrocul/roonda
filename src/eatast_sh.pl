@@ -8,9 +8,9 @@ sub eat_list_sh_statement {
     }
     my ($type, $line_no, $token, $token_str) = @$head;
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
-        if ($token eq 'exec') {
+        if ($token eq $KEYWD_SH_EXEC) {
             'exec ' . eat_list_sh_command(\@list);
-        } elsif ($token eq 'assign') {
+        } elsif ($token eq $KEYWD_SH_ASSIGN) {
             eat_list_sh_assign(\@list, $close_line_no);
         } else {
             unshift(@list, $head);
@@ -73,7 +73,7 @@ sub eat_list_sh_command {
     }
     my ($type, $line_no, $token, $token_str, $line_no_2) = @$head;
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
-        if ($token eq 'pipe') {
+        if ($token eq $KEYWD_SH_PIPE) {
             eat_list_sh_pipe(\@list);
         } else {
             unshift(@list, $head);
@@ -142,11 +142,11 @@ sub eat_list_sh_argument {
     }
     my ($type, $line_no, $token, $token_str) = @$head;
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
-        if ($token eq 'backticks') {
+        if ($token eq $KEYWD_SH_BACKTICKS) {
             eat_list_sh_argument_backticks(\@list);
-        } elsif ($token eq 'ref') {
+        } elsif ($token eq $KEYWD_SH_REF) {
             eat_list_sh_argument_ref(\@list);
-        } elsif ($token eq 'strcat') {
+        } elsif ($token eq $KEYWD_STRCAT) {
             eat_list_sh_argument_strcat(\@list);
         } else {
             die "Unexpected token: `$token_str` (Line: $line_no)";

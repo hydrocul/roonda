@@ -16,9 +16,18 @@ my $LANG_RUBY   = 3;
 #my $LANG_PHP    = 4;
 #my $LANG_PYTHON = 5;
 
-my $OP_ORDER_MIN = 0;
+my $OP_ORDER_MIN       = 0;
 my $OP_ORDER_ARG_COMMA = 5;
-my $OP_ORDER_PLUS = 10;
-my $OP_ORDER_MULTIPLY = 20;
+my $OP_ORDER_PLUS      = 10;
+my $OP_ORDER_MULTIPLY  = 20;
 
+my $KEYWD_SH_EXEC      = 'exec';
+my $KEYWD_SH_ASSIGN    = 'assign';
+my $KEYWD_SH_PIPE      = 'pipe';
+my $KEYWD_SH_BACKTICKS = 'backticks';
+my $KEYWD_SH_REF       = 'ref';
+
+my $KEYWD_IF           = 'if';
+my $KEYWD_APPLY        = 'apply';
+my $KEYWD_STRCAT       = 'strcat';
 

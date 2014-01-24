@@ -46,7 +46,7 @@ sub eat_list_langs_statement {
     my ($type, $line_no, $token, $token_str) = @$head;
     my $expr_source;
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
-        if ($token eq 'if') {
+        if ($token eq $KEYWD_IF) {
             die "TODO";
         } else {
             unshift(@list, $head);
@@ -98,13 +98,13 @@ sub eat_list_langs_expr {
     }
     my ($type, $line_no, $token, $token_str) = @$head;
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
-        if ($token eq 'apply') {
+        if ($token eq $KEYWD_APPLY) {
             eat_list_langs_apply(\@list, $close_line_no, $lang);
         } elsif ($token eq '+' || $token eq '-') {
             eat_list_langs_binop($token, $OP_ORDER_PLUS, $op_order, \@list, $lang);
         } elsif ($token eq '*' || $token eq '/') {
             eat_list_langs_binop($token, $OP_ORDER_MULTIPLY, $op_order, \@list, $lang);
-        } elsif ($token eq 'strcat') {
+        } elsif ($token eq $KEYWD_STRCAT) {
             my $op;
             my $op_order_plus;
             if ($lang eq $LANG_PERL) {
