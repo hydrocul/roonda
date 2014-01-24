@@ -56,16 +56,36 @@ sub eat_list_sh_assign_1 {
 
 sub eat_token_sh_command {
     my ($token_ref) = @_;
-    my ($type, $line_no, $token, $token_str) = @$token_ref;
+    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
     if ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_sh_command($token);
+        eat_list_sh_command($token, $line_no_2);
+    } else {
+        die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
+    }
+}
+
+sub eat_token_sh_command_pipe_element {
+    my ($token_ref, $is_first, $is_last) = @_;
+    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
+    if ($type eq $TOKEN_TYPE_LIST) {
+        eat_list_sh_command_pipe_element($token, $is_first, $is_last, $line_no_2);
     } else {
         die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
     }
 }
 
 sub eat_list_sh_command {
-    my ($list_ref) = @_;
+    my ($list_ref, $close_line_no) = @_;
+    _eat_list_sh_command_sub($list_ref, '', '', '', $close_line_no);
+}
+
+sub eat_list_sh_command_pipe_element {
+    my ($list_ref, $is_first, $is_last, $close_line_no) = @_;
+    _eat_list_sh_command_sub($list_ref, 1, $is_first, $is_last, $close_line_no);
+}
+
+sub _eat_list_sh_command_sub {
+    my ($list_ref, $is_pipe_element, $is_pipe_first, $is_pipe_last, $close_line_no) = @_;
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
@@ -73,8 +93,12 @@ sub eat_list_sh_command {
     }
     my ($type, $line_no, $token, $token_str, $line_no_2) = @$head;
     if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
-        if ($token eq $KEYWD_SH_PIPE) {
+        if (! $is_pipe_element && $token eq $KEYWD_SH_PIPE) {
             eat_list_sh_pipe(\@list);
+        } elsif ($is_pipe_first && $token eq '<') {
+            eat_list_sh_pipe_first_file(\@list);
+        } elsif ($is_pipe_last && $token eq '>') {
+            eat_list_sh_pipe_last_file(\@list);
         } else {
             unshift(@list, $head);
             eat_list_sh_command_normal(\@list);
@@ -95,14 +119,60 @@ sub eat_list_sh_pipe {
     my ($list_ref) = @_;
     my @list = @$list_ref;
     my $result = '';
+    my $is_first = 1;
+    my $is_last = '';
+    while () {
+        my $head = shift(@list);
+        return $result unless (defined($head));
+        $is_last = 1 unless (@list);
+        my $source = eat_token_sh_command_pipe_element($head, $is_first, $is_last);
+        $result = $result . ' | ' if ($result);
+        $result = $result . $source;
+        $is_first = '';
+    }
+}
+
+sub eat_list_sh_pipe_first_file {
+    my ($list_ref) = @_;
+    my @list = @$list_ref;
+    my $result = '';
     while () {
         my $head = shift(@list);
         unless (defined($head)) {
-            return $result;
+            if ($result) {
+                return 'cat ' . $result;
+            } else {
+                return 'cat /dev/null';
+            }
         }
-        my $source = eat_token_sh_command($head);
-        $result = $result . ' | ' if ($result);
+        my $source = eat_token_sh_argument($head);
+        $result = $result . ' ' if ($result);
         $result = $result . $source;
+    }
+}
+
+sub eat_list_sh_pipe_last_file {
+    my ($list_ref) = @_;
+    my @list = @$list_ref;
+    if (@list == 0) {
+        return 'cat > /dev/null';
+    } elsif (@list == 1) {
+        my $result = '';
+        my $head = shift(@list);
+        my $source = eat_token_sh_argument($head);
+        return 'cat > ' . $source;
+    } else {
+        my $result = '';
+        while () {
+            my $head = shift(@list);
+            unless (@list) {
+                my $source = eat_token_sh_argument($head);
+                return 'tee ' . $result . ' > ' . $source;
+            }
+            my $source = eat_token_sh_argument($head);
+            $result = $result . ' ' if ($result);
+            $result = $result . $source;
+        }
     }
 }
 
