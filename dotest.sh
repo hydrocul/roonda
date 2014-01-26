@@ -27,6 +27,10 @@ echo ./testdata/to-perl-obj.js
 cat ./testdata/to-perl-obj.js | ./target/roonda --from-json --to-perl-obj-1 > ./actual/to-perl-obj.pl
 diff -u expected/to-perl-obj.pl actual/to-perl-obj.pl
 
+echo ./testdata/to-python-obj.js
+cat ./testdata/to-python-obj.js | ./target/roonda --from-json --to-python3-obj-1 > ./actual/to-python-obj.py
+diff -u expected/to-python-obj.py actual/to-python-obj.py
+
 echo ./testdata/sh-env.rd
 cat ./testdata/sh-env.rd | ./target/roonda --output-code > ./actual/sh-env.sh
 diff -u expected/sh-env.sh actual/sh-env.sh

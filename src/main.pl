@@ -11,10 +11,22 @@ while () {
         $type_from = 'json';
     } elsif ($arg eq '--from-sexpr') {
         $type_from = 'sexpr';
-    } elsif ($arg eq '--to-perl-obj-1') {
+    } elsif ($arg =~ /--to-perl-obj-(\d+)/) {
         $type_to = 'obj';
         $to_lang = $LANG_PERL;
-        $to_ver = 1;
+        $to_ver = $1;
+    } elsif ($arg =~ /--to-ruby-obj-(\d+)/) {
+        $type_to = 'obj';
+        $to_lang = $LANG_RUBY;
+        $to_ver = $1;
+    } elsif ($arg =~ /--to-python2-obj-(\d+)/) {
+        $type_to = 'obj';
+        $to_lang = $LANG_PYTHON2;
+        $to_ver = $1;
+    } elsif ($arg =~ /--to-python3-obj-(\d+)/) {
+        $type_to = 'obj';
+        $to_lang = $LANG_PYTHON3;
+        $to_ver = $1;
     } elsif ($arg eq '--output-code') {
         $type_to = 'code';
     } else {
@@ -25,7 +37,7 @@ while () {
 
 my @lines;
 if ($source_filepath) {
-    open(SIN, '<', $source_filepath) or die;
+    open(SIN, '<', $source_filepath) or die "Not found: $source_filepath";
     @lines = <SIN>;
     close SIN;
 } else {
@@ -45,6 +57,7 @@ if ($type_from eq 'json') {
 if ($type_to eq 'obj') {
     my $source = gent_obj($ast, $to_lang, $to_ver);
     print encode('utf-8', $source);
+    print "\n";
     exit(0);
 }
 
