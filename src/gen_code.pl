@@ -1,15 +1,15 @@
 
 # ($lang, $bin_path, $source, $ext) を返す
-sub eat_token_exec {
+sub gent_exec {
     my ($token_ref) = @_;
     if (astlib_is_list($token_ref)) {
-        eat_list_exec(astlib_get_list($token_ref), astlib_get_close_line_no($token_ref));
+        genl_exec(astlib_get_list($token_ref), astlib_get_close_line_no($token_ref));
     } else {
         die create_dying_msg_unexpected($token_ref);
     }
 }
 
-sub eat_list_exec {
+sub genl_exec {
     my ($list_ref, $close_line_no) = @_;
     my @list = @$list_ref;
     my $head = shift(@list);
@@ -18,19 +18,19 @@ sub eat_list_exec {
     }
     if (astlib_is_list($head)) {
         my ($lang, $bin_path, $bin_path_for_sh, $source, $ext) =
-            _eat_list_exec_a(astlib_get_list($head), \@list, astlib_get_close_line_no($head));
+            _genl_exec_a(astlib_get_list($head), \@list, astlib_get_close_line_no($head));
         ($lang, $bin_path, $source, $ext);
     } else {
         die create_dying_msg_unexpected($head);
     }
 }
 
-sub eat_list_exec_for_sh {
-    my ($lang, $bin_path, $bin_path_for_sh, $source, $ext) = _eat_list_exec_a(@_);
+sub genl_exec_for_sh {
+    my ($lang, $bin_path, $bin_path_for_sh, $source, $ext) = _genl_exec_a(@_);
     ($lang, $bin_path_for_sh, $source, $ext);
 }
 
-sub _eat_list_exec_a {
+sub _genl_exec_a {
     my ($lang_opts_ref, $list_ref, $lang_close_line_no) = @_;
     my @lang_opts = @$lang_opts_ref;
     my $head = shift(@lang_opts);
@@ -41,14 +41,14 @@ sub _eat_list_exec_a {
         my ($lang, $bin_path, $bin_path_for_sh, $ext) =
             _bin_path_to_lang(astlib_get_symbol_or_string($head));
         die create_dying_msg_unexpected($head) unless (defined($lang));
-        my $source = _eat_list_exec_b($lang, \@lang_opts, $list_ref, $lang_close_line_no);
+        my $source = _genl_exec_b($lang, \@lang_opts, $list_ref, $lang_close_line_no);
         ($lang, $bin_path, $bin_path_for_sh, $source, $ext);
     } else {
         die create_dying_msg_unexpected($head);
     }
 }
 
-sub _eat_list_exec_b {
+sub _genl_exec_b {
     my ($lang, $lang_opts_ref, $list_ref, $lang_close_line_no) = @_;
     my @lang_opts = @$lang_opts_ref;
     my $head = shift(@lang_opts);
@@ -58,7 +58,7 @@ sub _eat_list_exec_b {
     if (astlib_is_symbol_or_string($head)) {
         if (astlib_get_symbol_or_string($head) =~ /\Av([1-9][0-9]*)\Z/) {
             my $ver = $1;
-            _eat_list_exec_c($lang, $ver, \@lang_opts, $list_ref);
+            _genl_exec_c($lang, $ver, \@lang_opts, $list_ref);
         } else {
             die create_dying_msg_unexpected($head);
         }
@@ -67,9 +67,9 @@ sub _eat_list_exec_b {
     }
 }
 
-sub _eat_list_exec_c {
+sub _genl_exec_c {
     my ($lang, $ver, $lang_opts_ref, $list_ref) = @_;
-    eat_list_langs($list_ref, $lang, $ver);
+    genl_langs($list_ref, $lang, $ver);
 }
 
 my %bin_path_map = ();

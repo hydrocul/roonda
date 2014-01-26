@@ -14,10 +14,12 @@ mkdir -p target
     cat ./src/build_ast.pl
     cat ./src/gen_obj.pl
     cat ./src/escape.pl
-    cat ./src/eatast_exec.pl
-    cat ./src/eatast_langs.pl
-    cat ./src/eatast_sh.pl
-    cat ./src/eatast_perl.pl
+    cat ./src/gen_code.pl
+    cat ./src/gen_stmt.pl
+    cat ./src/gen_expr.pl
+    cat ./src/gen_sh.pl
+    cat ./src/gen_perl.pl
+    cat ./src/gen_ruby.pl
     cat ./src/main.pl
 } > ./target/roonda
 

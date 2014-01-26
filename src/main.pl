@@ -52,7 +52,7 @@ if ($type_to ne 'code' && $type_to ne '') {
     die;
 }
 
-my ($lang, $bin_path, $source, $ext) = eat_token_exec($ast);
+my ($lang, $bin_path, $source, $ext) = gent_exec($ast);
 $source = $source . get_comments_about_saved_files($lang);
 
 if ($type_to eq 'code') {
