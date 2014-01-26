@@ -1,11 +1,11 @@
 
+# ($lang, $bin_path, $source, $ext) を返す
 sub eat_token_exec {
     my ($token_ref) = @_;
-    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
-    if ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_exec($token, $line_no_2);
+    if (astlib_is_list($token_ref)) {
+        eat_list_exec(astlib_get_list($token_ref), astlib_get_close_line_no($token_ref));
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
+        die create_dying_msg_unexpected($token_ref);
     }
 }
 
@@ -14,14 +14,14 @@ sub eat_list_exec {
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
-        die "Unexpected token: `)` (Line: $close_line_no)";
+        die create_dying_msg_unexpected_closing($close_line_no);
     }
-    my ($type, $line_no, $token, $token_str, $line_no_2) = @$head;
-    if ($type eq $TOKEN_TYPE_LIST) {
-        my ($lang, $bin_path, $bin_path_for_sh, $source, $ext) = _eat_list_exec_a($token, \@list, $line_no_2);
+    if (astlib_is_list($head)) {
+        my ($lang, $bin_path, $bin_path_for_sh, $source, $ext) =
+            _eat_list_exec_a(astlib_get_list($head), \@list, astlib_get_close_line_no($head));
         ($lang, $bin_path, $source, $ext);
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
+        die create_dying_msg_unexpected($head);
     }
 }
 
@@ -35,16 +35,16 @@ sub _eat_list_exec_a {
     my @lang_opts = @$lang_opts_ref;
     my $head = shift(@lang_opts);
     unless (defined($head)) {
-        die "Unexpected token: `)` (Line: $lang_close_line_no)";
+        die create_dying_msg_unexpected_closing($lang_close_line_no);
     }
-    my ($type, $line_no, $token, $token_str) = @$head;
-    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
-        my ($lang, $bin_path, $bin_path_for_sh, $ext) = _bin_path_to_lang($token);
-        die "Unexpected token: `$token_str` (Line: $line_no)" unless (defined($lang));
+    if (astlib_is_symbol_or_string($head)) {
+        my ($lang, $bin_path, $bin_path_for_sh, $ext) =
+            _bin_path_to_lang(astlib_get_symbol_or_string($head));
+        die create_dying_msg_unexpected($head) unless (defined($lang));
         my $source = _eat_list_exec_b($lang, \@lang_opts, $list_ref, $lang_close_line_no);
         ($lang, $bin_path, $bin_path_for_sh, $source, $ext);
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no)";
+        die create_dying_msg_unexpected($head);
     }
 }
 
@@ -53,18 +53,17 @@ sub _eat_list_exec_b {
     my @lang_opts = @$lang_opts_ref;
     my $head = shift(@lang_opts);
     unless (defined($head)) {
-        die "Unexpected token: `)` (Line: $lang_close_line_no), but expected symbol `v...`";
+        die create_dying_msg_unexpected_closing($lang_close_line_no);
     }
-    my ($type, $line_no, $token, $token_str) = @$head;
-    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
-        if ($token =~ /\Av([1-9][0-9]*)\Z/) {
+    if (astlib_is_symbol_or_string($head)) {
+        if (astlib_get_symbol_or_string($head) =~ /\Av([1-9][0-9]*)\Z/) {
             my $ver = $1;
             _eat_list_exec_c($lang, $ver, \@lang_opts, $list_ref);
         } else {
-            die "Unexpected token: `$token_str` (Line: $line_no), but expected symbol `v...`";
+            die create_dying_msg_unexpected($head);
         }
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no), but expected symbol `v...`";
+        die create_dying_msg_unexpected($head);
     }
 }
 

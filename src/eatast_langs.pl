@@ -1,11 +1,10 @@
 
 sub eat_token_langs {
     my ($token_ref, $lang, $ver) = @_;
-    my ($type, $line_no, $token, $token_str) = @$token_ref;
-    if ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_langs($token, $lang, $ver);
+    if (astlib_is_list($token_ref)) {
+        eat_list_langs(astlib_get_list($token_ref), $lang, $ver);
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
+        die create_dying_msg_unexpected($token_ref);
     }
 }
 
@@ -25,11 +24,10 @@ sub eat_list_langs {
 
 sub eat_token_langs_statement {
     my ($token_ref, $lang, $ver) = @_;
-    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
-    if ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_langs_statement($token, $line_no_2, $lang, $ver);
+    if (astlib_is_list($token_ref)) {
+        eat_list_langs_statement(astlib_get_list($token_ref), astlib_get_close_line_no($token_ref), $lang, $ver);
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
+        die create_dying_msg_unexpected($token_ref);
     }
 }
 
@@ -41,12 +39,11 @@ sub eat_list_langs_statement {
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
-        die "Unexpected token: `)` (Line: $close_line_no)";
+        die create_dying_msg_unexpected_closing($close_line_no);
     }
-    my ($type, $line_no, $token, $token_str) = @$head;
     my $expr_source;
-    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
-        if ($token eq $KEYWD_IF) {
+    if (astlib_is_symbol_or_string($head)) {
+        if (astlib_get_symbol_or_string($head) eq $KEYWD_IF) {
             die "TODO";
         } else {
             unshift(@list, $head);
@@ -68,23 +65,22 @@ sub eat_list_langs_statement {
 sub eat_token_langs_expr {
     my ($token_ref, $op_order, $lang) = @_;
     die if ($lang eq $LANG_SH);
-    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
-    if ($type eq $TOKEN_TYPE_SYMBOL) {
-        $token;
-    } elsif ($type eq $TOKEN_TYPE_STRING) {
+    if (astlib_is_symbol($token_ref)) {
+        astlib_get_symbol($token_ref);
+    } elsif (astlib_is_string($token_ref)) {
         if ($lang eq $LANG_PERL) {
-            escape_perl_string($token);
+            escape_perl_string(astlib_get_string($token_ref));
         } elsif ($lang eq $LANG_RUBY) {
-            escape_ruby_string($token);
+            escape_ruby_string(astlib_get_string($token_ref));
         } else {
             die;
         }
-    } elsif ($type eq $TOKEN_TYPE_INTEGER) {
-        $token;
-    } elsif ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_langs_expr($token, $op_order, $line_no_2, $lang);
+    } elsif (astlib_is_integer($token_ref)) {
+        astlib_get_integer($token_ref);
+    } elsif (astlib_is_list($token_ref)) {
+        eat_list_langs_expr(astlib_get_list($token_ref), $op_order, astlib_get_close_line_no($token_ref), $lang);
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no)";
+        die create_dying_msg_unexpected($token_ref);
     }
 }
 
@@ -94,10 +90,10 @@ sub eat_list_langs_expr {
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
-        die "Unexpected token: `)` (Line: $close_line_no)";
+        die create_dying_msg_unexpected_closing($close_line_no);
     }
-    my ($type, $line_no, $token, $token_str) = @$head;
-    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
+    if (astlib_is_symbol_or_string($head)) {
+        my $token = astlib_get_symbol_or_string($head);
         if ($token eq $KEYWD_APPLY) {
             eat_list_langs_apply(\@list, $close_line_no, $lang);
         } elsif ($token eq '+' || $token eq '-') {
@@ -122,7 +118,7 @@ sub eat_list_langs_expr {
             eat_list_langs_apply(\@list, $close_line_no, $lang);
         }
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no)";
+        die create_dying_msg_unexpected($head);
     }
 }
 
@@ -132,14 +128,13 @@ sub eat_list_langs_apply {
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
-        die "Unexpected token: `)` (Line: $close_line_no)";
+        die create_dying_msg_unexpected_closing($close_line_no);
     }
-    my ($type, $line_no, $token, $token_str) = @$head;
-    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
-        my $funcname = $token;
+    if (astlib_is_symbol_or_string($head)) {
+        my $funcname = astlib_get_symbol_or_string($head);
         eat_list_langs_apply_1($funcname, \@list, $lang);
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no)";
+        die create_dying_msg_unexpected($head);
     }
 }
 
@@ -150,9 +145,7 @@ sub eat_list_langs_apply_1 {
     my $result = '';
     while () {
         my $head = shift(@list);
-        unless (defined($head)) {
-            last;
-        }
+        last unless (defined($head));
         my $source = eat_token_langs_argument($head, $OP_ORDER_ARG_COMMA, $lang);
         $result = $result . ', ' if ($result);
         $result = $result . $source;

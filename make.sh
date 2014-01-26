@@ -8,6 +8,7 @@ mkdir -p target
     cat ./src/head.pl
     cat ./src/const.pl
     cat ./src/save.pl
+    cat ./src/astlib.pl
     cat ./src/parse_sexpr.pl
     cat ./src/parse_json.pl
     cat ./src/build_ast.pl

@@ -6,8 +6,8 @@ sub eat_list_sh_statement {
     unless (defined($head)) {
         return '';
     }
-    my ($type, $line_no, $token, $token_str) = @$head;
-    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
+    if (astlib_is_symbol_or_string($head)) {
+        my $token = astlib_get_symbol_or_string($head);
         if ($token eq $KEYWD_SH_EXEC) {
             'exec ' . eat_list_sh_command(\@list);
         } elsif ($token eq $KEYWD_SH_ASSIGN) {
@@ -26,12 +26,11 @@ sub eat_list_sh_assign {
     my ($list_ref, $close_line_no) = @_;
     my @list = @$list_ref;
     my $head = shift(@list);
-    die "Unexpected token: `)` (Line: $close_line_no)" unless (defined($head));
-    my ($type, $line_no, $token, $token_str) = @$head;
-    if ($type eq $TOKEN_TYPE_SYMBOL) {
-        eat_list_sh_assign_1($token, \@list, $close_line_no);
+    die create_dying_msg_unexpected_closing($close_line_no) unless (defined($head));
+    if (astlib_is_symbol($head)) {
+        eat_list_sh_assign_1(astlib_get_symbol($head), \@list, $close_line_no);
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no)";
+        die create_dying_msg_unexpected($head);
     }
 }
 
@@ -39,38 +38,36 @@ sub eat_list_sh_assign_1 {
     my ($varname, $list_ref, $close_line_no) = @_;
     my @list = @$list_ref;
     my $head = shift(@list);
-    die "Unexpected token: `)` (Line: $close_line_no)" unless (defined($head));
+    die create_dying_msg_unexpected_closing($close_line_no) unless (defined($head));
     if (@list) {
         my $head = shift(@list);
-        my ($type, $line_no, $token, $token_str) = @$head;
-        die "Unexpected token: `$token_str` (Line: $line_no)";
+        die create_dying_msg_unexpected($head);
     }
-    my ($type, $line_no, $token, $token_str) = @$head;
-    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
-        my $value_escaped = escape_sh_string($token);
+    if (astlib_is_symbol_or_string($head)) {
+        my $value_escaped = escape_sh_string(astlib_get_symbol_or_string($head));
         "$varname=$value_escaped";
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no)";
+        die create_dying_msg_unexpected($head);
     }
 }
 
 sub eat_token_sh_command {
     my ($token_ref) = @_;
-    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
-    if ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_sh_command($token, $line_no_2);
+    if (astlib_is_list($token_ref)) {
+        eat_list_sh_command(astlib_get_list($token_ref), astlib_get_close_line_no($token_ref));
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
+        die create_dying_msg_unexpected($token_ref);
     }
 }
 
 sub eat_token_sh_command_pipe_element {
     my ($token_ref, $is_first, $is_last) = @_;
-    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
-    if ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_sh_command_pipe_element($token, $is_first, $is_last, $line_no_2);
+    if (astlib_is_list($token_ref)) {
+        eat_list_sh_command_pipe_element(astlib_get_list($token_ref),
+                                         $is_first, $is_last,
+                                         astlib_get_close_line_no($token_ref));
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no), but expected `(`";
+        die create_dying_msg_unexpected($token_ref);
     }
 }
 
@@ -91,8 +88,8 @@ sub _eat_list_sh_command_sub {
     unless (defined($head)) {
         return '';
     }
-    my ($type, $line_no, $token, $token_str, $line_no_2) = @$head;
-    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
+    if (astlib_is_symbol_or_string($head)) {
+        my $token = astlib_get_symbol_or_string($head);
         if (! $is_pipe_element && $token eq $KEYWD_SH_PIPE) {
             eat_list_sh_pipe(\@list);
         } elsif ($is_pipe_first && $token eq '<') {
@@ -103,8 +100,9 @@ sub _eat_list_sh_command_sub {
             unshift(@list, $head);
             eat_list_sh_command_normal(\@list);
         }
-    } elsif ($type eq $TOKEN_TYPE_LIST) {
-        my ($lang, $bin_path, $source, $ext) = eat_list_exec_for_sh($token, \@list, $line_no_2);
+    } elsif (astlib_is_list($head)) {
+        my ($lang, $bin_path, $source, $ext) =
+            eat_list_exec_for_sh(astlib_get_list($head), \@list, astlib_get_close_line_no($head));
         my $bin_path_escaped = escape_sh_string($bin_path);
         my $script_path = save_file($source, $ext);
         my $script_path_escaped = escape_sh_string($script_path);
@@ -193,13 +191,14 @@ sub eat_list_sh_command_normal {
 
 sub eat_token_sh_argument {
     my ($token_ref) = @_;
-    my ($type, $line_no, $token, $token_str) = @$token_ref;
-    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING || $type eq $TOKEN_TYPE_INTEGER) {
-        escape_sh_string($token);
-    } elsif ($type eq $TOKEN_TYPE_LIST) {
-        eat_list_sh_argument($token);
+    if (astlib_is_symbol_or_string($token_ref)) {
+        escape_sh_string(astlib_get_symbol_or_string($token_ref));
+    } elsif (astlib_is_integer($token_ref)) {
+        escape_sh_string(astlib_get_integer($token_ref));
+    } elsif (astlib_is_list($token_ref)) {
+        eat_list_sh_argument(astlib_get_list($token_ref));
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no)";
+        die create_dying_msg_unexpected($token_ref);
     }
 }
 
@@ -210,8 +209,8 @@ sub eat_list_sh_argument {
     unless (defined($head)) {
         return "''";
     }
-    my ($type, $line_no, $token, $token_str) = @$head;
-    if ($type eq $TOKEN_TYPE_SYMBOL || $type eq $TOKEN_TYPE_STRING) {
+    if (astlib_is_symbol_or_string($head)) {
+        my $token = astlib_get_symbol_or_string($head);
         if ($token eq $KEYWD_SH_BACKTICKS) {
             eat_list_sh_argument_backticks(\@list);
         } elsif ($token eq $KEYWD_SH_REF) {
@@ -219,10 +218,10 @@ sub eat_list_sh_argument {
         } elsif ($token eq $KEYWD_STRCAT) {
             eat_list_sh_argument_strcat(\@list);
         } else {
-            die "Unexpected token: `$token_str` (Line: $line_no)";
+            die create_dying_msg_unexpected($head);
         }
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no)";
+        die create_dying_msg_unexpected($head);
     }
 }
 
@@ -237,16 +236,14 @@ sub eat_list_sh_argument_ref {
     my @list = @$list_ref;
     my $head = shift(@list);
     die "Unexpected endo of list" unless (defined($head));
-    my ($type, $line_no, $token, $token_str) = @$head;
-    if ($type eq $TOKEN_TYPE_SYMBOL) {
+    if (astlib_is_symbol($head)) {
         if (@list) {
             my $head = shift(@list);
-            my ($type, $line_no, $token, $token_str) = @$head;
-            die "Unexpected token: `$token_str` (Line: $line_no)";
+            die create_dying_msg_unexpected($head);
         }
-        '$' . $token;
+        '$' . astlib_get_symbol($head);
     } else {
-        die "Unexpected token: `$token_str` (Line: $line_no)";
+        die create_dying_msg_unexpected($head);
     }
 }
 
