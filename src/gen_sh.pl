@@ -1,24 +1,23 @@
 
 sub genl_sh_statement {
-    my ($list_ref, $close_line_no, $ver) = @_;
-    my @list = @$list_ref;
-    my $head = shift(@list);
+    my ($list, $indent, $close_line_no, $ver) = @_;
+    my $head = shift(@$list);
     unless (defined($head)) {
         return '';
     }
     if (astlib_is_symbol_or_string($head)) {
         my $token = astlib_get_symbol_or_string($head);
         if ($token eq $KEYWD_SH_EXEC) {
-            'exec ' . genl_sh_command(\@list);
+            $indent . 'exec ' . genl_sh_command($list) . "\n";
         } elsif ($token eq $KEYWD_SH_ASSIGN) {
-            genl_sh_assign(\@list, $close_line_no);
+            $indent . genl_sh_assign($list, $close_line_no) . "\n";
         } else {
-            unshift(@list, $head);
-            genl_sh_command(\@list);
+            unshift(@$list, $head);
+            $indent . genl_sh_command($list) . "\n";
         }
     } else {
-        unshift(@list, $head);
-        genl_sh_command(\@list);
+        unshift(@$list, $head);
+        $indent . genl_sh_command($list) . "\n";
     }
 }
 
