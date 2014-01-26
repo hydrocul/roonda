@@ -78,7 +78,8 @@ sub eat_token_langs_expr {
     } elsif (astlib_is_integer($token_ref)) {
         astlib_get_integer($token_ref);
     } elsif (astlib_is_list($token_ref)) {
-        eat_list_langs_expr(astlib_get_list($token_ref), $op_order, astlib_get_close_line_no($token_ref), $lang);
+        eat_list_langs_expr(astlib_get_list($token_ref), $op_order,
+                            astlib_get_close_line_no($token_ref), $lang);
     } else {
         die create_dying_msg_unexpected($token_ref);
     }

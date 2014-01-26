@@ -1,6 +1,8 @@
 
 my $type_from = 'sexpr';
-my $output_code = '';
+my $type_to = '';
+my $to_lang = '';
+my $to_ver = '';
 my $source_filepath = '';
 while () {
     last if (!@ARGV);
@@ -9,11 +11,14 @@ while () {
         $type_from = 'json';
     } elsif ($arg eq '--from-sexpr') {
         $type_from = 'sexpr';
-    } elsif ($arg eq '--from-plobj') {
-        $type_from = 'plobj';
+    } elsif ($arg eq '--to-perl-obj-1') {
+        $type_to = 'obj';
+        $to_lang = $LANG_PERL;
+        $to_ver = 1;
     } elsif ($arg eq '--output-code') {
-        $output_code = 1;
+        $type_to = 'code';
     } else {
+        die if ($source_filepath);
         $source_filepath = $arg;
     }
 }
@@ -36,21 +41,33 @@ if ($type_from eq 'json') {
 } else {
     $ast = parse_sexpr(@lines);
 }
-my ($lang, $bin_path, $source, $ext) = eat_token_exec($ast);
 
+if ($type_to eq 'obj') {
+    my $source = gent_obj($ast, $to_lang, $to_ver);
+    print encode('utf-8', $source);
+    exit(0);
+}
+
+if ($type_to ne 'code' && $type_to ne '') {
+    die;
+}
+
+my ($lang, $bin_path, $source, $ext) = eat_token_exec($ast);
 $source = $source . get_comments_about_saved_files($lang);
 
-if ($output_code) {
+if ($type_to eq 'code') {
     print encode('utf-8', $source);
-} else {
-    my $script_path = $ENV{$ENV_TMP_PATH} . '/' . save_file($source, $ext);
-    my $pid = fork;
-    if ($pid) {
-        wait;
-    } elsif (defined $pid) {
-        exec($bin_path, $script_path);
-    } else {
-        die;
-    }
+    exit(0);
 }
+
+my $script_path = $ENV{$ENV_TMP_PATH} . '/' . save_file($source, $ext);
+my $pid = fork;
+if ($pid) {
+    wait;
+} elsif (defined $pid) {
+    exec($bin_path, $script_path);
+} else {
+    die;
+}
+
 
