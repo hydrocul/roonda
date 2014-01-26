@@ -68,3 +68,24 @@ sub escape_ruby_string {
     "\"" . $str . "\"";
 }
 
+sub escape_python2_string {
+    my ($str) = @_;
+    escape_python_string($str, 2);
+}
+
+sub escape_python3_string {
+    my ($str) = @_;
+    escape_python_string($str, 3);
+}
+
+sub escape_python_string { # TODO
+    my ($str, $v) = @_;
+    $str =~ s/\\/\\\\/g;
+    $str =~ s/\n/\\n/g;
+    $str =~ s/\r/\\r/g;
+    $str =~ s/\t/\\t/g;
+    $str =~ s/([\x00-\x1F])/sprintf("\\x%02x",ord($1))/ge;
+    $str =~ s/"/\\"/g;
+    "\"" . $str . "\"";
+}
+

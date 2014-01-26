@@ -9,6 +9,10 @@ sub gent_langs_expr {
             escape_perl_string(astlib_get_string($token_ref));
         } elsif ($lang eq $LANG_RUBY) {
             escape_ruby_string(astlib_get_string($token_ref));
+        } elsif ($lang eq $LANG_PYTHON2) {
+            escape_python2_string(astlib_get_string($token_ref));
+        } elsif ($lang eq $LANG_PYTHON3) {
+            escape_python3_string(astlib_get_string($token_ref));
         } else {
             die;
         }
@@ -47,6 +51,9 @@ sub genl_langs_expr {
             } elsif ($lang eq $LANG_RUBY) {
                 $op = '+';
                 $op_order_plus = $OP_ORDER_PLUS;
+            } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+                $op = '+';
+                $op_order_plus = $OP_ORDER_PLUS;
             } else {
                 die;
             }
@@ -77,14 +84,11 @@ sub genl_langs_apply {
 }
 
 sub genl_langs_apply_1 {
-    my ($funcname, $list_ref, $lang) = @_;
+    my ($funcname, $list, $lang) = @_;
     die if ($lang eq $LANG_SH);
-    my @list = @$list_ref;
     my $result = '';
-    while () {
-        my $head = shift(@list);
-        last unless (defined($head));
-        my $source = gent_langs_argument($head, $OP_ORDER_ARG_COMMA, $lang);
+    foreach my $elem (@$list) {
+        my $source = gent_langs_argument($elem, $OP_ORDER_ARG_COMMA, $lang);
         $result = $result . ', ' if ($result);
         $result = $result . $source;
     }

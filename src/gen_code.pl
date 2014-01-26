@@ -88,6 +88,14 @@ sub _bin_path_to_lang {
         ($LANG_RUBY, $bin_path, $bin_path, 'rb');
     } elsif ($bin_path eq 'ruby') {
         ($LANG_RUBY, _get_cmd_path('ruby'), 'ruby', 'rb');
+    } elsif ($bin_path =~ /\/python2\Z/) {
+        ($LANG_PYTHON2, $bin_path, $bin_path, 'py');
+    } elsif ($bin_path eq 'python2') {
+        ($LANG_PYTHON2, _get_cmd_path('python2'), 'python2', 'py');
+    } elsif ($bin_path =~ /\/python3\Z/) {
+        ($LANG_PYTHON3, $bin_path, $bin_path, 'py');
+    } elsif ($bin_path eq 'python3') {
+        ($LANG_PYTHON3, _get_cmd_path('python3'), 'python2', 'py');
     } else {
         (undef, undef, undef, undef);
     }

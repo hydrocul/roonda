@@ -1,2 +1,2 @@
 print("Hello, world!\n")
-print(1 + 2)
+print 1 + 2

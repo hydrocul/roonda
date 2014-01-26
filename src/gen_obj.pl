@@ -6,6 +6,10 @@ sub gent_obj {
             escape_perl_string(astlib_get_symbol_or_string($token));
         } elsif ($lang eq $LANG_RUBY) {
             escape_ruby_string(astlib_get_symbol_or_string($token));
+        } elsif ($lang eq $LANG_PYTHON2) {
+            escape_python2_string(astlib_get_symbol_or_string($token));
+        } elsif ($lang eq $LANG_PYTHON3) {
+            escape_python3_string(astlib_get_symbol_or_string($token));
         } else {
             die;
         }
@@ -20,6 +24,8 @@ sub gent_obj {
         if ($lang eq $LANG_PERL) {
             '[' . join(',', @list2) . ']';
         } elsif ($lang eq $LANG_RUBY) {
+            '[' . join(',', @list2) . ']';
+        } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
             '[' . join(',', @list2) . ']';
         } else {
             die;

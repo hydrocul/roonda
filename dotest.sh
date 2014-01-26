@@ -81,6 +81,12 @@ diff -u expected/basic-ruby.rb actual/basic-ruby.rb
 cat ./testdata/basic-ruby.rd | ./target/roonda  > ./actual/basic-ruby.txt
 diff -u expected/basic-ruby.txt actual/basic-ruby.txt
 
+echo ./testdata/basic-python.rd
+cat ./testdata/basic-python.rd | ./target/roonda --output-code > ./actual/basic-python.py
+diff -u expected/basic-python.py actual/basic-python.py
+cat ./testdata/basic-python.rd | ./target/roonda  > ./actual/basic-python.txt
+diff -u expected/basic-python.txt actual/basic-python.txt
+
 echo ./testdata/operators-perl.rd
 cat ./testdata/operators-perl.rd | ./target/roonda --output-code > ./actual/operators-perl.pl
 diff -u expected/operators-perl.pl actual/operators-perl.pl
@@ -92,6 +98,12 @@ cat ./testdata/operators-ruby.rd | ./target/roonda --output-code > ./actual/oper
 diff -u expected/operators-ruby.rb actual/operators-ruby.rb
 cat ./testdata/operators-ruby.rd | ./target/roonda > ./actual/operators-ruby.txt
 diff -u expected/operators-ruby.txt actual/operators-ruby.txt
+
+echo ./testdata/operators-python.rd
+cat ./testdata/operators-python.rd | ./target/roonda --output-code > ./actual/operators-python.py
+diff -u expected/operators-python.py actual/operators-python.py
+cat ./testdata/operators-python.rd | ./target/roonda > ./actual/operators-python.txt
+diff -u expected/operators-python.txt actual/operators-python.txt
 
 
 if diff -u -r expected actual >/dev/null; then
