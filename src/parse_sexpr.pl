@@ -27,6 +27,8 @@ sub _parse_sexpr_get_heredoc {
                 my $fname = save_file($heredoc_content, $ext);
                 $fname_map{$heredoc} = $fname;
                 push(@new_lines, "\n");
+                $heredoc = '';
+                $heredoc_content = '';
                 next;
             }
             $heredoc_content .= $line;
