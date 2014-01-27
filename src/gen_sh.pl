@@ -51,22 +51,22 @@ sub genl_sh_assign_1 {
 }
 
 sub gent_sh_command {
-    my ($token_ref) = @_;
-    if (astlib_is_list($token_ref)) {
-        genl_sh_command(astlib_get_list($token_ref), astlib_get_close_line_no($token_ref));
+    my ($token) = @_;
+    if (astlib_is_list($token)) {
+        genl_sh_command(astlib_get_list($token), astlib_get_close_line_no($token));
     } else {
-        die create_dying_msg_unexpected($token_ref);
+        die create_dying_msg_unexpected($token);
     }
 }
 
 sub gent_sh_command_pipe_element {
-    my ($token_ref, $is_first, $is_last) = @_;
-    if (astlib_is_list($token_ref)) {
-        genl_sh_command_pipe_element(astlib_get_list($token_ref),
-                                         $is_first, $is_last,
-                                         astlib_get_close_line_no($token_ref));
+    my ($token, $is_first, $is_last) = @_;
+    if (astlib_is_list($token)) {
+        genl_sh_command_pipe_element(astlib_get_list($token),
+                                     $is_first, $is_last,
+                                     astlib_get_close_line_no($token));
     } else {
-        die create_dying_msg_unexpected($token_ref);
+        die create_dying_msg_unexpected($token);
     }
 }
 
@@ -100,16 +100,33 @@ sub _genl_sh_command_sub {
             genl_sh_command_normal(\@list);
         }
     } elsif (astlib_is_list($head)) {
-        my ($lang, $bin_path, $source, $ext) =
-            genl_exec_for_sh(astlib_get_list($head), \@list, astlib_get_close_line_no($head));
-        my $bin_path_escaped = escape_sh_string($bin_path);
-        my $script_path = save_file($source, $ext);
-        my $script_path_escaped = escape_sh_string($script_path);
-        "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
+        my $result = _genl_sh_command_sub_list(
+            \@list, astlib_get_list($head), astlib_get_close_line_no($head));
+        if (defined($result)) {
+            $result;
+        } else {
+            unshift(@list, $head);
+            genl_sh_command_normal(\@list);
+        }
     } else {
         unshift(@list, $head);
         genl_sh_command_normal(\@list);
     }
+}
+
+sub _genl_sh_command_sub_list {
+    my ($list, $cmd_list, $cmd_list_close_line_no) = @_;
+    my $cmd_head = $cmd_list->[0];
+    if (astlib_is_symbol_or_string($cmd_head)) {
+        my ($lang) = _bin_path_to_lang(astlib_get_symbol_or_string($cmd_head));
+        return undef unless ($lang);
+    }
+    my ($lang, $bin_path, $source, $ext) =
+        genl_exec_for_sh($cmd_list, $list, $cmd_list_close_line_no);
+    my $bin_path_escaped = escape_sh_string($bin_path);
+    my $script_path = save_file($source, $ext);
+    my $script_path_escaped = escape_sh_string($script_path);
+    "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
 }
 
 sub genl_sh_pipe {

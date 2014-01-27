@@ -5,4 +5,7 @@
 (assign T abc)
 (echo (ref T))
 
+(assign T echo)
+((ref T) def)
+
 
