@@ -191,18 +191,25 @@ sub genl_sh_pipe_last_file {
 }
 
 sub genl_sh_command_normal {
-    my ($list_ref) = @_;
-    my @list = @$list_ref;
-    my $result = '';
-    while () {
-        my $head = shift(@list);
-        unless (defined($head)) {
-            return $result;
+    my ($list) = @_;
+    my $result;
+    my $head = shift(@$list);
+    if (astlib_is_symbol_or_string($head)) {
+        my $token = astlib_get_symbol_or_string($head);
+        if ($token eq $KEYWD_SH_ROONDA) {
+            $result = '$ROONDA_SELF_PATH';
+        } else {
+            $result = gent_sh_argument($head);
         }
-        my $source = gent_sh_argument($head);
+    } else {
+        $result = gent_sh_argument($head);
+    }
+    foreach my $elem (@$list) {
+        my $source = gent_sh_argument($elem);
         $result = $result . ' ' if ($result);
         $result = $result . $source;
     }
+    return $result;
 }
 
 sub gent_sh_argument {

@@ -1,4 +1,5 @@
 
+my $ENV_SELF_PATH = 'ROONDA_SELF_PATH';
 my $ENV_TMP_PATH = 'ROONDA_TMP_PATH';
 
 my $TOKEN_TYPE_SYMBOL  = 1;
@@ -25,6 +26,7 @@ my $OP_ORDER_MULTIPLY  = 20;
 my $KEYWD_SH_EXEC      = 'exec';
 my $KEYWD_SH_ASSIGN    = 'assign';
 my $KEYWD_SH_PIPE      = 'pipe';
+my $KEYWD_SH_ROONDA    = 'roonda';
 my $KEYWD_SH_BACKTICKS = 'backticks';
 my $KEYWD_SH_REF       = 'ref';
 

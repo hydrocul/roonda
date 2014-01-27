@@ -45,6 +45,7 @@ if ($source_filepath) {
 }
 @lines = map { decode('utf-8', $_) } @lines;
 
+$ENV{$ENV_SELF_PATH} = $0;
 $ENV{$ENV_TMP_PATH} = tempdir(CLEANUP => 1);
 
 my $ast;

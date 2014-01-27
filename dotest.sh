@@ -67,6 +67,12 @@ echo ./testdata/sh-exec.rd
 cat ./testdata/sh-exec.rd | ./target/roonda --output-code > ./actual/sh-exec.sh
 diff -u expected/sh-exec.sh actual/sh-exec.sh
 
+echo ./testdata/sh-call-roonda.rd
+cat ./testdata/sh-call-roonda.rd | ./target/roonda --output-code > ./actual/sh-call-roonda.sh
+diff -u expected/sh-call-roonda.sh actual/sh-call-roonda.sh
+cat ./testdata/sh-call-roonda.rd | ./target/roonda > ./actual/sh-call-roonda.txt
+diff -u expected/sh-call-roonda.txt actual/sh-call-roonda.txt
+
 echo ./testdata/sh-call-langs.rd
 cat ./testdata/sh-call-langs.rd | ./target/roonda --output-code > ./actual/sh-call-langs.sh
 diff -u expected/sh-call-langs.sh actual/sh-call-langs.sh
