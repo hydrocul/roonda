@@ -35,8 +35,12 @@ sub _parse_sexpr_get_heredoc {
             push(@new_lines, "\n");
             next;
         }
-        if ($line =~ '\A<<\s*([-+*/._a-zA-Z0-9]+)\s*\Z') {
+        if ($line =~ /\A<<\s*([-+*\/._a-zA-Z0-9]+)\s*\Z/) {
             $heredoc = $1;
+            push(@new_lines, "\n");
+            next;
+        }
+        if ($line =~ /\A\s*\#/) {
             push(@new_lines, "\n");
             next;
         }
