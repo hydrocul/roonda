@@ -124,7 +124,7 @@ sub _genl_sh_command_sub_list {
     my ($lang, $bin_path, $source, $ext) =
         genl_exec_for_sh($cmd_list, $list, $cmd_list_close_line_no);
     my $bin_path_escaped = escape_sh_string($bin_path);
-    my $script_path = save_file($source, $ext);
+    my $script_path = save_file($source, $ext, 1);
     my $script_path_escaped = escape_sh_string($script_path);
     "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
 }
@@ -216,6 +216,8 @@ sub gent_sh_argument {
     my ($token_ref) = @_;
     if (astlib_is_symbol_or_string($token_ref)) {
         escape_sh_string(astlib_get_symbol_or_string($token_ref));
+    } elsif (astlib_is_heredoc($token_ref)) {
+        "\$$ENV_TMP_PATH/" . escape_sh_string(astlib_get_heredoc_name($token_ref));
     } elsif (astlib_is_integer($token_ref)) {
         escape_sh_string(astlib_get_integer($token_ref));
     } elsif (astlib_is_list($token_ref)) {

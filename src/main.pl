@@ -1,6 +1,6 @@
 
 my $type_from = 'sexpr';
-my $type_to = '';
+my $type_to = 'exec';
 my $to_lang = '';
 my $to_ver = '';
 my $source_filepath = '';
@@ -47,6 +47,9 @@ if ($source_filepath) {
 
 $ENV{$ENV_SELF_PATH} = $0;
 $ENV{$ENV_TMP_PATH} = tempdir(CLEANUP => 1);
+if ($type_to eq 'exec') {
+    $save_file_dryrun = '';
+}
 
 my $ast;
 if ($type_from eq 'json') {
@@ -62,7 +65,7 @@ if ($type_to eq 'obj') {
     exit(0);
 }
 
-if ($type_to ne 'code' && $type_to ne '') {
+if ($type_to ne 'code' && $type_to ne 'exec') {
     die;
 }
 
@@ -74,7 +77,9 @@ if ($type_to eq 'code') {
     exit(0);
 }
 
-my $script_path = $ENV{$ENV_TMP_PATH} . '/' . save_file($source, $ext);
+die unless ($type_to eq 'exec');
+
+my $script_path = $ENV{$ENV_TMP_PATH} . '/' . save_file($source, $ext, '');
 my $pid = fork;
 if ($pid) {
     wait;

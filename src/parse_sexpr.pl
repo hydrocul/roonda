@@ -24,7 +24,7 @@ sub _parse_sexpr_get_heredoc {
             if ($line =~ ('\A' . quotemeta($heredoc) . '\s*>>\s*\Z')) {
                 my $ext = '';
                 $ext = $1 if ($heredoc =~ /\.([-_a-zA-Z0-9]+)\Z/);
-                my $fname = save_file($heredoc_content, $ext);
+                my $fname = save_file($heredoc_content, $ext, 1);
                 $fname_map{$heredoc} = $fname;
                 push(@new_lines, "\n");
                 $heredoc = '';
@@ -99,6 +99,7 @@ sub _parse_sexpr_line {
         if ($token_type eq $TOKEN_TYPE_SYMBOL) {
             if (defined($fname_map_ref->{$token})) {
                 $token = $fname_map_ref->{$token};
+                $token_type = $TOKEN_TYPE_HEREDOC;
             }
         }
         push(@tokens, [$token_type, $line_no, $token, $token_str]);

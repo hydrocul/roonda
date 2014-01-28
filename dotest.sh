@@ -10,18 +10,14 @@ mkdir -p actual
 echo ./testdata/sexpr.rd
 cat ./testdata/sexpr.rd | ./target/roonda --output-code > ./actual/sexpr.sh
 diff -u expected/sexpr.sh actual/sexpr.sh
-sh actual/sexpr.sh > actual/sexpr.txt 2>/dev/null
+cat ./testdata/sexpr.rd | ./target/roonda  > ./actual/sexpr.txt
 diff -u expected/sexpr.txt actual/sexpr.txt
-cat ./testdata/sexpr.rd | ./target/roonda  > ./actual/sexpr.2.txt
-diff -u expected/sexpr.2.txt actual/sexpr.2.txt
 
 echo ./testdata/from-json.js
 cat ./testdata/from-json.js | ./target/roonda --from-json --output-code > ./actual/from-json.sh
 diff -u expected/from-json.sh actual/from-json.sh
-sh actual/from-json.sh > actual/from-json.txt 2>/dev/null
+cat ./testdata/from-json.js | ./target/roonda --from-json > ./actual/from-json.txt
 diff -u expected/from-json.txt actual/from-json.txt
-cat ./testdata/from-json.js | ./target/roonda --from-json > ./actual/from-json.2.txt
-diff -u expected/from-json.2.txt actual/from-json.2.txt
 
 echo ./testdata/to-perl-obj.js
 cat ./testdata/to-perl-obj.js | ./target/roonda --from-json --to-perl-obj-1 > ./actual/to-perl-obj.pl

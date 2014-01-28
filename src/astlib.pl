@@ -100,6 +100,37 @@ sub astlib_get_string {
     }
 }
 
+sub astlib_is_heredoc {
+    my ($token_ref) = @_;
+    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
+    if ($type eq $TOKEN_TYPE_HEREDOC) {
+        1;
+    } else {
+        '';
+    }
+}
+
+sub astlib_get_heredoc_name {
+    my ($token_ref) = @_;
+    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
+    if ($type eq $TOKEN_TYPE_HEREDOC) {
+        $token;
+    } else {
+        die;
+    }
+}
+
+sub astlib_get_heredoc_content {
+    my ($token_ref) = @_;
+    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
+    if ($type eq $TOKEN_TYPE_HEREDOC) {
+        my $name = $token;
+        get_saved_file($name);
+    } else {
+        die;
+    }
+}
+
 sub astlib_is_integer {
     my ($token_ref) = @_;
     my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
