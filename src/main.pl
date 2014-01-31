@@ -1,6 +1,6 @@
 
-my $type_from = 'sexpr';
-my $type_to = 'exec';
+my $type_from = '';
+my $type_to = '';
 my $to_lang = '';
 my $to_ver = '';
 my $source_filepath = '';
@@ -8,31 +8,47 @@ while () {
     last if (!@ARGV);
     my $arg = shift;
     if ($arg eq '--from-json') {
+        die if ($type_from ne '');
         $type_from = 'json';
     } elsif ($arg eq '--from-sexpr') {
+        die if ($type_from ne '');
         $type_from = 'sexpr';
     } elsif ($arg =~ /--to-perl-obj-(\d+)/) {
+        die if ($type_to ne '');
         $type_to = 'obj';
         $to_lang = $LANG_PERL;
         $to_ver = $1;
     } elsif ($arg =~ /--to-ruby-obj-(\d+)/) {
+        die if ($type_to ne '');
         $type_to = 'obj';
         $to_lang = $LANG_RUBY;
         $to_ver = $1;
     } elsif ($arg =~ /--to-python2-obj-(\d+)/) {
+        die if ($type_to ne '');
         $type_to = 'obj';
         $to_lang = $LANG_PYTHON2;
         $to_ver = $1;
     } elsif ($arg =~ /--to-python3-obj-(\d+)/) {
+        die if ($type_to ne '');
         $type_to = 'obj';
         $to_lang = $LANG_PYTHON3;
         $to_ver = $1;
     } elsif ($arg eq '--output-code') {
+        die if ($type_to ne '');
         $type_to = 'code';
+    } elsif ($arg =~ /\A-/) {
+        die "Unknown argument: $arg";
     } else {
         die if ($source_filepath);
         $source_filepath = $arg;
     }
+}
+
+if ($type_from eq '') {
+    $type_from = 'sexpr';
+}
+if ($type_to eq '') {
+    $type_to = 'exec';
 }
 
 my @lines;
