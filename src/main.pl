@@ -1,5 +1,6 @@
 
 my $type_from = '';
+my $from_ver = '';
 my $type_to = '';
 my $to_lang = '';
 my $to_ver = '';
@@ -7,9 +8,10 @@ my $source_filepath = '';
 while () {
     last if (!@ARGV);
     my $arg = shift;
-    if ($arg eq '--from-json') {
+    if ($arg =~ /--from-json-(\d+)/) {
         die if ($type_from ne '');
         $type_from = 'json';
+        $from_ver = $1;
     } elsif ($arg eq '--from-sexpr') {
         die if ($type_from ne '');
         $type_from = 'sexpr';
