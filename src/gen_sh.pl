@@ -197,7 +197,7 @@ sub genl_sh_command_normal {
     if (astlib_is_symbol_or_string($head)) {
         my $token = astlib_get_symbol_or_string($head);
         if ($token eq $KEYWD_SH_ROONDA) {
-            $result = '$ROONDA_SELF_PATH';
+            return genl_sh_command_roonda($list);
         } else {
             $result = gent_sh_argument($head);
         }
@@ -206,6 +206,41 @@ sub genl_sh_command_normal {
     }
     foreach my $elem (@$list) {
         my $source = gent_sh_argument($elem);
+        $result = $result . ' ' if ($result);
+        $result = $result . $source;
+    }
+    return $result;
+}
+
+sub genl_sh_command_roonda {
+    my ($list) = @_;
+    my $result = '$ROONDA_SELF_PATH';
+    foreach my $elem (@$list) {
+        my $source;
+        if (astlib_is_symbol_or_string($elem)) {
+            my $token = astlib_get_symbol_or_string($elem);
+            if ($token eq '--json-to-perl') {
+                $source = '--json-1-to-perl-1';
+            } elsif ($token eq '--json-to-ruby') {
+                $source = '--json-1-to-ruby-1';
+            } elsif ($token eq '--json-to-python2') {
+                $source = '--json-1-to-python2-1';
+            } elsif ($token eq '--json-to-python3') {
+                $source = '--json-1-to-python3-1';
+            } elsif ($token eq '--sexpr-to-perl') {
+                $source = '--sexpr-1-to-perl-1';
+            } elsif ($token eq '--sexpr-to-ruby') {
+                $source = '--sexpr-1-to-ruby-1';
+            } elsif ($token eq '--sexpr-to-python2') {
+                $source = '--sexpr-1-to-python2-1';
+            } elsif ($token eq '--sexpr-to-python3') {
+                $source = '--sexpr-1-to-python3-1';
+            } else {
+                $source = gent_sh_argument($elem);
+            }
+        } else {
+            $source = gent_sh_argument($elem);
+        }
         $result = $result . ' ' if ($result);
         $result = $result . $source;
     }

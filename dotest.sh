@@ -46,6 +46,12 @@ diff -u expected/sh-pipe.sh actual/sh-pipe.sh
 cat ./testdata/sh-pipe.rd | ./target/roonda > ./actual/sh-pipe.txt
 diff -u expected/sh-pipe.txt actual/sh-pipe.txt
 
+echo ./testdata/sh-embed-script.rd
+cat ./testdata/sh-embed-script.rd | ./target/roonda --output-code > ./actual/sh-embed-script.sh
+diff -u expected/sh-embed-script.sh actual/sh-embed-script.sh
+cat ./testdata/sh-embed-script.rd | ./target/roonda > ./actual/sh-embed-script.txt
+diff -u expected/sh-embed-script.txt actual/sh-embed-script.txt
+
 echo ./testdata/sh-backticks.rd
 cat ./testdata/sh-backticks.rd | ./target/roonda --output-code > ./actual/sh-backticks.sh
 diff -u expected/sh-backticks.sh actual/sh-backticks.sh

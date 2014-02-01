@@ -15,6 +15,30 @@ while () {
     } elsif ($arg eq '--from-sexpr') {
         die if ($type_from ne '');
         $type_from = 'sexpr';
+    } elsif ($arg =~ /--([a-z0-9]+)-(\d+)-to-([a-z0-9]+)-(\d+)/) {
+        die if ($type_from ne '');
+        die if ($type_to ne '');
+        if ($1 eq 'sexpr') {
+            $type_from = 'sexpr';
+        } elsif ($1 eq 'json') {
+            $type_from = 'json';
+        } else {
+            die "Unknown argument: $arg";
+        }
+        $from_ver = $2;
+        $type_to = 'obj';
+        if ($3 eq 'perl') {
+            $to_lang = $LANG_PERL;
+        } elsif ($3 eq 'ruby') {
+            $to_lang = $LANG_RUBY;
+        } elsif ($3 eq 'python2') {
+            $to_lang = $LANG_PYTHON2;
+        } elsif ($3 eq 'python3') {
+            $to_lang = $LANG_PYTHON3;
+        } else {
+            die "Unknown argument: $arg";
+        }
+        $to_ver = $4;
     } elsif ($arg =~ /--to-perl-obj-(\d+)/) {
         die if ($type_to ne '');
         $type_to = 'obj';
