@@ -20,6 +20,7 @@ mkdir -p target
     cat ./src/gen_sh.pl
     cat ./src/gen_perl.pl
     cat ./src/gen_ruby.pl
+    cat ./src/build_by_template.pl
     cat ./src/main.pl
 } > ./target/roonda
 

@@ -74,6 +74,24 @@ sub _genl_exec_c {
 
 my %bin_path_map = ();
 
+# return: $bin_path, $ext
+sub lang_to_bin_path {
+    my ($lang) = @_;
+    if ($lang eq $LANG_SH) {
+        ('/bin/sh', 'sh');
+    } elsif ($lang eq $LANG_PERL) {
+        (_get_cmd_path('perl'), 'pl');
+    } elsif ($lang eq $LANG_RUBY) {
+        (_get_cmd_path('ruby'), 'rb');
+    } elsif ($lang eq $LANG_PYTHON2) {
+        (_get_cmd_path('python2'), 'py');
+    } elsif ($lang eq $LANG_PYTHON3) {
+        (_get_cmd_path('python3'), 'py');
+    } else {
+        die;
+    }
+}
+
 sub _bin_path_to_lang {
     my ($bin_path) = @_;
     if ($bin_path =~ /\/sh\Z/) {
