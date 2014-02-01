@@ -23,8 +23,12 @@ sub _parse_sexpr_get_heredoc {
         if ($heredoc) {
             if ($line =~ ('\A' . quotemeta($heredoc) . '\s*>>\s*\Z')) {
                 my $ext = '';
-                $ext = $1 if ($heredoc =~ /\.([-_a-zA-Z0-9]+)\Z/);
-                my $fname = save_file($heredoc_content, $ext, 1);
+                my $name;
+                if ($heredoc =~ /\A(.+)\.([-_a-zA-Z0-9]+)\Z/) {
+                    $name = $1;
+                    $ext = $2;
+                }
+                my $fname = save_file($heredoc_content, $ext, 1, $name);
                 $fname_map{$heredoc} = $fname;
                 push(@new_lines, "\n");
                 $heredoc = '';

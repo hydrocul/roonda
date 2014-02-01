@@ -4,33 +4,36 @@ my %saved_files_content = ();
 my $save_file_dryrun = 1;
 
 sub save_file {
-    my ($content, $ext, $keep) = @_;
+    my ($content, $ext, $keep, $name) = @_;
 
     my ($fh, $filename) = tempfile;
     print $fh encode('utf-8', $content);
     close $fh;
 
-    save_file_from_tempfile($filename, $ext, $keep, $content);
+    save_file_from_tempfile($filename, $name, $ext, $keep, $content);
 }
 
 sub save_file_from_tempfile {
-    my ($filename, $ext, $keep, $content) = @_;
+    my ($filename, $name, $ext, $keep, $content) = @_;
 
-    my $key=`sha1sum $filename`; # TODO ファイルに保存しなくてもsha1をとれるようにすべき
-    die unless ($key =~ /\A([^\s]+)/);
-    $key = $1;
+    my $prefix = 'roonda_';
+
+    unless ($name) {
+        my $key=`sha1sum $filename`; # TODO ファイルに保存しなくてもsha1をとれるようにすべき
+        die unless ($key =~ /\A([^\s]+)/);
+        $name = $prefix . $1;
+    }
 
     my $roonda_tmp_path = $ENV{$ENV_TMP_PATH};
-    my $prefix = 'roonda_';
 
     my $target_path;
     my $target_name;
     if ($ext) {
-        $target_path = "$roonda_tmp_path/$prefix$key.$ext";
-        $target_name = "$prefix$key.$ext";
+        $target_path = "$roonda_tmp_path/$name.$ext";
+        $target_name = "$name.$ext";
     } else {
-        $target_path = "$roonda_tmp_path/$prefix$key";
-        $target_name = "$prefix$key";
+        $target_path = "$roonda_tmp_path/$name";
+        $target_name = "$name";
     }
 
     unless (defined($content)) {
@@ -38,6 +41,7 @@ sub save_file_from_tempfile {
     }
 
     if ($keep) {
+        push(@saved_files, $target_name);
         $saved_files_content{$target_name} = $content;
     }
 
@@ -48,8 +52,6 @@ sub save_file_from_tempfile {
     } else {
         `mv $filename $target_path`;
     }
-
-    push(@saved_files, $target_name);
 
     $target_name;
 }
@@ -63,7 +65,7 @@ sub get_comments_about_saved_files {
     my ($lang) = @_;
     my $roonda_tmp_path = $ENV{$ENV_TMP_PATH};
     my $result = "";
-    foreach my $file_name (keys %saved_files_content) {
+    foreach my $file_name (@saved_files) {
         my $content = $saved_files_content{$file_name};
         $result = $result . "\n";
         my $source_comment;
