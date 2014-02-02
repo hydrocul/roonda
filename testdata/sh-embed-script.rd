@@ -15,13 +15,16 @@
 (pipe (cat data.js)
       (roonda --json-to-python2 --replace-tag ROONDA_STDIN_DATA script.py))
 
-#(pipe (cat data.js)
-#      (json-to-python2 ROONDA_STDIN_DATA script.py))
+(pipe (cat data.js)
+      (roonda --json-to-python2 script.py))
 
-#(pipe (cat data.js)
-#      (json-to-python2
-#       ROONDA_STDIN_DATA
-#       (print ROONDA_STDIN_DATA)))
+(pipe (cat data.js)
+      (roonda json-to-python2 script.py))
+
+(pipe (cat data.js)
+      (roonda json-to-python2 (v1)
+       (print ROONDA_STDIN_DATA)
+       (print "\n")))
 
 << data.js
 [["abc", 10],

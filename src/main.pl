@@ -11,19 +11,34 @@ my $template_source_filepath = '';
 while () {
     last if (!@ARGV);
     my $arg = shift;
-    if ($arg =~ /--from-json-(\d+)/) {
+    if ($arg eq '--from-sexpr') {
+        die if ($type_from ne '');
+        $type_from = 'sexpr';
+    } elsif ($arg =~ /--from-json-(\d+)/) {
         die if ($type_from ne '');
         $type_from = 'json';
         $from_ver = $1;
-    } elsif ($arg eq '--from-sexpr') {
+    } elsif ($arg =~ /--sexpr-to-([a-z0-9]+)-(\d+)/) {
         die if ($type_from ne '');
+        die if ($type_to ne '');
         $type_from = 'sexpr';
+        $type_to = 'obj';
+        if ($1 eq 'perl') {
+            $to_lang = $LANG_PERL;
+        } elsif ($1 eq 'ruby') {
+            $to_lang = $LANG_RUBY;
+        } elsif ($1 eq 'python2') {
+            $to_lang = $LANG_PYTHON2;
+        } elsif ($1 eq 'python3') {
+            $to_lang = $LANG_PYTHON3;
+        } else {
+            die "Unknown argument: $arg";
+        }
+        $to_ver = $2;
     } elsif ($arg =~ /--([a-z0-9]+)-(\d+)-to-([a-z0-9]+)-(\d+)/) {
         die if ($type_from ne '');
         die if ($type_to ne '');
-        if ($1 eq 'sexpr') {
-            $type_from = 'sexpr';
-        } elsif ($1 eq 'json') {
+        if ($1 eq 'json') {
             $type_from = 'json';
         } else {
             die "Unknown argument: $arg";
@@ -74,7 +89,7 @@ while () {
     } elsif ($arg =~ /\A-/) {
         die "Unknown argument: $arg";
     } else {
-        if ($replace_tag ne '') {
+        if ($type_to eq 'obj') {
             die if ($template_source_filepath);
             $template_source_filepath = $arg;
         } else {
@@ -94,11 +109,12 @@ if ($type_to eq '') {
 if ($type_to eq 'obj' && $replace_tag ne '' && $template_source_filepath eq '') {
     die;
 }
-if ($type_to eq 'obj' && $replace_tag eq '' && $template_source_filepath ne '') {
-    die;
-}
 if ($type_to ne 'obj' && $replace_tag ne '') {
     die;
+}
+
+if ($type_to eq 'obj' && $replace_tag eq '' && $template_source_filepath ne '') {
+    $replace_tag = 'ROONDA_STDIN_DATA';
 }
 
 my @lines;

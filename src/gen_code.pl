@@ -1,5 +1,5 @@
 
-# ($lang, $bin_path, $source, $ext) を返す
+# return: ($lang, $bin_path, $source, $ext)
 sub gent_exec {
     my ($token_ref) = @_;
     if (astlib_is_list($token_ref)) {
@@ -9,6 +9,7 @@ sub gent_exec {
     }
 }
 
+# return: ($lang, $bin_path, $source, $ext)
 sub genl_exec {
     my ($list_ref, $close_line_no) = @_;
     my @list = @$list_ref;
@@ -25,11 +26,13 @@ sub genl_exec {
     }
 }
 
+# return: ($lang, $bin_path_for_sh, $source, $ext)
 sub genl_exec_for_sh {
     my ($lang, $bin_path, $bin_path_for_sh, $source, $ext) = _genl_exec_a(@_);
     ($lang, $bin_path_for_sh, $source, $ext);
 }
 
+# return: ($lang, $bin_path, $bin_path_for_sh, $source, $ext)
 sub _genl_exec_a {
     my ($lang_opts_ref, $list_ref, $lang_close_line_no) = @_;
     my @lang_opts = @$lang_opts_ref;
@@ -48,6 +51,12 @@ sub _genl_exec_a {
     }
 }
 
+# return: $source
+sub genl_exec_b_for_sh {
+    _genl_exec_b(@_);
+}
+
+# return: $source
 sub _genl_exec_b {
     my ($lang, $lang_opts_ref, $list_ref, $lang_close_line_no) = @_;
     my @lang_opts = @$lang_opts_ref;
