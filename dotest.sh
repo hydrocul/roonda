@@ -19,13 +19,9 @@ diff -u expected/from-json.sh actual/from-json.sh
 cat ./testdata/from-json.js | ./target/roonda --from-json > ./actual/from-json.txt
 diff -u expected/from-json.txt actual/from-json.txt
 
-echo ./testdata/to-perl-obj.js
-cat ./testdata/to-perl-obj.js | ./target/roonda --v1 --from-json --to-perl-obj > ./actual/to-perl-obj.pl
-diff -u expected/to-perl-obj.pl actual/to-perl-obj.pl
-
-echo ./testdata/to-python-obj.js
-cat ./testdata/to-python-obj.js | ./target/roonda --v1 --from-json --to-python3-obj > ./actual/to-python-obj.py
-diff -u expected/to-python-obj.py actual/to-python-obj.py
+echo ./testdata/json-to-obj.rd
+cat ./testdata/json-to-obj.rd | ./target/roonda > ./actual/json-to-obj.txt
+diff -u expected/json-to-obj.txt actual/json-to-obj.txt
 
 echo ./testdata/sh-env.rd
 cat ./testdata/sh-env.rd | ./target/roonda --output-code > ./actual/sh-env.sh

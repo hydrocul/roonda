@@ -86,7 +86,7 @@ sub get_dst_format_label {
     } elsif ($str eq 'python3') {
         $LANG_PYTHON3;
     } elsif ($str eq 'php') {
-        die;
+        $LANG_PHP;
     } else {
         undef;
     }

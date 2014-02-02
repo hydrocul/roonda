@@ -227,6 +227,8 @@ sub genl_sh_command_roonda {
             return genl_sh_command_roonda_embed_2($token, $LANG_PYTHON2, $list, $close_line_no);
         } elsif ($token eq 'sexpr-to-python3') {
             return genl_sh_command_roonda_embed_2($token, $LANG_PYTHON3, $list, $close_line_no);
+        } elsif ($token eq 'sexpr-to-php') {
+            return genl_sh_command_roonda_embed_2($token, $LANG_PHP, $list, $close_line_no);
         } elsif ($token eq 'json-to-sexpr') {
             return genl_sh_command_roonda_embed_2($token, $LANG_SEXPR, $list, $close_line_no);
         } elsif ($token eq 'json-to-perl') {
@@ -237,6 +239,8 @@ sub genl_sh_command_roonda {
             return genl_sh_command_roonda_embed_2($token, $LANG_PYTHON2, $list, $close_line_no);
         } elsif ($token eq 'json-to-python3') {
             return genl_sh_command_roonda_embed_2($token, $LANG_PYTHON3, $list, $close_line_no);
+        } elsif ($token eq 'json-to-php') {
+            return genl_sh_command_roonda_embed_2($token, $LANG_PHP, $list, $close_line_no);
         } else {
             unshift(@$list, $head);
         }

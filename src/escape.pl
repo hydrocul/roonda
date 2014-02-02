@@ -110,3 +110,14 @@ sub escape_python_string { # TODO
     "\"" . $str . "\"";
 }
 
+sub escape_php_string { # TODO
+    my ($str) = @_;
+    $str =~ s/\\/\\\\/g;
+    $str =~ s/\n/\\n/g;
+    $str =~ s/\r/\\r/g;
+    $str =~ s/\t/\\t/g;
+    $str =~ s/([\x00-\x1F])/sprintf("\\x%02x",ord($1))/ge;
+    $str =~ s/"/\\"/g;
+    "\"" . $str . "\"";
+}
+

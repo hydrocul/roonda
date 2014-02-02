@@ -13,7 +13,7 @@ sub gent_obj {
         } elsif ($lang eq $LANG_PYTHON3) {
             escape_python3_string(astlib_get_symbol_or_string($token));
         } elsif ($lang eq $LANG_PHP) {
-            die;
+            escape_php_string(astlib_get_symbol_or_string($token));
         } else {
             die;
         }
@@ -42,7 +42,7 @@ sub genl_obj {
     } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
         '[' . join(',', @list2) . ']';
     } elsif ($lang eq $LANG_PHP) {
-        die;
+        'array(' . join(',', @list2) . ')';
     } else {
         die;
     }
