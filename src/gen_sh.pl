@@ -118,7 +118,7 @@ sub _genl_sh_command_sub_list {
     my ($list, $cmd_list, $cmd_list_close_line_no) = @_;
     my $cmd_head = $cmd_list->[0];
     if (astlib_is_symbol_or_string($cmd_head)) {
-        my ($lang) = _bin_path_to_lang(astlib_get_symbol_or_string($cmd_head));
+        my ($lang) = bin_path_to_lang(astlib_get_symbol_or_string($cmd_head));
         return undef unless ($lang);
     }
     my ($lang, $bin_path, $source, $ext) =

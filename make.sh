@@ -14,6 +14,7 @@ mkdir -p target
     cat ./src/parse_sexpr.pl
     cat ./src/parse_json.pl
     cat ./src/build_ast.pl
+    cat ./src/langs.pl
     cat ./src/gen_obj.pl
     cat ./src/escape.pl
     cat ./src/gen_code.pl

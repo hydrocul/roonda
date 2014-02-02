@@ -1,8 +1,8 @@
 
 my $ver = '';
-my $type_from = '';
-my $type_to = '';
-my $to_lang = '';
+my $format_from = '';
+my $run_type = '';
+my $lang_to = '';
 my $is_dryrun = '';
 my $replace_tag = '';
 my $source_filepath = '';
@@ -13,56 +13,23 @@ while () {
     if ($arg =~ /\A--v(\d+)\Z/) {
         die if ($ver ne '');
         $ver = $1;
-    } elsif ($arg eq '--from-sexpr') {
-        die if ($type_from ne '');
-        $type_from = 'sexpr';
-    } elsif ($arg eq '--from-json') {
-        die if ($type_from ne '');
-        $type_from = 'json';
+    } elsif ($arg =~ /\A--from-([a-z0-9]+)\Z/) {
+        die if ($format_from ne '');
+        $format_from = get_src_format_label($1);
+        die "Unknown argument: $arg" unless (defined($format_from));
     } elsif ($arg =~ /\A--([a-z0-9]+)-to-([a-z0-9]+)\Z/) {
-        die if ($type_from ne '');
-        die if ($type_to ne '');
-        if ($1 eq 'sexpr') {
-            $type_from = 'sexpr';
-        } elsif ($1 eq 'json') {
-            $type_from = 'json';
-        } else {
-            die "Unknown argument: $arg";
-        }
-        $type_to = 'obj';
-        if ($2 eq 'sexpr') {
-            $to_lang = $LANG_SEXPR;
-        } elsif ($2 eq 'perl') {
-            $to_lang = $LANG_PERL;
-        } elsif ($2 eq 'ruby') {
-            $to_lang = $LANG_RUBY;
-        } elsif ($2 eq 'python2') {
-            $to_lang = $LANG_PYTHON2;
-        } elsif ($2 eq 'python3') {
-            $to_lang = $LANG_PYTHON3;
-        } else {
-            die "Unknown argument: $arg";
-        }
-    } elsif ($arg eq '--to-sexpr-obj') {
-        die if ($type_to ne '');
-        $type_to = 'obj';
-        $to_lang = $LANG_SEXPR;
-    } elsif ($arg eq '--to-perl-obj') {
-        die if ($type_to ne '');
-        $type_to = 'obj';
-        $to_lang = $LANG_PERL;
-    } elsif ($arg eq '--to-ruby-obj') {
-        die if ($type_to ne '');
-        $type_to = 'obj';
-        $to_lang = $LANG_RUBY;
-    } elsif ($arg eq '--to-python2-obj') {
-        die if ($type_to ne '');
-        $type_to = 'obj';
-        $to_lang = $LANG_PYTHON2;
-    } elsif ($arg eq '--to-python3-obj') {
-        die if ($type_to ne '');
-        $type_to = 'obj';
-        $to_lang = $LANG_PYTHON3;
+        die if ($format_from ne '');
+        die if ($run_type ne '');
+        $format_from = get_src_format_label($1);
+        die "Unknown argument: $arg" unless (defined($format_from));
+        $run_type = 'obj';
+        $lang_to = get_dst_format_label($2);
+        die "Unknown argument: $arg" unless (defined($lang_to));
+    } elsif ($arg =~ /\A--to-([a-z0-9]+)-obj\Z/) {
+        die if ($run_type ne '');
+        $run_type = 'obj';
+        $lang_to = get_dst_format_label($1);
+        die "Unknown argument: $arg" unless (defined($lang_to));
     } elsif ($arg eq '--replace-tag') {
         my $arg2 = shift;
         unless (defined($arg2)) {
@@ -75,7 +42,7 @@ while () {
     } elsif ($arg =~ /\A-/) {
         die "Unknown argument: $arg";
     } else {
-        if ($type_to eq 'obj') {
+        if ($run_type eq 'obj') {
             die if ($template_source_filepath);
             $template_source_filepath = $arg;
         } else {
@@ -88,21 +55,21 @@ while () {
 if ($ver eq '') {
     $ver = 1;
 }
-if ($type_from eq '') {
-    $type_from = 'sexpr';
+if ($format_from eq '') {
+    $format_from = $FORMAT_SEXPR;
 }
-if ($type_to eq '') {
-    $type_to = 'exec';
-}
-
-if ($type_to eq 'obj' && $replace_tag ne '' && $template_source_filepath eq '') {
-    die;
-}
-if ($type_to ne 'obj' && $replace_tag ne '') {
-    die;
+if ($run_type eq '') {
+    $run_type = 'exec';
 }
 
-if ($type_to eq 'obj' && $replace_tag eq '' && $template_source_filepath ne '') {
+if ($run_type eq 'obj' && $replace_tag ne '' && $template_source_filepath eq '') {
+    die;
+}
+if ($run_type ne 'obj' && $replace_tag ne '') {
+    die;
+}
+
+if ($run_type eq 'obj' && $replace_tag eq '' && $template_source_filepath ne '') {
     $replace_tag = $KEYWD_STDIN_DATA;
 }
 
@@ -122,18 +89,18 @@ $ENV{$ENV_SELF_PATH} = $0;
 $ENV{$ENV_TMP_PATH} = tempdir(CLEANUP => 1);
 
 my $ast;
-if ($type_from eq 'json') {
-    $ast = parse_json(@lines);
-} elsif ($type_from eq 'sexpr') {
+if ($format_from eq $FORMAT_SEXPR) {
     $ast = parse_sexpr(@lines);
+} elsif ($format_from eq $FORMAT_JSON) {
+    $ast = parse_json(@lines);
 } else {
     die;
 }
 
 my ($exec_source, $bin_path, $ext);
 
-if ($type_to eq 'obj') {
-    my $source = gent_obj($ast, $to_lang, $ver);
+if ($run_type eq 'obj') {
+    my $source = gent_obj($ast, $lang_to, $ver);
 
     if ($template_source_filepath eq '') {
         print encode('utf-8', $source);
@@ -147,7 +114,7 @@ if ($type_to eq 'obj') {
         my $template = join('', @template_lines);
         $exec_source = build_by_template($template, $replace_tag, $source);
 
-        ($bin_path, $ext) = lang_to_bin_path($to_lang);
+        ($bin_path, $ext) = lang_to_bin_path($lang_to);
     }
 } else {
     my ($lang, $source);
