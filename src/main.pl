@@ -114,7 +114,7 @@ if ($type_to ne 'obj' && $replace_tag ne '') {
 }
 
 if ($type_to eq 'obj' && $replace_tag eq '' && $template_source_filepath ne '') {
-    $replace_tag = 'ROONDA_STDIN_DATA';
+    $replace_tag = $KEYWD_STDIN_DATA;
 }
 
 my @lines;

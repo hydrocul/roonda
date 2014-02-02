@@ -31,6 +31,8 @@ my $KEYWD_SH_ROONDA    = 'roonda';
 my $KEYWD_SH_BACKTICKS = 'backticks';
 my $KEYWD_SH_REF       = 'ref';
 
+my $KEYWD_STDIN_DATA   = 'stdin_data';
+
 my $KEYWD_IF           = 'if';
 my $KEYWD_APPLY        = 'apply';
 my $KEYWD_PRINT        = 'print';
