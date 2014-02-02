@@ -7,6 +7,8 @@ cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --json-1-to-python2-1 $ROONDA_T
 cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --json-1-to-python2-1
 cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --json-1-to-python2-1 $ROONDA_TMP_PATH/script2.py
 cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --json-1-to-python2-1 $ROONDA_TMP_PATH/roonda_9f408e8e0470f4ed1bd165e6e9aaf32855509991.py
+cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --from-json-1 --to-sexpr-obj
+cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --json-1-to-sexpr
 
 #################################################
 # data.js:

@@ -12,12 +12,13 @@ my $TOKEN_TYPE_CLOSE   = 6;
 my $TOKEN_TYPE_EOF     = 7;
 my $TOKEN_TYPE_LIST    = 8;
 
+my $LANG_SEXPR   = 0;
 my $LANG_SH      = 1;
 my $LANG_PERL    = 2;
 my $LANG_RUBY    = 3;
 my $LANG_PYTHON2 = 4;
 my $LANG_PYTHON3 = 5;
-#my $LANG_PHP     = 6;
+my $LANG_PHP     = 6;
 
 my $OP_ORDER_MIN       = 0;
 my $OP_ORDER_ARG_COMMA = 5;

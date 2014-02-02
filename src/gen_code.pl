@@ -86,7 +86,9 @@ my %bin_path_map = ();
 # return: $bin_path, $ext
 sub lang_to_bin_path {
     my ($lang) = @_;
-    if ($lang eq $LANG_SH) {
+    if ($lang eq $LANG_SEXPR) {
+        ($ENV{$ENV_SELF_PATH}, 'rd');
+    } elsif ($lang eq $LANG_SH) {
         ('/bin/sh', 'sh');
     } elsif ($lang eq $LANG_PERL) {
         (_get_cmd_path('perl'), 'pl');

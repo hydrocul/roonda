@@ -18,6 +18,12 @@ while () {
         die if ($type_from ne '');
         $type_from = 'json';
         $from_ver = $1;
+    } elsif ($arg =~ /--sexpr-to-sexpr/) {
+        die if ($type_from ne '');
+        die if ($type_to ne '');
+        $type_from = 'sexpr';
+        $type_to = 'obj';
+        $to_lang = $LANG_SEXPR;
     } elsif ($arg =~ /--sexpr-to-([a-z0-9]+)-(\d+)/) {
         die if ($type_from ne '');
         die if ($type_to ne '');
@@ -35,6 +41,17 @@ while () {
             die "Unknown argument: $arg";
         }
         $to_ver = $2;
+    } elsif ($arg =~ /--([a-z0-9]+)-(\d+)-to-sexpr/) {
+        die if ($type_from ne '');
+        die if ($type_to ne '');
+        if ($1 eq 'json') {
+            $type_from = 'json';
+        } else {
+            die "Unknown argument: $arg";
+        }
+        $from_ver = $2;
+        $type_to = 'obj';
+        $to_lang = $LANG_SEXPR;
     } elsif ($arg =~ /--([a-z0-9]+)-(\d+)-to-([a-z0-9]+)-(\d+)/) {
         die if ($type_from ne '');
         die if ($type_to ne '');
@@ -45,7 +62,9 @@ while () {
         }
         $from_ver = $2;
         $type_to = 'obj';
-        if ($3 eq 'perl') {
+        if ($3 eq 'sexpr') {
+            $to_lang = $LANG_SEXPR;
+        } elsif ($3 eq 'perl') {
             $to_lang = $LANG_PERL;
         } elsif ($3 eq 'ruby') {
             $to_lang = $LANG_RUBY;
@@ -57,6 +76,10 @@ while () {
             die "Unknown argument: $arg";
         }
         $to_ver = $4;
+    } elsif ($arg =~ /--to-sexpr-obj/) {
+        die if ($type_to ne '');
+        $type_to = 'obj';
+        $to_lang = $LANG_SEXPR;
     } elsif ($arg =~ /--to-perl-obj-(\d+)/) {
         die if ($type_to ne '');
         $type_to = 'obj';

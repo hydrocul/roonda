@@ -86,13 +86,7 @@ sub _parse_sexpr_line {
             $token = $token + 0; # convert to integer
             $token_type = $TOKEN_TYPE_INTEGER;
         } elsif ($token =~ /\A"(.*)"\Z/) {
-            my $str = $1;
-            $str =~ s/\\n/\n/g;
-            $str =~ s/\\r/\r/g;
-            $str =~ s/\\t/\t/g;
-            $str =~ s/\\"/"/g;
-            $str =~ s/\\u([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])/chr(hex($1))/ge;
-            $token = $str;
+            $token = unescape_sexpr_string($1);
             $token_type = $TOKEN_TYPE_STRING;
         } elsif ($token =~ /\A:(.+)\Z/) {
             $token = $1;

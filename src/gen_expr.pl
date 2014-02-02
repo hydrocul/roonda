@@ -1,7 +1,9 @@
 
 sub gent_langs_expr {
     my ($token_ref, $op_order, $lang) = @_;
+    die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
+    die if ($lang eq $LANG_PHP);
     if (astlib_is_symbol($token_ref)) {
         astlib_get_symbol($token_ref);
     } elsif (astlib_is_string($token_ref)) {
@@ -28,7 +30,9 @@ sub gent_langs_expr {
 
 sub genl_langs_expr {
     my ($list_ref, $op_order, $close_line_no, $lang) = @_;
+    die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
+    die if ($lang eq $LANG_PHP);
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
@@ -69,7 +73,9 @@ sub genl_langs_expr {
 
 sub genl_langs_apply {
     my ($list_ref, $close_line_no, $lang) = @_;
+    die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
+    die if ($lang eq $LANG_PHP);
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
@@ -85,7 +91,9 @@ sub genl_langs_apply {
 
 sub genl_langs_apply_1 {
     my ($funcname, $list, $lang) = @_;
+    die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
+    die if ($lang eq $LANG_PHP);
     my $result = '';
     foreach my $elem (@$list) {
         my $source = gent_langs_argument($elem, $OP_ORDER_ARG_COMMA, $lang);
@@ -97,7 +105,9 @@ sub genl_langs_apply_1 {
 
 sub genl_langs_binop {
     my ($op, $op_order, $outer_op_order, $list_ref, $lang) = @_;
+    die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
+    die if ($lang eq $LANG_PHP);
     my @list = @$list_ref;
     my $result = '';
     while () {
@@ -117,7 +127,9 @@ sub genl_langs_binop {
 
 sub gent_langs_argument {
     my ($token_ref, $op_order, $lang) = @_;
+    die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
+    die if ($lang eq $LANG_PHP);
     gent_langs_expr($token_ref, $op_order, $lang);
 }
 

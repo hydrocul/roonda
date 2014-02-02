@@ -1,4 +1,25 @@
 
+sub escape_sexpr_string {
+    my ($str) = @_;
+    $str =~ s/\\/\\\\/g;
+    $str =~ s/\n/\\n/g;
+    $str =~ s/\r/\\r/g;
+    $str =~ s/\t/\\t/g;
+    $str =~ s/"/\\"/g;
+    "\"" . $str . "\"";
+}
+
+sub unescape_sexpr_string {
+    my ($str) = @_;
+    $str =~ s/\\n/\n/g;
+    $str =~ s/\\r/\r/g;
+    $str =~ s/\\t/\t/g;
+    $str =~ s/\\"/"/g;
+    $str =~ s/\\\\/\\/g;
+    $str =~ s/\\u([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])/chr(hex($1))/ge;
+    $str;
+}
+
 sub escape_sh_string {
     my ($str) = @_;
     return $str if ($str =~ /\A[-.\/_0-9A-Za-z]+\Z/);

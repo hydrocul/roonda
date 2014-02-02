@@ -29,6 +29,13 @@
        (print stdin_data)
        (print "\n")))
 
+(pipe (cat data.js)
+      (roonda --from-json-1 --to-sexpr-obj))
+
+(pipe (cat data.js)
+      (roonda json-to-sexpr))
+
+
 << data.js
 [["abc", 10],
  ["def", 30],

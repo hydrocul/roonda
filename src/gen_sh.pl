@@ -217,7 +217,9 @@ sub genl_sh_command_roonda {
     my $head = shift(@$list);
     if (astlib_is_symbol_or_string($head)) {
         my $token = astlib_get_symbol_or_string($head);
-        if ($token eq 'sexpr-to-perl') {
+        if ($token eq 'sexpr-to-sexpr') {
+            return genl_sh_command_roonda_embed_2('sexpr', $LANG_SEXPR, $list, $close_line_no);
+        } elsif ($token eq 'sexpr-to-perl') {
             return genl_sh_command_roonda_embed_2('sexpr', $LANG_PERL, $list, $close_line_no);
         } elsif ($token eq 'sexpr-to-ruby') {
             return genl_sh_command_roonda_embed_2('sexpr', $LANG_RUBY, $list, $close_line_no);
@@ -225,6 +227,8 @@ sub genl_sh_command_roonda {
             return genl_sh_command_roonda_embed_2('sexpr', $LANG_PYTHON2, $list, $close_line_no);
         } elsif ($token eq 'sexpr-to-python3') {
             return genl_sh_command_roonda_embed_2('sexpr', $LANG_PYTHON3, $list, $close_line_no);
+        } elsif ($token eq 'json-to-sexpr') {
+            return genl_sh_command_roonda_embed_2('json', $LANG_SEXPR, $list, $close_line_no);
         } elsif ($token eq 'json-to-perl') {
             return genl_sh_command_roonda_embed_2('json', $LANG_PERL, $list, $close_line_no);
         } elsif ($token eq 'json-to-ruby') {
@@ -244,7 +248,9 @@ sub genl_sh_command_roonda {
         my $source;
         if (astlib_is_symbol_or_string($elem)) {
             my $token = astlib_get_symbol_or_string($elem);
-            if ($token eq '--sexpr-to-perl') {
+            if ($token eq '--sexpr-to-sexpr') {
+                $source = _obj_conversion_option_str('sexpr', $LANG_SEXPR);
+            } elsif ($token eq '--sexpr-to-perl') {
                 $source = _obj_conversion_option_str('sexpr', $LANG_PERL);
             } elsif ($token eq '--sexpr-to-ruby') {
                 $source = _obj_conversion_option_str('sexpr', $LANG_RUBY);
@@ -252,6 +258,8 @@ sub genl_sh_command_roonda {
                 $source = _obj_conversion_option_str('sexpr', $LANG_PYTHON2);
             } elsif ($token eq '--sexpr-to-python3') {
                 $source = _obj_conversion_option_str('sexpr', $LANG_PYTHON3);
+            } elsif ($token eq '--json-to-sexpr') {
+                $source = _obj_conversion_option_str('json', $LANG_SEXPR);
             } elsif ($token eq '--json-to-perl') {
                 $source = _obj_conversion_option_str('json', $LANG_PERL);
             } elsif ($token eq '--json-to-ruby') {
@@ -280,6 +288,9 @@ sub genl_sh_command_roonda_embed_2 {
     unless (defined($head)) {
         return $result;
     }
+    if ($lang_to eq $LANG_SEXPR) {
+        die create_dying_msg_unexpected($head);
+    }
     my $fname;
     if (astlib_is_heredoc($head)) {
         die create_dying_msg_unexpected(shift(@$list)) if (@$list);
@@ -298,7 +309,9 @@ sub genl_sh_command_roonda_embed_2 {
 sub _obj_conversion_option_str {
     my ($format_from, $lang_to) = @_;
     if ($format_from eq 'sexpr') {
-        if ($lang_to eq $LANG_PERL) {
+        if ($lang_to eq $LANG_SEXPR) {
+            '--sexpr-to-sexpr';
+        } elsif ($lang_to eq $LANG_PERL) {
             '--sexpr-to-perl-1';
         } elsif ($lang_to eq $LANG_RUBY) {
             '--sexpr-to-ruby-1';
@@ -310,7 +323,9 @@ sub _obj_conversion_option_str {
             die;
         }
     } elsif ($format_from eq 'json') {
-        if ($lang_to eq $LANG_PERL) {
+        if ($lang_to eq $LANG_SEXPR) {
+            '--json-1-to-sexpr';
+        } elsif ($lang_to eq $LANG_PERL) {
             '--json-1-to-perl-1';
         } elsif ($lang_to eq $LANG_RUBY) {
             '--json-1-to-ruby-1';

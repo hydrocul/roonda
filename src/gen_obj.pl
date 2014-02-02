@@ -2,7 +2,9 @@
 sub gent_obj {
     my ($token, $lang, $ver) = @_;
     if (astlib_is_symbol_or_string($token)) {
-        if ($lang eq $LANG_PERL) {
+        if ($lang eq $LANG_SEXPR) {
+            escape_sexpr_string(astlib_get_symbol_or_string($token));
+        } elsif ($lang eq $LANG_PERL) {
             escape_perl_string(astlib_get_symbol_or_string($token));
         } elsif ($lang eq $LANG_RUBY) {
             escape_ruby_string(astlib_get_symbol_or_string($token));
@@ -10,6 +12,8 @@ sub gent_obj {
             escape_python2_string(astlib_get_symbol_or_string($token));
         } elsif ($lang eq $LANG_PYTHON3) {
             escape_python3_string(astlib_get_symbol_or_string($token));
+        } elsif ($lang eq $LANG_PHP) {
+            die;
         } else {
             die;
         }
@@ -21,12 +25,16 @@ sub gent_obj {
         foreach my $elem (@$list) {
             push(@list2, gent_obj($elem, $lang, $ver));
         }
-        if ($lang eq $LANG_PERL) {
+        if ($lang eq $LANG_SEXPR) {
+            '(' . join(' ', @list2) . ')';
+        } elsif ($lang eq $LANG_PERL) {
             '[' . join(',', @list2) . ']';
         } elsif ($lang eq $LANG_RUBY) {
             '[' . join(',', @list2) . ']';
         } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
             '[' . join(',', @list2) . ']';
+        } elsif ($lang eq $LANG_PHP) {
+            die;
         } else {
             die;
         }
