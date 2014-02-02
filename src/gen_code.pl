@@ -52,11 +52,6 @@ sub _genl_exec_a {
 }
 
 # return: $source
-sub genl_exec_b_for_sh {
-    _genl_exec_b(@_);
-}
-
-# return: $source
 sub _genl_exec_b {
     my ($lang, $lang_opts_ref, $list_ref, $lang_close_line_no) = @_;
     my @lang_opts = @$lang_opts_ref;
@@ -74,6 +69,11 @@ sub _genl_exec_b {
     } else {
         die create_dying_msg_unexpected($head);
     }
+}
+
+# return: $source
+sub genl_exec_c_for_sh {
+    _genl_exec_c(@_);
 }
 
 sub _genl_exec_c {

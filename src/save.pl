@@ -1,7 +1,6 @@
 
 my @saved_files = ();
 my %saved_files_content = ();
-my $save_file_dryrun = 1;
 
 sub save_file {
     my ($content, $ext, $keep, $name) = @_;

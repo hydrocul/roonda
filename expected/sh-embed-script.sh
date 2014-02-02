@@ -1,14 +1,13 @@
-cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --json-1-to-python2-1
-cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --json-1-to-python2-1
-cat $ROONDA_TMP_PATH/data.rd | $ROONDA_SELF_PATH --sexpr-to-python2-1
-cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --json-1-to-python2-1 --replace-tag ROONDA_STDIN_DATA --output-code $ROONDA_TMP_PATH/script.py
-cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --json-1-to-python2-1 --replace-tag ROONDA_STDIN_DATA $ROONDA_TMP_PATH/script.py
-cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --json-1-to-python2-1 $ROONDA_TMP_PATH/script2.py
-cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --json-1-to-python2-1
-cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --json-1-to-python2-1 $ROONDA_TMP_PATH/script2.py
-cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --json-1-to-python2-1 $ROONDA_TMP_PATH/roonda_9f408e8e0470f4ed1bd165e6e9aaf32855509991.py
-cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --from-json-1 --to-sexpr-obj
-cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --json-1-to-sexpr
+cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --v1 --json-to-python2
+cat $ROONDA_TMP_PATH/data.rd | $ROONDA_SELF_PATH --v1 --sexpr-to-python2
+cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --v1 --json-to-python2 --replace-tag ROONDA_STDIN_DATA --output-code $ROONDA_TMP_PATH/script.py
+cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --v1 --json-to-python2 --replace-tag ROONDA_STDIN_DATA $ROONDA_TMP_PATH/script.py
+cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --v1 --json-to-python2 $ROONDA_TMP_PATH/script2.py
+cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --v1 --json-to-python2
+cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --v1 --json-to-python2 $ROONDA_TMP_PATH/script2.py
+cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --v1 --json-to-python2 $ROONDA_TMP_PATH/roonda_9f408e8e0470f4ed1bd165e6e9aaf32855509991.py
+cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --v1 --from-json --to-sexpr-obj
+cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH --v1 --json-to-sexpr
 
 #################################################
 # data.js:

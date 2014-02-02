@@ -7,6 +7,7 @@ mkdir -p target
 {
     cat ./src/head.pl
     cat ./src/const.pl
+    cat ./src/global.pl
     cat ./src/sha1.pl
     cat ./src/save.pl
     cat ./src/astlib.pl

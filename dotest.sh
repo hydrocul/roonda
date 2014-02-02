@@ -14,17 +14,17 @@ cat ./testdata/sexpr.rd | ./target/roonda  > ./actual/sexpr.txt
 diff -u expected/sexpr.txt actual/sexpr.txt
 
 echo ./testdata/from-json.js
-cat ./testdata/from-json.js | ./target/roonda --from-json-1 --output-code > ./actual/from-json.sh
+cat ./testdata/from-json.js | ./target/roonda --from-json --output-code > ./actual/from-json.sh
 diff -u expected/from-json.sh actual/from-json.sh
-cat ./testdata/from-json.js | ./target/roonda --from-json-1 > ./actual/from-json.txt
+cat ./testdata/from-json.js | ./target/roonda --from-json > ./actual/from-json.txt
 diff -u expected/from-json.txt actual/from-json.txt
 
 echo ./testdata/to-perl-obj.js
-cat ./testdata/to-perl-obj.js | ./target/roonda --from-json-1 --to-perl-obj-1 > ./actual/to-perl-obj.pl
+cat ./testdata/to-perl-obj.js | ./target/roonda --v1 --from-json --to-perl-obj > ./actual/to-perl-obj.pl
 diff -u expected/to-perl-obj.pl actual/to-perl-obj.pl
 
 echo ./testdata/to-python-obj.js
-cat ./testdata/to-python-obj.js | ./target/roonda --from-json-1 --to-python3-obj-1 > ./actual/to-python-obj.py
+cat ./testdata/to-python-obj.js | ./target/roonda --v1 --from-json --to-python3-obj > ./actual/to-python-obj.py
 diff -u expected/to-python-obj.py actual/to-python-obj.py
 
 echo ./testdata/sh-env.rd

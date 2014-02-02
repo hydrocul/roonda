@@ -1,8 +1,8 @@
 (sh v1)
 
 (pipe (echo "[[\"abc\", 10], [\"def\", 30]]")
-      ((ref ROONDA_SELF_PATH) --from-json-1 --to-python2-obj-1))
+      ((ref ROONDA_SELF_PATH) --v1 --from-json --to-python2-obj))
 
 (pipe (echo "[[\"abc\", 10], [\"def\", 30]]")
-      (roonda --from-json-1 --to-python2-obj-1))
+      (roonda --v1 --from-json --to-python2-obj))
 

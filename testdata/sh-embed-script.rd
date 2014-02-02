@@ -1,22 +1,19 @@
 (sh v1)
 
 (pipe (cat data.js)
-      (roonda --json-1-to-python2-1))
-
-(pipe (cat data.js)
-      (roonda --json-to-python2))
+      (roonda --v1 --json-to-python2))
 
 (pipe (cat data.rd)
-      (roonda --sexpr-to-python2))
+      (roonda --v1 --sexpr-to-python2))
 
 (pipe (cat data.js)
-      (roonda --json-to-python2 --replace-tag ROONDA_STDIN_DATA --output-code script.py))
+      (roonda --v1 --json-to-python2 --replace-tag ROONDA_STDIN_DATA --output-code script.py))
 
 (pipe (cat data.js)
-      (roonda --json-to-python2 --replace-tag ROONDA_STDIN_DATA script.py))
+      (roonda --v1 --json-to-python2 --replace-tag ROONDA_STDIN_DATA script.py))
 
 (pipe (cat data.js)
-      (roonda --json-to-python2 script2.py))
+      (roonda --v1 --json-to-python2 script2.py))
 
 (pipe (cat data.js)
       (roonda json-to-python2))
@@ -25,12 +22,12 @@
       (roonda json-to-python2 script2.py))
 
 (pipe (cat data.js)
-      (roonda json-to-python2 (v1)
+      (roonda json-to-python2 ()
        (print stdin_data)
        (print "\n")))
 
 (pipe (cat data.js)
-      (roonda --from-json-1 --to-sexpr-obj))
+      (roonda --v1 --from-json --to-sexpr-obj))
 
 (pipe (cat data.js)
       (roonda json-to-sexpr))
