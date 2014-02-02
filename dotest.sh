@@ -77,23 +77,11 @@ diff -u expected/sh-call-langs.sh actual/sh-call-langs.sh
 cat ./testdata/sh-call-langs.rd | ./target/roonda > ./actual/sh-call-langs.txt
 diff -u expected/sh-call-langs.txt actual/sh-call-langs.txt
 
-echo ./testdata/basic-perl.rd
-cat ./testdata/basic-perl.rd | ./target/roonda --output-code > ./actual/basic-perl.pl
-diff -u expected/basic-perl.pl actual/basic-perl.pl
-cat ./testdata/basic-perl.rd | ./target/roonda  > ./actual/basic-perl.txt
-diff -u expected/basic-perl.txt actual/basic-perl.txt
-
-echo ./testdata/basic-ruby.rd
-cat ./testdata/basic-ruby.rd | ./target/roonda --output-code > ./actual/basic-ruby.rb
-diff -u expected/basic-ruby.rb actual/basic-ruby.rb
-cat ./testdata/basic-ruby.rd | ./target/roonda  > ./actual/basic-ruby.txt
-diff -u expected/basic-ruby.txt actual/basic-ruby.txt
-
-echo ./testdata/basic-python.rd
-cat ./testdata/basic-python.rd | ./target/roonda --output-code > ./actual/basic-python.py
-diff -u expected/basic-python.py actual/basic-python.py
-cat ./testdata/basic-python.rd | ./target/roonda  > ./actual/basic-python.txt
-diff -u expected/basic-python.txt actual/basic-python.txt
+echo ./testdata/basic.rd
+cat ./testdata/basic.rd | ./target/roonda --output-code > ./actual/basic.sh
+diff -u expected/basic.sh actual/basic.sh
+cat ./testdata/basic.rd | ./target/roonda  > ./actual/basic.txt
+diff -u expected/basic.txt actual/basic.txt
 
 echo ./testdata/operators-perl.rd
 cat ./testdata/operators-perl.rd | ./target/roonda --output-code > ./actual/operators-perl.pl
