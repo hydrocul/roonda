@@ -217,30 +217,14 @@ sub genl_sh_command_roonda {
     my $head = shift(@$list);
     if (astlib_is_symbol_or_string($head)) {
         my $token = astlib_get_symbol_or_string($head);
-        if ($token eq 'sexpr-to-sexpr') {
-            return genl_sh_command_roonda_embed_2($token, $LANG_SEXPR, $list, $close_line_no);
-        } elsif ($token eq 'sexpr-to-perl') {
-            return genl_sh_command_roonda_embed_2($token, $LANG_PERL, $list, $close_line_no);
-        } elsif ($token eq 'sexpr-to-ruby') {
-            return genl_sh_command_roonda_embed_2($token, $LANG_RUBY, $list, $close_line_no);
-        } elsif ($token eq 'sexpr-to-python2') {
-            return genl_sh_command_roonda_embed_2($token, $LANG_PYTHON2, $list, $close_line_no);
-        } elsif ($token eq 'sexpr-to-python3') {
-            return genl_sh_command_roonda_embed_2($token, $LANG_PYTHON3, $list, $close_line_no);
-        } elsif ($token eq 'sexpr-to-php') {
-            return genl_sh_command_roonda_embed_2($token, $LANG_PHP, $list, $close_line_no);
-        } elsif ($token eq 'json-to-sexpr') {
-            return genl_sh_command_roonda_embed_2($token, $LANG_SEXPR, $list, $close_line_no);
-        } elsif ($token eq 'json-to-perl') {
-            return genl_sh_command_roonda_embed_2($token, $LANG_PERL, $list, $close_line_no);
-        } elsif ($token eq 'json-to-ruby') {
-            return genl_sh_command_roonda_embed_2($token, $LANG_RUBY, $list, $close_line_no);
-        } elsif ($token eq 'json-to-python2') {
-            return genl_sh_command_roonda_embed_2($token, $LANG_PYTHON2, $list, $close_line_no);
-        } elsif ($token eq 'json-to-python3') {
-            return genl_sh_command_roonda_embed_2($token, $LANG_PYTHON3, $list, $close_line_no);
-        } elsif ($token eq 'json-to-php') {
-            return genl_sh_command_roonda_embed_2($token, $LANG_PHP, $list, $close_line_no);
+        if ($token =~ /\A([a-z0-9]+)-to-([a-z0-9]+)\Z/) {
+            my $format_from = get_src_format_label($1);
+            my $lang_to = get_dst_format_label($2);
+            if (defined($format_from) && defined($lang_to)) {
+                return genl_sh_command_roonda_embed_2($token, $lang_to, $list, $close_line_no);
+            } else {
+                unshift(@$list, $head);
+            }
         } else {
             unshift(@$list, $head);
         }
