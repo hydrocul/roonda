@@ -278,7 +278,7 @@ sub genl_sh_command_roonda_embed_2 {
     $result = $result . ' ' . _obj_conversion_option_str($format_from, $lang_to);
     my $head = shift(@$list);
     unless (defined($head)) {
-        die create_dying_msg_unexpected_closing($close_line_no);
+        return $result;
     }
     my $fname;
     if (astlib_is_heredoc($head)) {

@@ -19,6 +19,9 @@
       (roonda --json-to-python2 script.py))
 
 (pipe (cat data.js)
+      (roonda json-to-python2))
+
+(pipe (cat data.js)
       (roonda json-to-python2 script.py))
 
 (pipe (cat data.js)
