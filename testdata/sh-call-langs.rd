@@ -1,10 +1,10 @@
 (sh v1)
 
-((perl v1)
+((perl)
  (print (+ 3 4))
  (print "\n"))
 
-((ruby v1)
+((ruby)
  (print (+ 3 4))
  (print "\n"))
 

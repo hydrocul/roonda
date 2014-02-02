@@ -26,10 +26,23 @@ sub genl_exec {
     }
 }
 
-# return: ($lang, $bin_path_for_sh, $source, $ext)
+# return: ($bin_path_for_sh, $source, $ext)
 sub genl_exec_for_sh {
-    my ($lang, $bin_path, $bin_path_for_sh, $source, $ext) = _genl_exec_a(@_);
-    ($lang, $bin_path_for_sh, $source, $ext);
+    my ($lang_opts_ref, $list_ref, $lang_close_line_no, $ver) = @_;
+    my @lang_opts = @$lang_opts_ref;
+    my $head = shift(@lang_opts);
+    unless (defined($head)) {
+        return (undef, undef, undef)
+    }
+    if (astlib_is_symbol_or_string($head)) {
+        my ($lang, $bin_path, $bin_path_for_sh, $ext) =
+            bin_path_to_lang(astlib_get_symbol_or_string($head));
+        return (undef, undef, undef) unless (defined($lang));
+        my $source = _genl_exec_c($lang, $ver, \@lang_opts, $list_ref);
+        ($bin_path_for_sh, $source, $ext);
+    } else {
+        (undef, undef, undef);
+    }
 }
 
 # return: ($lang, $bin_path, $bin_path_for_sh, $source, $ext)

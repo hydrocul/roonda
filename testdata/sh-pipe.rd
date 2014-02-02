@@ -2,7 +2,7 @@
 
 (pipe (echo "Hey!")
       (cat)
-      ((perl v1) (print "Hello\n")))
+      ((perl) (print "Hello\n")))
 
 (pipe (echo "abc")
       (> (strcat (ref ROONDA_TMP_PATH) "/" abc.txt)))

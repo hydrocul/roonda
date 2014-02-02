@@ -116,13 +116,10 @@ sub _genl_sh_command_sub {
 
 sub _genl_sh_command_sub_list {
     my ($list, $cmd_list, $cmd_list_close_line_no) = @_;
-    my $cmd_head = $cmd_list->[0];
-    if (astlib_is_symbol_or_string($cmd_head)) {
-        my ($lang) = bin_path_to_lang(astlib_get_symbol_or_string($cmd_head));
-        return undef unless ($lang);
-    }
-    my ($lang, $bin_path, $source, $ext) =
-        genl_exec_for_sh($cmd_list, $list, $cmd_list_close_line_no);
+    my $ver = 1; # TODO
+    my ($bin_path, $source, $ext) =
+        genl_exec_for_sh($cmd_list, $list, $cmd_list_close_line_no, $ver);
+    return undef unless ($bin_path);
     my $bin_path_escaped = escape_sh_string($bin_path);
     my $script_path = save_file($source, $ext, 1, '');
     my $script_path_escaped = escape_sh_string($script_path);
