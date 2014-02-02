@@ -21,23 +21,28 @@ sub gent_obj {
         astlib_get_integer($token);
     } elsif (astlib_is_list($token)) {
         my $list = astlib_get_list($token);
-        my @list2 = ();
-        foreach my $elem (@$list) {
-            push(@list2, gent_obj($elem, $lang, $ver));
-        }
-        if ($lang eq $LANG_SEXPR) {
-            '(' . join(' ', @list2) . ')';
-        } elsif ($lang eq $LANG_PERL) {
-            '[' . join(',', @list2) . ']';
-        } elsif ($lang eq $LANG_RUBY) {
-            '[' . join(',', @list2) . ']';
-        } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
-            '[' . join(',', @list2) . ']';
-        } elsif ($lang eq $LANG_PHP) {
-            die;
-        } else {
-            die;
-        }
+        genl_obj($list, $lang, $ver);
+    } else {
+        die;
+    }
+}
+
+sub genl_obj {
+    my ($list, $lang, $ver) = @_;
+    my @list2 = ();
+    foreach my $elem (@$list) {
+        push(@list2, gent_obj($elem, $lang, $ver));
+    }
+    if ($lang eq $LANG_SEXPR) {
+        '(' . join(' ', @list2) . ')';
+    } elsif ($lang eq $LANG_PERL) {
+        '[' . join(',', @list2) . ']';
+    } elsif ($lang eq $LANG_RUBY) {
+        '[' . join(',', @list2) . ']';
+    } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+        '[' . join(',', @list2) . ']';
+    } elsif ($lang eq $LANG_PHP) {
+        die;
     } else {
         die;
     }

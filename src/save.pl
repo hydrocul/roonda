@@ -19,9 +19,7 @@ sub save_file_from_tempfile {
     my $prefix = 'roonda_';
 
     unless ($name) {
-        my $key=`sha1sum $filename`; # TODO ファイルに保存しなくてもsha1をとれるようにすべき
-        die unless ($key =~ /\A([^\s]+)/);
-        $name = $prefix . $1;
+        $name = $prefix . calc_sha1($content, $filename);
     }
 
     my $roonda_tmp_path = $ENV{$ENV_TMP_PATH};
