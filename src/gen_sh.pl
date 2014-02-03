@@ -264,41 +264,6 @@ sub genl_sh_command_roonda_embed_2 {
     $result;
 }
 
-sub _obj_conversion_option_str {
-    my ($format_from, $lang_to) = @_;
-    if ($format_from eq 'sexpr') {
-        if ($lang_to eq $LANG_SEXPR) {
-            '--sexpr-to-sexpr';
-        } elsif ($lang_to eq $LANG_PERL) {
-            '--sexpr-to-perl-1';
-        } elsif ($lang_to eq $LANG_RUBY) {
-            '--sexpr-to-ruby-1';
-        } elsif ($lang_to eq $LANG_PYTHON2) {
-            '--sexpr-to-python2-1';
-        } elsif ($lang_to eq $LANG_PYTHON3) {
-            '--sexpr-to-python3-1';
-        } else {
-            die;
-        }
-    } elsif ($format_from eq 'json') {
-        if ($lang_to eq $LANG_SEXPR) {
-            '--json-1-to-sexpr';
-        } elsif ($lang_to eq $LANG_PERL) {
-            '--json-1-to-perl-1';
-        } elsif ($lang_to eq $LANG_RUBY) {
-            '--json-1-to-ruby-1';
-        } elsif ($lang_to eq $LANG_PYTHON2) {
-            '--json-1-to-python2-1';
-        } elsif ($lang_to eq $LANG_PYTHON3) {
-            '--json-1-to-python3-1';
-        } else {
-            die;
-        }
-    } else {
-        die;
-    }
-}
-
 sub gent_sh_argument {
     my ($token_ref) = @_;
     if (astlib_is_symbol_or_string($token_ref)) {
