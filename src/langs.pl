@@ -44,7 +44,7 @@ sub bin_path_to_lang {
     } elsif ($bin_path =~ /\/python3\Z/) {
         ($LANG_PYTHON3, $bin_path, $bin_path, 'py');
     } elsif ($bin_path eq 'python3') {
-        ($LANG_PYTHON3, _get_cmd_path('python3'), 'python2', 'py');
+        ($LANG_PYTHON3, _get_cmd_path('python3'), 'python3', 'py');
     } elsif ($bin_path eq 'php') {
         ($LANG_PHP, _get_cmd_path('php'), 'php', 'php');
     } else {
