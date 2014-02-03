@@ -25,24 +25,14 @@ sub lang_to_bin_path {
 
 sub bin_path_to_lang {
     my ($bin_path) = @_;
-    if ($bin_path =~ /\/sh\Z/) {
-        ($LANG_SH, $bin_path, $bin_path, 'sh');
-    } elsif ($bin_path eq 'sh') {
+    if ($bin_path eq 'sh') {
         ($LANG_SH, '/bin/sh', 'sh', 'sh');
-    } elsif ($bin_path =~ /\/perl\Z/) {
-        ($LANG_PERL, $bin_path, $bin_path, 'pl');
     } elsif ($bin_path eq 'perl') {
         ($LANG_PERL, _get_cmd_path('perl'), 'perl', 'pl');
-    } elsif ($bin_path =~ /\/ruby\Z/) {
-        ($LANG_RUBY, $bin_path, $bin_path, 'rb');
     } elsif ($bin_path eq 'ruby') {
         ($LANG_RUBY, _get_cmd_path('ruby'), 'ruby', 'rb');
-    } elsif ($bin_path =~ /\/python2\Z/) {
-        ($LANG_PYTHON2, $bin_path, $bin_path, 'py');
     } elsif ($bin_path eq 'python2') {
         ($LANG_PYTHON2, _get_cmd_path('python2'), 'python2', 'py');
-    } elsif ($bin_path =~ /\/python3\Z/) {
-        ($LANG_PYTHON3, $bin_path, $bin_path, 'py');
     } elsif ($bin_path eq 'python3') {
         ($LANG_PYTHON3, _get_cmd_path('python3'), 'python3', 'py');
     } elsif ($bin_path eq 'php') {
