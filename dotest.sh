@@ -83,23 +83,11 @@ diff -u expected/basic.sh actual/basic.sh
 cat ./testdata/basic.rd | ./target/roonda  > ./actual/basic.txt
 diff -u expected/basic.txt actual/basic.txt
 
-echo ./testdata/operators-perl.rd
-cat ./testdata/operators-perl.rd | ./target/roonda --output-code > ./actual/operators-perl.pl
-diff -u expected/operators-perl.pl actual/operators-perl.pl
-cat ./testdata/operators-perl.rd | ./target/roonda > ./actual/operators-perl.txt
-diff -u expected/operators-perl.txt actual/operators-perl.txt
-
-echo ./testdata/operators-ruby.rd
-cat ./testdata/operators-ruby.rd | ./target/roonda --output-code > ./actual/operators-ruby.rb
-diff -u expected/operators-ruby.rb actual/operators-ruby.rb
-cat ./testdata/operators-ruby.rd | ./target/roonda > ./actual/operators-ruby.txt
-diff -u expected/operators-ruby.txt actual/operators-ruby.txt
-
-echo ./testdata/operators-python.rd
-cat ./testdata/operators-python.rd | ./target/roonda --output-code > ./actual/operators-python.py
-diff -u expected/operators-python.py actual/operators-python.py
-cat ./testdata/operators-python.rd | ./target/roonda > ./actual/operators-python.txt
-diff -u expected/operators-python.txt actual/operators-python.txt
+echo ./testdata/operators.rd
+cat ./testdata/operators.rd | ./target/roonda --output-code > ./actual/operators.sh
+diff -u expected/operators.sh actual/operators.sh
+cat ./testdata/operators.rd | ./target/roonda > ./actual/operators.txt
+diff -u expected/operators.txt actual/operators.txt
 
 
 if diff -u -r expected actual >/dev/null; then
