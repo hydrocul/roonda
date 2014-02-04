@@ -16,6 +16,8 @@ sub lang_to_bin_path {
         (_get_cmd_path('python2'), 'py');
     } elsif ($lang eq $LANG_PYTHON3) {
         (_get_cmd_path('python3'), 'py');
+    } elsif ($lang eq $LANG_PHP) {
+        (_get_cmd_path('php'), 'php');
     } else {
         die;
     }
@@ -43,6 +45,8 @@ sub bin_path_to_lang {
         ($LANG_PYTHON3, $bin_path, $bin_path, 'py');
     } elsif ($bin_path eq 'python3') {
         ($LANG_PYTHON3, _get_cmd_path('python3'), 'python2', 'py');
+    } elsif ($bin_path eq 'php') {
+        ($LANG_PHP, _get_cmd_path('php'), 'php', 'php');
     } else {
         (undef, undef, undef, undef);
     }

@@ -1,30 +1,36 @@
 
 sub gent_langs_expr {
-    my ($token_ref, $op_order, $lang) = @_;
+    my ($token, $op_order, $lang) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
-    die if ($lang eq $LANG_PHP);
-    if (astlib_is_symbol($token_ref)) {
-        astlib_get_symbol($token_ref);
-    } elsif (astlib_is_string($token_ref)) {
+    if (astlib_is_symbol($token)) {
+        my $symbol = astlib_get_symbol($token);
+        if ($symbol eq $KEYWD_STDIN_DATA) {
+            $symbol;
+        } else {
+            die create_dying_msg_unexpected($token);
+        }
+    } elsif (astlib_is_string($token)) {
         if ($lang eq $LANG_PERL) {
-            escape_perl_string(astlib_get_string($token_ref));
+            escape_perl_string(astlib_get_string($token));
         } elsif ($lang eq $LANG_RUBY) {
-            escape_ruby_string(astlib_get_string($token_ref));
+            escape_ruby_string(astlib_get_string($token));
         } elsif ($lang eq $LANG_PYTHON2) {
-            escape_python2_string(astlib_get_string($token_ref));
+            escape_python2_string(astlib_get_string($token));
         } elsif ($lang eq $LANG_PYTHON3) {
-            escape_python3_string(astlib_get_string($token_ref));
+            escape_python3_string(astlib_get_string($token));
+        } elsif ($lang eq $LANG_PHP) {
+            escape_php_string(astlib_get_string($token));
         } else {
             die;
         }
-    } elsif (astlib_is_integer($token_ref)) {
-        astlib_get_integer($token_ref);
-    } elsif (astlib_is_list($token_ref)) {
-        genl_langs_expr(astlib_get_list($token_ref), $op_order,
-                            astlib_get_close_line_no($token_ref), $lang);
+    } elsif (astlib_is_integer($token)) {
+        astlib_get_integer($token);
+    } elsif (astlib_is_list($token)) {
+        genl_langs_expr(astlib_get_list($token), $op_order,
+                        astlib_get_close_line_no($token), $lang);
     } else {
-        die create_dying_msg_unexpected($token_ref);
+        die create_dying_msg_unexpected($token);
     }
 }
 
@@ -32,7 +38,6 @@ sub genl_langs_expr {
     my ($list_ref, $op_order, $close_line_no, $lang) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
-    die if ($lang eq $LANG_PHP);
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
@@ -58,6 +63,9 @@ sub genl_langs_expr {
             } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
                 $op = '+';
                 $op_order_plus = $OP_ORDER_PLUS;
+            } elsif ($lang eq $LANG_PHP) {
+                $op = '.';
+                $op_order_plus = $OP_ORDER_PLUS;
             } else {
                 die;
             }
@@ -75,7 +83,6 @@ sub genl_langs_apply {
     my ($list_ref, $close_line_no, $lang) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
-    die if ($lang eq $LANG_PHP);
     my @list = @$list_ref;
     my $head = shift(@list);
     unless (defined($head)) {
@@ -93,7 +100,6 @@ sub genl_langs_apply_1 {
     my ($funcname, $list, $lang) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
-    die if ($lang eq $LANG_PHP);
     my $result = '';
     foreach my $elem (@$list) {
         my $source = gent_langs_argument($elem, $OP_ORDER_ARG_COMMA, $lang);
@@ -107,7 +113,6 @@ sub genl_langs_binop {
     my ($op, $op_order, $outer_op_order, $list_ref, $lang) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
-    die if ($lang eq $LANG_PHP);
     my @list = @$list_ref;
     my $result = '';
     while () {
@@ -129,7 +134,6 @@ sub gent_langs_argument {
     my ($token_ref, $op_order, $lang) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
-    die if ($lang eq $LANG_PHP);
     gent_langs_expr($token_ref, $op_order, $lang);
 }
 

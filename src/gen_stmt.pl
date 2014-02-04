@@ -2,7 +2,6 @@
 sub gent_langs {
     my ($token, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
-    die if ($lang eq $LANG_PHP);
     if (astlib_is_list($token)) {
         genl_langs(astlib_get_list($token), $lang, $ver);
     } else {
@@ -13,10 +12,11 @@ sub gent_langs {
 sub genl_langs {
     my ($list, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
-    die if ($lang eq $LANG_PHP);
     my $result = '';
     if ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
         $result = $result . "import sys\n\n";
+    } elsif ($lang eq $LANG_PHP) {
+        $result = $result . "<?php\n\n";
     }
     foreach my $elem (@$list) {
         my $source = gent_langs_statement($elem, '', $lang, $ver);
@@ -28,7 +28,6 @@ sub genl_langs {
 sub gent_langs_statement {
     my ($token, $indent, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
-    die if ($lang eq $LANG_PHP);
     if (astlib_is_list($token)) {
         genl_langs_statement(astlib_get_list($token), $indent,
                              astlib_get_close_line_no($token), $lang, $ver);
@@ -40,7 +39,6 @@ sub gent_langs_statement {
 sub genl_langs_statement {
     my ($list, $indent, $close_line_no, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
-    die if ($lang eq $LANG_PHP);
     if ($lang eq $LANG_SH) {
         return genl_sh_statement($list, $indent, $close_line_no, $ver);
     }
@@ -69,6 +67,8 @@ sub genl_langs_statement {
         $indent . $expr_source . "\n";
     } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
         $indent . $expr_source . "\n";
+    } elsif ($lang eq $LANG_PHP) {
+        $indent . $expr_source . ";\n";
     } else {
         die;
     }
@@ -77,7 +77,6 @@ sub genl_langs_statement {
 sub genl_langs_print {
     my ($list, $close_line_no, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
-    die if ($lang eq $LANG_PHP);
     my $elem = shift(@$list);
     die create_dying_msg_unexpected_closing($close_line_no) unless ($elem);
     my $source = gent_langs_argument($elem, $OP_ORDER_ARG_COMMA, $lang, $ver);
@@ -87,6 +86,8 @@ sub genl_langs_print {
         "print $source";
     } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
         "sys.stdout.write(str($source))";
+    } elsif ($lang eq $LANG_PHP) {
+        "echo $source";
     }
 }
 

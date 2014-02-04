@@ -1,36 +1,36 @@
-$ROONDA_SELF_PATH $ROONDA_TMP_PATH/perl.pl
-$ROONDA_SELF_PATH $ROONDA_TMP_PATH/ruby.rb
-$ROONDA_SELF_PATH $ROONDA_TMP_PATH/python2.py
+$ROONDA_SELF_PATH $ROONDA_TMP_PATH/perl.rd
+$ROONDA_SELF_PATH $ROONDA_TMP_PATH/ruby.rd
+$ROONDA_SELF_PATH $ROONDA_TMP_PATH/python2.rd
+$ROONDA_SELF_PATH $ROONDA_TMP_PATH/php.rd
 
 #################################################
-# perl.pl:
+# perl.rd:
 #################################################
-# 
 # (perl v1)
-# 
 # (apply print "Hello, world!\n")
-# 
 # (print (+ 1 2))
-# 
+# (print "\n")
 
 #################################################
-# ruby.rb:
+# ruby.rd:
 #################################################
-# 
 # (ruby v1)
-# 
 # (apply print "Hello, world!\n")
-# 
 # (print (+ 1 2))
-# 
+# (print "\n")
 
 #################################################
-# python2.py:
+# python2.rd:
 #################################################
-# 
 # (python2 v1)
-# 
 # (apply print "Hello, world!")
-# 
 # (print (+ 1 2))
-# 
+# (print "\n")
+
+#################################################
+# php.rd:
+#################################################
+# (php v1)
+# (apply echo "Hello, world!\n")
+# (print (+ 1 2))
+# (print "\n")
