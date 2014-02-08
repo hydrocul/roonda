@@ -1,12 +1,20 @@
 
+# コマンドの動作パターン(run_type):
+#   from_stdin: 標準入力からオブジェクトを受け取って、コード生成 & 実行
+#   from_file:  ファイルからオブジェクトを受け取って、コード生成 & 実行
+#   embed:      ファイルからオブジェクトを受け取って、コード生成し、
+#               標準入力からオブジェクトを受け取って、それを埋め込んで、コード生成 & 実行
+#   from_stdin: 標準入力からオブジェクトを受け取って、オブジェクト生成
+#   from_file:  標準入力からオブジェクトを受け取って、オブジェクト生成
+
 my $ver = '';
+my $is_stdin_data = '';
 my $format_from = '';
-my $run_type = '';
-my $lang_to = '';
+my $stdin_data_format_from = '';
 my $is_dryrun = '';
-my $replace_tag = '';
 my $source_filepath = '';
-my $template_source_filepath = '';
+my $format_to = ''; # オブジェクト生成の場合のみ
+
 while () {
     last if (!@ARGV);
     my $arg = shift;
@@ -17,66 +25,82 @@ while () {
         die if ($format_from ne '');
         $format_from = get_src_format_label($1);
         die "Unknown argument: $arg" unless (defined($format_from));
-    } elsif ($arg =~ /\A--([a-z0-9]+)-to-([a-z0-9]+)\Z/) {
+    } elsif ($arg =~ /\A--([a-z0-9]+)-to-([a-z0-9]+)-obj\Z/) {
         die if ($format_from ne '');
-        die if ($run_type ne '');
         $format_from = get_src_format_label($1);
         die "Unknown argument: $arg" unless (defined($format_from));
-        $run_type = 'obj';
-        $lang_to = get_dst_format_label($2);
-        die "Unknown argument: $arg" unless (defined($lang_to));
+        die if ($format_to ne '');
+        $format_to = get_dst_format_label($2);
+        die "Unknown argument: $arg" unless (defined($format_to));
     } elsif ($arg =~ /\A--to-([a-z0-9]+)-obj\Z/) {
-        die if ($run_type ne '');
-        $run_type = 'obj';
-        $lang_to = get_dst_format_label($1);
-        die "Unknown argument: $arg" unless (defined($lang_to));
-    } elsif ($arg eq '--replace-tag') {
-        my $arg2 = shift;
-        unless (defined($arg2)) {
-            die;
-        }
-        die if ($replace_tag ne '');
-        $replace_tag = $arg2;
+        die if ($format_to ne '');
+        $format_to = get_dst_format_label($1);
+        die "Unknown argument: $arg" unless (defined($format_to));
+    } elsif ($arg =~ /\A--stdin-data-from-([a-z0-9]+)\Z/) {
+        die if ($stdin_data_format_from ne '');
+        $stdin_data_format_from = get_src_format_label($1);
+        die "Unknown argument: $arg" unless (defined($stdin_data_format_from));
+    } elsif ($arg eq '--stdin-data') {
+        $is_stdin_data = 1;
     } elsif ($arg eq '--output-code') {
         $is_dryrun = 1;
     } elsif ($arg =~ /\A-/) {
         die "Unknown argument: $arg";
     } else {
-        if ($run_type eq 'obj') {
-            die if ($template_source_filepath);
-            $template_source_filepath = $arg;
-        } else {
-            die if ($source_filepath);
-            $source_filepath = $arg;
-        }
+        die if ($source_filepath);
+        $source_filepath = $arg;
     }
 }
 
+my $run_type = '';
+
 if ($ver eq '') {
-    $ver = 1;
+    $roonda_spec_ver = 1;
+} else {
+    my $ver2 = $ver + 0;
+    if ($ver2 ne $ver) {
+        die "Unknown argument: --v$ver";
+    }
+    $roonda_spec_ver = $ver2;
 }
+
+if ($source_filepath eq '') {
+    $run_type = 'from_stdin';
+} else {
+    if (($stdin_data_format_from eq '' && $is_stdin_data)) {
+        $run_type = 'from_file';
+    } else {
+        $run_type = 'embed';
+    }
+}
+
 if ($format_from eq '') {
     $format_from = $FORMAT_SEXPR;
 }
-if ($run_type eq '') {
-    $run_type = 'exec';
+if ($stdin_data_format_from eq '') {
+    $stdin_data_format_from = $format_from;
 }
 
-if ($run_type eq 'obj' && $replace_tag ne '' && $template_source_filepath eq '') {
-    die;
-}
-if ($run_type ne 'obj' && $replace_tag ne '') {
-    die;
+my $source_from;
+my $source_format;
+if ($run_type eq 'from_file' || $run_type eq 'obj_file' || $run_type eq 'embed') {
+    $source_from = 'file';
+    $source_format = $format_from;
+} else {
+    $source_from = 'stdin';
+    $source_format = $stdin_data_format_from;
 }
 
-if ($run_type eq 'obj' && $replace_tag eq '' && $template_source_filepath ne '') {
-    $replace_tag = $KEYWD_STDIN_DATA;
+if ($run_type eq 'embed') {
+    $embedded_obj_format = $stdin_data_format_from;
+} else {
+    $embedded_obj_format = '';
 }
 
-$save_file_dryrun = '' unless ($is_dryrun);
+$save_file_dryrun = $is_dryrun;
 
 my @lines;
-if ($source_filepath) {
+if ($source_from eq 'file') {
     open(SIN, '<', $source_filepath) or die "Not found: $source_filepath";
     @lines = <SIN>;
     close SIN;
@@ -89,40 +113,29 @@ $ENV{$ENV_SELF_PATH} = $0;
 $ENV{$ENV_TMP_PATH} = tempdir(CLEANUP => 1);
 
 my $ast;
-if ($format_from eq $FORMAT_SEXPR) {
+if ($source_format eq $FORMAT_SEXPR) {
     $ast = parse_sexpr(@lines);
-} elsif ($format_from eq $FORMAT_JSON) {
+} elsif ($source_format eq $FORMAT_JSON) {
     $ast = parse_json(@lines);
 } else {
     die;
 }
 
-my ($exec_source, $bin_path, $ext);
+if ($format_to) {
+    my $source = gent_obj($ast, $format_to);
 
-if ($run_type eq 'obj') {
-    my $source = gent_obj($ast, $lang_to, $ver);
+    print encode('utf-8', $source);
+    print "\n";
+    exit(0);
+}
 
-    if ($template_source_filepath eq '') {
-        print encode('utf-8', $source);
-        print "\n";
-        exit(0);
-    } else {
-        my @template_lines;
-        open(SIN, '<', $template_source_filepath) or die "Not found: $template_source_filepath";
-        @template_lines = <SIN>;
-        close SIN;
-        my $template = join('', @template_lines);
-        $exec_source = build_by_template($template, $replace_tag, $source);
-
-        ($bin_path, $ext) = lang_to_bin_path($lang_to);
-    }
-} else {
-    my ($lang, $source);
+my ($exec_source, $bin_path, $ext) = sub {
+    my ($bin_path, $ext, $lang, $source);
     ($lang, $bin_path, $source, $ext) = gent_exec($ast);
     $source = $source . get_comments_about_saved_files($lang);
 
-    $exec_source = $source;
-}
+    ($source, $bin_path, $ext);
+}->();
 
 if ($is_dryrun) {
     print encode('utf-8', $exec_source);
@@ -139,4 +152,5 @@ if ($pid) {
     die;
 }
 
+exit($?);
 

@@ -228,11 +228,10 @@ sub genl_sh_command_roonda {
     } else {
         unshift(@$list, $head);
     }
-    my $result = '$ROONDA_SELF_PATH';
+    my $result = "\$$ENV_SELF_PATH";
     foreach my $elem (@$list) {
         my $source = gent_sh_argument($elem);
-        $result = $result . ' ' if ($result);
-        $result = $result . $source;
+        $result = $result . ' ' . $source;
     }
     return $result;
 }
@@ -240,8 +239,7 @@ sub genl_sh_command_roonda {
 sub genl_sh_command_roonda_embed_2 {
     my ($from_to_str, $lang_to, $list, $close_line_no) = @_;
     my $ver = 1; # TODO
-    my $result = '$ROONDA_SELF_PATH';
-    $result = $result . " --v$ver --" . escape_sh_string($from_to_str);
+    my $result = "\$$ENV_SELF_PATH --v$roonda_spec_ver --" . escape_sh_string($from_to_str) . "-obj";
     my $head = shift(@$list);
     unless (defined($head)) {
         return $result;
