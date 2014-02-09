@@ -12,12 +12,7 @@ sub gent_langs {
 sub genl_langs {
     my ($list, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
-    my $result = '';
-    if ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
-        $result = $result . "import sys\n\n";
-    } elsif ($lang eq $LANG_PHP) {
-        $result = $result . "<?php\n\n";
-    }
+    my $result = get_source_header($lang);
     foreach my $elem (@$list) {
         my $source = gent_langs_statement($elem, '', $lang, $ver);
         $result = $result . $source;

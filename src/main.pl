@@ -40,6 +40,7 @@ while () {
         die if ($stdin_data_format_from ne '');
         $stdin_data_format_from = get_src_format_label($1);
         die "Unknown argument: $arg" unless (defined($stdin_data_format_from));
+        $is_stdin_data = 1;
     } elsif ($arg eq '--stdin-data') {
         $is_stdin_data = 1;
     } elsif ($arg eq '--output-code') {
@@ -66,12 +67,10 @@ if ($ver eq '') {
 
 if ($source_filepath eq '') {
     $run_type = 'from_stdin';
+} elsif ($is_stdin_data) {
+    $run_type = 'embed';
 } else {
-    if (($stdin_data_format_from eq '' && $is_stdin_data)) {
-        $run_type = 'from_file';
-    } else {
-        $run_type = 'embed';
-    }
+    $run_type = 'from_file';
 }
 
 if ($format_from eq '') {
@@ -83,7 +82,7 @@ if ($stdin_data_format_from eq '') {
 
 my $source_from;
 my $source_format;
-if ($run_type eq 'from_file' || $run_type eq 'obj_file' || $run_type eq 'embed') {
+if ($run_type eq 'from_file' || $run_type eq 'embed') {
     $source_from = 'file';
     $source_format = $format_from;
 } else {

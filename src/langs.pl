@@ -56,6 +56,17 @@ sub _get_cmd_path {
     $path;
 }
 
+sub get_source_header {
+    my ($lang) = @_;
+    if ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+        "import sys\n\n";
+    } elsif ($lang eq $LANG_PHP) {
+        "<?php\n\n";
+    } else {
+        '';
+    }
+}
+
 sub get_src_format_label {
     my ($str) = @_;
     if ($str eq 'sexpr') {
