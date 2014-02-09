@@ -1,96 +1,107 @@
 
 # return: ($lang, $bin_path, $source, $ext)
 sub gent_exec {
-    my ($token_ref) = @_;
-    if (astlib_is_list($token_ref)) {
-        genl_exec(astlib_get_list($token_ref), astlib_get_close_line_no($token_ref));
+    my ($token) = @_;
+    if (astlib_is_list($token)) {
+        genl_exec(astlib_get_list($token), astlib_get_close_line_no($token));
     } else {
-        die create_dying_msg_unexpected($token_ref);
+        die create_dying_msg_unexpected($token);
     }
 }
 
 # return: ($lang, $bin_path, $source, $ext)
 sub genl_exec {
-    my ($list_ref, $close_line_no) = @_;
-    my @list = @$list_ref;
+    my ($list, $list_close_line_no) = @_;
+    my @list = @$list;
     my $head = shift(@list);
     unless (defined($head)) {
-        die create_dying_msg_unexpected_closing($close_line_no);
+        die create_dying_msg_unexpected_closing($list_close_line_no);
     }
     if (astlib_is_list($head)) {
+        my $ver = 1; # TODO
         my ($lang, $bin_path, $bin_path_for_sh, $source, $ext) =
-            _genl_exec_a(astlib_get_list($head), \@list, astlib_get_close_line_no($head));
+            genl_exec_head_body(astlib_get_list($head), astlib_get_close_line_no($head),
+                                \@list, $ver, 1);
         ($lang, $bin_path, $source, $ext);
     } else {
         die create_dying_msg_unexpected($head);
     }
 }
 
-# return: ($bin_path_for_sh, $source, $ext)
-sub genl_exec_for_sh {
-    my ($lang_opts_ref, $list_ref, $lang_close_line_no, $ver) = @_;
-    my @lang_opts = @$lang_opts_ref;
-    my $head = shift(@lang_opts);
-    unless (defined($head)) {
-        return (undef, undef, undef)
-    }
-    if (astlib_is_symbol_or_string($head)) {
-        my ($lang, $bin_path, $bin_path_for_sh, $ext) =
-            bin_path_to_lang(astlib_get_symbol_or_string($head));
-        return (undef, undef, undef) unless (defined($lang));
-        my $source = _genl_exec_c($lang, $ver, \@lang_opts, $list_ref);
-        ($bin_path_for_sh, $source, $ext);
-    } else {
-        (undef, undef, undef);
-    }
-}
-
 # return: ($lang, $bin_path, $bin_path_for_sh, $source, $ext)
-sub _genl_exec_a {
-    my ($lang_opts_ref, $list_ref, $lang_close_line_no) = @_;
-    my @lang_opts = @$lang_opts_ref;
-    my $head = shift(@lang_opts);
+sub genl_exec_head_body {
+    my ($lang_list, $lang_list_close_line_no, $list, $ver, $die_if_error) = @_;
+    my @lang_list = @$lang_list;
+    my $head = shift(@lang_list);
     unless (defined($head)) {
-        die create_dying_msg_unexpected_closing($lang_close_line_no);
+        if ($die_if_error) {
+            die create_dying_msg_unexpected_closing($lang_list_close_line_no);
+        } else{
+            return (undef, undef, undef, undef, undef);
+        }
     }
     if (astlib_is_symbol_or_string($head)) {
         my ($lang, $bin_path, $bin_path_for_sh, $ext) =
             bin_path_to_lang(astlib_get_symbol_or_string($head));
-        die create_dying_msg_unexpected($head) unless (defined($lang));
-        my $source = _genl_exec_b($lang, \@lang_opts, $list_ref, $lang_close_line_no);
+        unless (defined($lang)) {
+            if ($die_if_error) {
+                die create_dying_msg_unexpected($head);
+            } else {
+                return (undef, undef, undef, undef, undef);
+            }
+        }
+        my $source = genl_exec_lang_head_body($lang, \@lang_list, $lang_list_close_line_no, $list);
         ($lang, $bin_path, $bin_path_for_sh, $source, $ext);
     } else {
-        die create_dying_msg_unexpected($head);
+        if ($die_if_error) {
+            die create_dying_msg_unexpected($head);
+        } else {
+            return (undef, undef, undef, undef, undef);
+        }
     }
 }
 
 # return: $source
-sub _genl_exec_b {
-    my ($lang, $lang_opts_ref, $list_ref, $lang_close_line_no) = @_;
-    my @lang_opts = @$lang_opts_ref;
-    my $head = shift(@lang_opts);
-    unless (defined($head)) {
-        die create_dying_msg_unexpected_closing($lang_close_line_no);
-    }
-    if (astlib_is_symbol_or_string($head)) {
-        if (astlib_get_symbol_or_string($head) =~ /\Av([1-9][0-9]*)\Z/) {
-            my $ver = $1;
-            _genl_exec_c($lang, $ver, \@lang_opts, $list_ref);
+sub genl_exec_lang_head_body {
+    my ($lang, $lang_ver_list, $lang_ver_list_close_line_no, $list) = @_;
+    my @lang_ver_list = @$lang_ver_list;
+    my $head = shift(@lang_ver_list);
+    my $ver = $roonda_spec_ver;
+    if (defined($head)) {
+        if (@lang_ver_list) {
+            die create_dying_msg_unexpected(shift(@lang_ver_list));
+        }
+        if (astlib_is_symbol_or_string($head)) {
+            if (astlib_get_symbol_or_string($head) =~ /\Av([1-9][0-9]*)\Z/) {
+                $ver = $1;
+            } else {
+                die create_dying_msg_unexpected($head);
+            }
         } else {
             die create_dying_msg_unexpected($head);
         }
+    }
+    genl_langs($list, $lang, $ver);
+}
+
+sub gent_langs {
+    my ($token, $lang, $ver) = @_;
+    die if ($lang eq $LANG_SEXPR);
+    if (astlib_is_list($token)) {
+        genl_langs(astlib_get_list($token), $lang, $ver);
     } else {
-        die create_dying_msg_unexpected($head);
+        die create_dying_msg_unexpected($token);
     }
 }
 
-# return: $source
-sub genl_exec_c_for_sh {
-    _genl_exec_c(@_);
-}
-
-sub _genl_exec_c {
-    my ($lang, $ver, $lang_opts_ref, $list_ref) = @_;
-    genl_langs($list_ref, $lang, $ver);
+sub genl_langs {
+    my ($list, $lang, $ver) = @_;
+    die if ($lang eq $LANG_SEXPR);
+    my $result = get_source_header($lang);
+    foreach my $elem (@$list) {
+        my $source = gent_langs_statement($elem, '', $lang, $ver);
+        $result = $result . $source;
+    }
+    return $result;
 }
 

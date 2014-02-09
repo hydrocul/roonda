@@ -30,10 +30,10 @@ sub gent_langs_expr {
 }
 
 sub genl_langs_expr {
-    my ($list_ref, $op_order, $close_line_no, $lang) = @_;
+    my ($list, $op_order, $close_line_no, $lang) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
-    my @list = @$list_ref;
+    my @list = @$list;
     my $head = shift(@list);
     unless (defined($head)) {
         die create_dying_msg_unexpected_closing($close_line_no);
@@ -75,10 +75,10 @@ sub genl_langs_expr {
 }
 
 sub genl_langs_apply {
-    my ($list_ref, $close_line_no, $lang) = @_;
+    my ($list, $close_line_no, $lang) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
-    my @list = @$list_ref;
+    my @list = @$list;
     my $head = shift(@list);
     unless (defined($head)) {
         die create_dying_msg_unexpected_closing($close_line_no);
@@ -105,10 +105,10 @@ sub genl_langs_apply_1 {
 }
 
 sub genl_langs_binop {
-    my ($op, $op_order, $outer_op_order, $list_ref, $lang) = @_;
+    my ($op, $op_order, $outer_op_order, $list, $lang) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
-    my @list = @$list_ref;
+    my @list = @$list;
     my $result = '';
     while () {
         my $head = shift(@list);
@@ -126,9 +126,9 @@ sub genl_langs_binop {
 }
 
 sub gent_langs_argument {
-    my ($token_ref, $op_order, $lang) = @_;
+    my ($token, $op_order, $lang) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
-    gent_langs_expr($token_ref, $op_order, $lang);
+    gent_langs_expr($token, $op_order, $lang);
 }
 
