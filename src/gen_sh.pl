@@ -9,33 +9,33 @@ sub genl_sh_statement {
     if (astlib_is_symbol_or_string($head)) {
         my $token = astlib_get_symbol_or_string($head);
         if ($token eq $KEYWD_SH_EXEC) {
-            $indent . 'exec ' . genl_sh_command(\@list) . "\n";
+            $indent . 'exec ' . genl_sh_command(\@list, $list_close_line_no, $ver) . "\n";
         } elsif ($token eq $KEYWD_SH_ASSIGN) {
-            $indent . genl_sh_assign(\@list, $list_close_line_no) . "\n";
+            $indent . genl_sh_assign(\@list, $list_close_line_no, $ver) . "\n";
         } else {
             unshift(@list, $head);
-            $indent . genl_sh_command(\@list) . "\n";
+            $indent . genl_sh_command(\@list, $list_close_line_no, $ver) . "\n";
         }
     } else {
         unshift(@list, $head);
-        $indent . genl_sh_command(\@list) . "\n";
+        $indent . genl_sh_command(\@list, $list_close_line_no, $ver) . "\n";
     }
 }
 
 sub genl_sh_assign {
-    my ($list, $list_close_line_no) = @_;
+    my ($list, $list_close_line_no, $ver) = @_;
     my @list = @$list;
     my $head = shift(@list);
     die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
     if (astlib_is_symbol($head)) {
-        genl_sh_assign_1(astlib_get_symbol($head), \@list, $list_close_line_no);
+        genl_sh_assign_1(astlib_get_symbol($head), \@list, $list_close_line_no, $ver);
     } else {
         die create_dying_msg_unexpected($head);
     }
 }
 
 sub genl_sh_assign_1 {
-    my ($varname, $list, $list_close_line_no) = @_;
+    my ($varname, $list, $list_close_line_no, $ver) = @_;
     my @list = @$list;
     my $head = shift(@list);
     die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
@@ -51,15 +51,6 @@ sub genl_sh_assign_1 {
     }
 }
 
-sub gent_sh_command {
-    my ($token) = @_;
-    if (astlib_is_list($token)) {
-        genl_sh_command(astlib_get_list($token), astlib_get_close_line_no($token));
-    } else {
-        die create_dying_msg_unexpected($token);
-    }
-}
-
 sub gent_sh_command_pipe_element {
     my ($token, $is_first, $is_last) = @_;
     if (astlib_is_list($token)) {
@@ -72,7 +63,7 @@ sub gent_sh_command_pipe_element {
 }
 
 sub genl_sh_command {
-    my ($list, $list_close_line_no) = @_;
+    my ($list, $list_close_line_no, $ver) = @_;
     _genl_sh_command_sub($list, '', '', '', $list_close_line_no);
 }
 
@@ -240,7 +231,7 @@ sub genl_sh_command_roonda {
 sub genl_sh_command_roonda_embed_2 {
     my ($from_to_str, $lang_to, $list, $list_close_line_no) = @_;
     my $ver = 1; # TODO
-    my $result = "\$$ENV_SELF_PATH --v$roonda_spec_ver --" . escape_sh_string($from_to_str) . "-obj";
+    my $result = "\$$ENV_SELF_PATH --v$ver --" . escape_sh_string($from_to_str) . "-obj";
     my $head = shift(@$list);
     unless (defined($head)) {
         return $result;
@@ -302,8 +293,10 @@ sub genl_sh_argument {
 }
 
 sub genl_sh_argument_backticks {
-    my ($list_ref) = @_;
-    my $source = genl_sh_command($list_ref);
+    my ($list) = @_;
+    my $list_close_line_no = 0; # TODO
+    my $ver = 1; # TODO
+    my $source = genl_sh_command($list, $list_close_line_no, $ver);
     escape_sh_backticks($source);
 }
 

@@ -1,6 +1,7 @@
 
 sub parse_json {
-    my @lines = @_;
+    my ($lines, $ver) = @_;
+    my @lines = @$lines;
     my $json_src = join('', @lines);
     my $json_data = decode_json($json_src);
     _parse_json_add_meta($json_data);

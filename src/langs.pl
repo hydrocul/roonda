@@ -57,7 +57,7 @@ sub _get_cmd_path {
 }
 
 sub get_source_header {
-    my ($lang) = @_;
+    my ($lang, $ver) = @_;
     if ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
         "import sys\n\n";
     } elsif ($lang eq $LANG_PHP) {

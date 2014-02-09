@@ -45,13 +45,13 @@ while () {
 my $run_type = '';
 
 if ($ver eq '') {
-    $roonda_spec_ver = 1;
+    $ver = 1;
 } else {
     my $ver2 = $ver + 0;
     if ($ver2 ne $ver) {
         die "Unknown argument: --v$ver";
     }
-    $roonda_spec_ver = $ver2;
+    $ver = $ver2;
 }
 
 if ($source_filepath eq '') {
@@ -91,15 +91,15 @@ $ENV{$ENV_TMP_PATH} = tempdir(CLEANUP => 1);
 
 my $ast;
 if ($source_format eq $FORMAT_SEXPR) {
-    $ast = parse_sexpr(@lines);
+    $ast = parse_sexpr(\@lines, $ver);
 } elsif ($source_format eq $FORMAT_JSON) {
-    $ast = parse_json(@lines);
+    $ast = parse_json(\@lines, $ver);
 } else {
     die;
 }
 
 if ($format_to) {
-    my $source = gent_obj($ast, $format_to);
+    my $source = gent_obj($ast, $format_to, $ver);
 
     print encode('utf-8', $source);
     print "\n";
@@ -108,7 +108,7 @@ if ($format_to) {
 
 my ($exec_source, $bin_path, $ext) = sub {
     my ($bin_path, $ext, $lang, $source);
-    ($lang, $bin_path, $source, $ext) = gent_exec($ast);
+    ($lang, $bin_path, $source, $ext) = gent_exec($ast, $ver);
     $source = $source . get_comments_about_saved_files($lang);
 
     ($source, $bin_path, $ext);

@@ -30,11 +30,11 @@ sub genl_langs_statement {
             $expr_source = genl_langs_print(\@list, $close_line_no, $lang, $ver);
         } else {
             unshift(@list, $head);
-            $expr_source = genl_langs_expr(\@list, $OP_ORDER_MIN, $close_line_no, $lang);
+            $expr_source = genl_langs_expr(\@list, $OP_ORDER_MIN, $close_line_no, $lang, $ver);
         }
     } else {
         unshift(@list, $head);
-        $expr_source = genl_langs_expr(\@list, $OP_ORDER_MIN, $close_line_no, $lang);
+        $expr_source = genl_langs_expr(\@list, $OP_ORDER_MIN, $close_line_no, $lang, $ver);
     }
     if ($lang eq $LANG_PERL) {
         $indent . $expr_source . ";\n";

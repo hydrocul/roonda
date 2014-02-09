@@ -1,6 +1,6 @@
 
 sub gent_langs_expr {
-    my ($token, $op_order, $lang) = @_;
+    my ($token, $op_order, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
     if (astlib_is_symbol($token)) {
@@ -23,14 +23,14 @@ sub gent_langs_expr {
         astlib_get_integer($token);
     } elsif (astlib_is_list($token)) {
         genl_langs_expr(astlib_get_list($token), $op_order,
-                        astlib_get_close_line_no($token), $lang);
+                        astlib_get_close_line_no($token), $lang, $ver);
     } else {
         die create_dying_msg_unexpected($token);
     }
 }
 
 sub genl_langs_expr {
-    my ($list, $op_order, $close_line_no, $lang) = @_;
+    my ($list, $op_order, $close_line_no, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
     my @list = @$list;
@@ -41,11 +41,11 @@ sub genl_langs_expr {
     if (astlib_is_symbol_or_string($head)) {
         my $token = astlib_get_symbol_or_string($head);
         if ($token eq $KEYWD_APPLY) {
-            genl_langs_apply(\@list, $close_line_no, $lang);
+            genl_langs_apply(\@list, $close_line_no, $lang, $ver);
         } elsif ($token eq '+' || $token eq '-') {
-            genl_langs_binop($token, $OP_ORDER_PLUS, $op_order, \@list, $lang);
+            genl_langs_binop($token, $OP_ORDER_PLUS, $op_order, \@list, $lang, $ver);
         } elsif ($token eq '*' || $token eq '/') {
-            genl_langs_binop($token, $OP_ORDER_MULTIPLY, $op_order, \@list, $lang);
+            genl_langs_binop($token, $OP_ORDER_MULTIPLY, $op_order, \@list, $lang, $ver);
         } elsif ($token eq $KEYWD_STRCAT) {
             my $op;
             my $op_order_plus;
@@ -64,10 +64,10 @@ sub genl_langs_expr {
             } else {
                 die;
             }
-            genl_langs_binop($op, $op_order_plus, $op_order, \@list, $lang);
+            genl_langs_binop($op, $op_order_plus, $op_order, \@list, $lang, $ver);
         } else {
             unshift(@list, $head);
-            genl_langs_apply(\@list, $close_line_no, $lang);
+            genl_langs_apply(\@list, $close_line_no, $lang, $ver);
         }
     } else {
         die create_dying_msg_unexpected($head);
@@ -75,7 +75,7 @@ sub genl_langs_expr {
 }
 
 sub genl_langs_apply {
-    my ($list, $close_line_no, $lang) = @_;
+    my ($list, $close_line_no, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
     my @list = @$list;
@@ -85,19 +85,19 @@ sub genl_langs_apply {
     }
     if (astlib_is_symbol_or_string($head)) {
         my $funcname = astlib_get_symbol_or_string($head);
-        genl_langs_apply_1($funcname, \@list, $lang);
+        genl_langs_apply_1($funcname, \@list, $lang, $ver);
     } else {
         die create_dying_msg_unexpected($head);
     }
 }
 
 sub genl_langs_apply_1 {
-    my ($funcname, $list, $lang) = @_;
+    my ($funcname, $list, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
     my $result = '';
     foreach my $elem (@$list) {
-        my $source = gent_langs_argument($elem, $OP_ORDER_ARG_COMMA, $lang);
+        my $source = gent_langs_argument($elem, $OP_ORDER_ARG_COMMA, $lang, $ver);
         $result = $result . ', ' if ($result);
         $result = $result . $source;
     }
@@ -105,7 +105,7 @@ sub genl_langs_apply_1 {
 }
 
 sub genl_langs_binop {
-    my ($op, $op_order, $outer_op_order, $list, $lang) = @_;
+    my ($op, $op_order, $outer_op_order, $list, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
     my @list = @$list;
@@ -119,16 +119,16 @@ sub genl_langs_binop {
                 return $result;
             }
         }
-        my $source = gent_langs_argument($head, $op_order, $lang);
+        my $source = gent_langs_argument($head, $op_order, $lang, $ver);
         $result = $result . " $op " if ($result);
         $result = $result . $source;
     }
 }
 
 sub gent_langs_argument {
-    my ($token, $op_order, $lang) = @_;
+    my ($token, $op_order, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
-    gent_langs_expr($token, $op_order, $lang);
+    gent_langs_expr($token, $op_order, $lang, $ver);
 }
 
