@@ -5,5 +5,3 @@ my $roonda_spec_ver;
 
 my $save_file_dryrun;
 
-my $embedded_obj_format;
-

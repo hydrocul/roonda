@@ -2,15 +2,11 @@
 # コマンドの動作パターン(run_type):
 #   from_stdin: 標準入力からオブジェクトを受け取って、コード生成 & 実行
 #   from_file:  ファイルからオブジェクトを受け取って、コード生成 & 実行
-#   embed:      ファイルからオブジェクトを受け取って、コード生成し、
-#               標準入力からオブジェクトを受け取って、それを埋め込んで、コード生成 & 実行
 #   from_stdin: 標準入力からオブジェクトを受け取って、オブジェクト生成
 #   from_file:  標準入力からオブジェクトを受け取って、オブジェクト生成
 
 my $ver = '';
-my $is_stdin_data = '';
 my $format_from = '';
-my $stdin_data_format_from = '';
 my $is_dryrun = '';
 my $source_filepath = '';
 my $format_to = ''; # オブジェクト生成の場合のみ
@@ -36,13 +32,6 @@ while () {
         die if ($format_to ne '');
         $format_to = get_dst_format_label($1);
         die "Unknown argument: $arg" unless (defined($format_to));
-    } elsif ($arg =~ /\A--stdin-data-from-([a-z0-9]+)\Z/) {
-        die if ($stdin_data_format_from ne '');
-        $stdin_data_format_from = get_src_format_label($1);
-        die "Unknown argument: $arg" unless (defined($stdin_data_format_from));
-        $is_stdin_data = 1;
-    } elsif ($arg eq '--stdin-data') {
-        $is_stdin_data = 1;
     } elsif ($arg eq '--output-code') {
         $is_dryrun = 1;
     } elsif ($arg =~ /\A-/) {
@@ -67,8 +56,6 @@ if ($ver eq '') {
 
 if ($source_filepath eq '') {
     $run_type = 'from_stdin';
-} elsif ($is_stdin_data) {
-    $run_type = 'embed';
 } else {
     $run_type = 'from_file';
 }
@@ -76,24 +63,15 @@ if ($source_filepath eq '') {
 if ($format_from eq '') {
     $format_from = $FORMAT_SEXPR;
 }
-if ($stdin_data_format_from eq '') {
-    $stdin_data_format_from = $format_from;
-}
 
 my $source_from;
 my $source_format;
-if ($run_type eq 'from_file' || $run_type eq 'embed') {
+if ($run_type eq 'from_file') {
     $source_from = 'file';
     $source_format = $format_from;
 } else {
     $source_from = 'stdin';
-    $source_format = $stdin_data_format_from;
-}
-
-if ($run_type eq 'embed') {
-    $embedded_obj_format = $stdin_data_format_from;
-} else {
-    $embedded_obj_format = '';
+    $source_format = $format_from;
 }
 
 $save_file_dryrun = $is_dryrun;

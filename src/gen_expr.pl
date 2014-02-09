@@ -4,12 +4,7 @@ sub gent_langs_expr {
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
     if (astlib_is_symbol($token)) {
-        my $symbol = astlib_get_symbol($token);
-        if ($symbol eq $KEYWD_STDIN_DATA) {
-            $symbol;
-        } else {
-            die create_dying_msg_unexpected($token);
-        }
+        die create_dying_msg_unexpected($token);
     } elsif (astlib_is_string($token)) {
         if ($lang eq $LANG_PERL) {
             escape_perl_string(astlib_get_string($token));
