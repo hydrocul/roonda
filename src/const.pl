@@ -12,16 +12,16 @@ my $TOKEN_TYPE_CLOSE   = 6;
 my $TOKEN_TYPE_EOF     = 7;
 my $TOKEN_TYPE_LIST    = 8;
 
-my $LANG_SEXPR   = 1;
-my $LANG_SH      = 2;
-my $LANG_PERL    = 3;
-my $LANG_RUBY    = 5;
-my $LANG_PYTHON2 = 6;
-my $LANG_PYTHON3 = 7;
-my $LANG_PHP     = 8;
+my $LANG_SEXPR   = 'sexpr';
+my $LANG_SH      = 'sh';
+my $LANG_PERL    = 'perl';
+my $LANG_RUBY    = 'ruby';
+my $LANG_PYTHON2 = 'python2';
+my $LANG_PYTHON3 = 'python3';
+my $LANG_PHP     = 'php';
 
-my $FORMAT_SEXPR = 1;
-my $FORMAT_JSON  = 4;
+my $FORMAT_SEXPR = 'sexpr';
+my $FORMAT_JSON  = 'json';
 
 my $OP_ORDER_MIN       = 0;
 my $OP_ORDER_ARG_COMMA = 5;
