@@ -23,8 +23,8 @@ sub unescape_sexpr_string {
 sub escape_sh_string {
     my ($str) = @_;
     return $str if ($str =~ /\A[-.\/_0-9A-Za-z]+\Z/);
+    $str =~ s/\\/\\\\/g;
     $str =~ s/'/'\\''/g;
-    "'" . $str . "'";
     "'" . $str . "'";
 }
 
