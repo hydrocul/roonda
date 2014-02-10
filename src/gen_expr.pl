@@ -42,6 +42,8 @@ sub genl_langs_expr {
         my $token = astlib_get_symbol_or_string($head);
         if ($token eq $KEYWD_APPLY) {
             genl_langs_apply(\@list, $close_line_no, $lang, $ver);
+        } elsif ($token eq $KEYWD_STDIN_DATA) {
+            genl_langs_stdin_data(\@list, $close_line_no, $lang, $ver);
         } elsif ($token eq '+' || $token eq '-') {
             genl_langs_binop($token, $OP_ORDER_PLUS, $op_order, \@list, $lang, $ver);
         } elsif ($token eq '*' || $token eq '/') {
@@ -102,6 +104,26 @@ sub genl_langs_apply_1 {
         $result = $result . $source;
     }
     "$funcname($result)";
+}
+
+sub genl_langs_stdin_data {
+    my ($list, $list_close_line_no, $lang, $ver) = @_;
+    die if ($lang eq $LANG_SEXPR);
+    die if ($lang eq $LANG_SH);
+    my @list = @$list;
+    my $head = shift(@list);
+    unless (defined($head)) {
+        die create_dying_msg_unexpected_closing($list_close_line_no);
+    }
+    if (@list) {
+        die create_dying_msg_unexpected(shift(@list));
+    }
+    if (astlib_is_symbol_or_string($head)) {
+        my $format_from = astlib_get_symbol_or_string($head);
+        gent_embed_simple_obj($format_from, $lang, $ver);
+    } else {
+        die create_dying_msg_unexpected($head);
+    }
 }
 
 sub genl_langs_binop {

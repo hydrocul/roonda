@@ -20,6 +20,7 @@ mkdir -p target
     cat ./src/gen_code.pl
     cat ./src/gen_stmt.pl
     cat ./src/gen_expr.pl
+    cat ./src/gen_embed.pl
     cat ./src/gen_sh.pl
     cat ./src/gen_perl.pl
     cat ./src/gen_ruby.pl
