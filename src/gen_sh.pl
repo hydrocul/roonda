@@ -52,10 +52,10 @@ sub genl_sh_assign_1 {
 }
 
 sub gent_sh_command_pipe_element {
-    my ($token, $is_first, $is_last) = @_;
+    my ($token, $is_first) = @_;
     if (astlib_is_list($token)) {
         genl_sh_command_pipe_element(astlib_get_list($token),
-                                     $is_first, $is_last,
+                                     $is_first,
                                      astlib_get_close_line_no($token));
     } else {
         die create_dying_msg_unexpected($token);
@@ -64,46 +64,54 @@ sub gent_sh_command_pipe_element {
 
 sub genl_sh_command {
     my ($list, $list_close_line_no, $ver) = @_;
-    _genl_sh_command_sub($list, '', '', '', $list_close_line_no);
+    _genl_sh_command_sub($list, '', $list_close_line_no);
 }
 
 sub genl_sh_command_pipe_element {
-    my ($list, $is_first, $is_last, $list_close_line_no) = @_;
-    _genl_sh_command_sub($list, 1, $is_first, $is_last, $list_close_line_no);
-}
-
-sub _genl_sh_command_sub {
-    my ($list, $is_pipe_element, $is_pipe_first, $is_pipe_last, $list_close_line_no) = @_;
+    my ($list, $is_first, $list_close_line_no) = @_;
     my @list = @$list;
     my $head = shift(@list);
     unless (defined($head)) {
-        return '';
+        die create_dying_msg_unexpected_closing($list_close_line_no);
+    }
+    if (astlib_is_symbol_or_string($head)) {
+        my $token = astlib_get_symbol_or_string($head);
+        if ($is_first && $token eq '<') {
+            return genl_sh_pipe_first_file(\@list);
+        } elsif (! $is_first && $token eq '>') {
+            return genl_sh_pipe_stdout_to_file(\@list);
+        }
+    }
+    unshift(@list, $head);
+    my $source = _genl_sh_command_sub(\@list, 1, $list_close_line_no);
+    if ($is_first) {
+        $source;
+    } else {
+        " | $source";
+    }
+}
+
+sub _genl_sh_command_sub {
+    my ($list, $is_pipe_element, $list_close_line_no) = @_;
+    my @list = @$list;
+    my $head = shift(@list);
+    unless (defined($head)) {
+        die create_dying_msg_unexpected_closing($list_close_line_no);
     }
     if (astlib_is_symbol_or_string($head)) {
         my $token = astlib_get_symbol_or_string($head);
         if (! $is_pipe_element && $token eq $KEYWD_SH_PIPE) {
-            genl_sh_pipe(\@list);
-        } elsif ($is_pipe_first && $token eq '<') {
-            genl_sh_pipe_first_file(\@list);
-        } elsif ($is_pipe_last && $token eq '>') {
-            genl_sh_pipe_last_file(\@list);
-        } else {
-            unshift(@list, $head);
-            genl_sh_command_normal(\@list, $list_close_line_no);
+            return genl_sh_pipe(\@list);
         }
     } elsif (astlib_is_list($head)) {
         my $result = _genl_sh_command_sub_list(
             \@list, astlib_get_list($head), astlib_get_close_line_no($head));
         if (defined($result)) {
-            $result;
-        } else {
-            unshift(@list, $head);
-            genl_sh_command_normal(\@list, $list_close_line_no);
+            return $result;
         }
-    } else {
-        unshift(@list, $head);
-        genl_sh_command_normal(\@list, $list_close_line_no);
     }
+    unshift(@list, $head);
+    genl_sh_command_normal(\@list, $list_close_line_no);
 }
 
 sub _genl_sh_command_sub_list {
@@ -123,13 +131,10 @@ sub genl_sh_pipe {
     my @list = @$list;
     my $result = '';
     my $is_first = 1;
-    my $is_last = '';
     while () {
         my $head = shift(@list);
         return $result unless (defined($head));
-        $is_last = 1 unless (@list);
-        my $source = gent_sh_command_pipe_element($head, $is_first, $is_last);
-        $result = $result . ' | ' if ($result);
+        my $source = gent_sh_command_pipe_element($head, $is_first);
         $result = $result . $source;
         $is_first = '';
     }
@@ -154,23 +159,23 @@ sub genl_sh_pipe_first_file {
     }
 }
 
-sub genl_sh_pipe_last_file {
+sub genl_sh_pipe_stdout_to_file {
     my ($list) = @_;
     my @list = @$list;
     if (@list == 0) {
-        return 'cat > /dev/null';
+        return ' > /dev/null';
     } elsif (@list == 1) {
         my $result = '';
         my $head = shift(@list);
         my $source = gent_sh_argument($head);
-        return 'cat > ' . $source;
+        return ' > ' . $source;
     } else {
         my $result = '';
         while () {
             my $head = shift(@list);
             unless (@list) {
                 my $source = gent_sh_argument($head);
-                return 'tee ' . $result . ' > ' . $source;
+                return '| tee ' . $result . ' > ' . $source;
             }
             my $source = gent_sh_argument($head);
             $result = $result . ' ' if ($result);
