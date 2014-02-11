@@ -79,7 +79,9 @@ sub genl_sh_command_pipe_element {
         if ($is_first && $token eq '<') {
             return genl_sh_pipe_first_file(\@list);
         } elsif (! $is_first && $token eq '>') {
-            return genl_sh_pipe_stdout_to_file(\@list);
+            return genl_sh_pipe_stdout_to_file(\@list, '');
+        } elsif (! $is_first && $token eq '>>') {
+            return genl_sh_pipe_stdout_to_file(\@list, 1);
         }
     }
     unshift(@list, $head);
@@ -160,22 +162,30 @@ sub genl_sh_pipe_first_file {
 }
 
 sub genl_sh_pipe_stdout_to_file {
-    my ($list) = @_;
+    my ($list, $is_append) = @_;
     my @list = @$list;
     if (@list == 0) {
-        return ' > /dev/null';
+        return '';
     } elsif (@list == 1) {
         my $result = '';
         my $head = shift(@list);
         my $source = gent_sh_argument($head);
-        return ' > ' . $source;
+        if ($is_append) {
+            return ' >> ' . $source;
+        } else {
+            return ' > ' . $source;
+        }
     } else {
         my $result = '';
         while () {
             my $head = shift(@list);
             unless (@list) {
                 my $source = gent_sh_argument($head);
-                return '| tee ' . $result . ' > ' . $source;
+                if ($is_append) {
+                    return '| tee -a ' . $result . ' >> ' . $source;
+                } else {
+                    return '| tee ' . $result . ' > ' . $source;
+                }
             }
             my $source = gent_sh_argument($head);
             $result = $result . ' ' if ($result);

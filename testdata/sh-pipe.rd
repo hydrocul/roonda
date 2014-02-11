@@ -17,6 +17,8 @@
 
 (pipe (< (strcat (ref ROONDA_TMP_PATH) "/" abc1.txt)))
 
-(pipe (< (strcat (ref ROONDA_TMP_PATH) "/" abc2.txt)))
+(pipe (echo "ABC")
+      (>> (strcat (ref ROONDA_TMP_PATH) "/" abc2.txt)))
 
+(pipe (< (strcat (ref ROONDA_TMP_PATH) "/" abc2.txt)))
 
