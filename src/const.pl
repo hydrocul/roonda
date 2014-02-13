@@ -30,6 +30,7 @@ my $OP_ORDER_MULTIPLY  = 20;
 
 my $KEYWD_SH_EXEC      = 'exec';
 my $KEYWD_SH_ASSIGN    = 'assign';
+my $KEYWD_SH_EXPORT    = 'export';
 my $KEYWD_SH_PIPE      = 'pipe';
 my $KEYWD_SH_ROONDA    = 'roonda';
 my $KEYWD_SH_BACKTICKS = 'backticks';

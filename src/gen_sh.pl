@@ -1,24 +1,99 @@
 
 sub genl_sh_statement {
     my ($list, $indent, $list_close_line_no, $ver) = @_;
+    genl_sh_command($list, $list_close_line_no, 1, 1, 1, 1, '', $ver) . "\n";
+}
+
+sub gent_sh_command {
+    my ($token,
+        $enable_assign, $enable_export, $enable_exec, $enable_pipe, $enable_redirect_only, $ver) = @_;
+    if (astlib_is_list($token)) {
+        genl_sh_command(astlib_get_list($token), astlib_get_close_line_no($token),
+            $enable_assign, $enable_export, $enable_exec, $enable_pipe, $enable_redirect_only, $ver);
+    } else {
+        die create_dying_msg_unexpected($token);
+    }
+}
+
+sub genl_sh_command {
+    my ($list, $list_close_line_no,
+        $enable_assign, $enable_export, $enable_exec, $enable_pipe, $enable_redirect_only, $ver) = @_;
     my @list = @$list;
     my $head = shift(@list);
     unless (defined($head)) {
-        return '';
+        die create_dying_msg_unexpected_closing($list_close_line_no);
     }
+    my @args_list = ();
     if (astlib_is_symbol_or_string($head)) {
-        my $token = astlib_get_symbol_or_string($head);
-        if ($token eq $KEYWD_SH_EXEC) {
-            $indent . 'exec ' . genl_sh_command(\@list, $list_close_line_no, $ver) . "\n";
-        } elsif ($token eq $KEYWD_SH_ASSIGN) {
-            $indent . genl_sh_assign(\@list, $list_close_line_no, $ver) . "\n";
+        my $symbol = astlib_get_symbol_or_string($head);
+        if ($symbol eq $KEYWD_SH_EXEC) {
+            unless ($enable_exec) {
+                die create_dying_msg_unexpected($head);
+            }
+            return 'exec ' . genl_sh_command(\@list, $list_close_line_no, '', '', '', '', 1, $ver);
+        } elsif ($symbol eq $KEYWD_SH_ASSIGN) {
+            unless ($enable_assign) {
+                die create_dying_msg_unexpected($head);
+            }
+            return genl_sh_assign(\@list, $list_close_line_no, $ver);
+        } elsif ($symbol eq $KEYWD_SH_EXPORT) {
+            unless ($enable_export) {
+                die create_dying_msg_unexpected($head);
+            }
+            return genl_sh_export(\@list, $list_close_line_no, $ver);
+        } elsif ($symbol eq $KEYWD_SH_PIPE) {
+            unless ($enable_pipe) {
+                die create_dying_msg_unexpected($head);
+            }
+            return genl_sh_pipe(\@list, $list_close_line_no, $ver);
+        } elsif ($symbol eq $KEYWD_SH_ROONDA) {
+            return genl_sh_command_roonda(\@list, $list_close_line_no, $ver);
         } else {
-            unshift(@list, $head);
-            $indent . genl_sh_command(\@list, $list_close_line_no, $ver) . "\n";
+            push(@args_list, $head);
         }
+    } elsif (astlib_is_list($head)) {
+        my $cmd_list = astlib_get_list($head);
+        my $cmd_list_close_line_no = astlib_get_close_line_no($head);
+        my ($lang, $bin_path, $bin_path_for_sh, $source, $ext) =
+            genl_exec_head_body($cmd_list, $cmd_list_close_line_no, \@list, $ver, '');
+        if ($lang) {
+            my $bin_path_escaped = escape_sh_string($bin_path_for_sh);
+            my $script_path = save_file($source, $ext, 1, '');
+            my $script_path_escaped = escape_sh_string($script_path);
+            return "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
+        } else {
+            push(@args_list, $head);
+        }
+    }
+    push(@args_list, @list);
+    _genl_sh_command_arguments(\@args_list, $enable_redirect_only, $ver);
+}
+
+sub _genl_sh_command_arguments {
+    my ($args_list, $enable_redirect_only, $ver) = @_;
+    my @args_list = @$args_list;
+    my $result = '';
+    my $result_redirect = '';
+    unless ($enable_redirect_only) {
+        my $head = shift(@args_list);
+        $result = gent_sh_argument($head, $ver);
+    }
+    foreach my $elem (@args_list) {
+        my ($source, $is_redirect) = gent_sh_argument_or_redirect($elem, $ver);
+        if ($is_redirect) {
+            $result_redirect = $result_redirect . ' ' if ($result_redirect ne '');
+            $result_redirect = $result_redirect . $source;
+        } else {
+            $result = $result . ' ' if ($result ne '');
+            $result = $result . $source;
+        }
+    }
+    if ($result_redirect eq '') {
+        $result;
+    } elsif ($result eq '') {
+        $result_redirect;
     } else {
-        unshift(@list, $head);
-        $indent . genl_sh_command(\@list, $list_close_line_no, $ver) . "\n";
+        $result . ' ' . $result_redirect;
     }
 }
 
@@ -39,215 +114,60 @@ sub genl_sh_assign_1 {
     my @list = @$list;
     my $head = shift(@list);
     die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
+    my $source = gent_sh_argument($head);
+    my $result = $varname . '=' . $source;
     if (@list) {
-        my $head = shift(@list);
-        die create_dying_msg_unexpected($head);
+        $result = $result . ' ' . genl_sh_command(\@list, $list_close_line_no, 1, 1, 1, 1, '', $ver);
+        # TODO パイプの時に括弧が必要
     }
-    if (astlib_is_symbol_or_string($head)) {
-        my $value_escaped = escape_sh_string(astlib_get_symbol_or_string($head));
-        "$varname=$value_escaped";
-    } else {
-        die create_dying_msg_unexpected($head);
-    }
+    $result;
 }
 
-sub gent_sh_command_pipe_element {
-    my ($token, $is_first) = @_;
-    if (astlib_is_list($token)) {
-        genl_sh_command_pipe_element(astlib_get_list($token),
-                                     $is_first,
-                                     astlib_get_close_line_no($token));
-    } else {
-        die create_dying_msg_unexpected($token);
-    }
-}
-
-sub genl_sh_command {
+sub genl_sh_export {
     my ($list, $list_close_line_no, $ver) = @_;
-    _genl_sh_command_sub($list, '', $list_close_line_no);
-}
-
-sub genl_sh_command_pipe_element {
-    my ($list, $is_first, $list_close_line_no) = @_;
-    my @list = @$list;
-    my $head = shift(@list);
-    unless (defined($head)) {
-        die create_dying_msg_unexpected_closing($list_close_line_no);
-    }
-    if (astlib_is_symbol_or_string($head)) {
-        my $token = astlib_get_symbol_or_string($head);
-        if ($is_first && $token eq '<') {
-            return genl_sh_pipe_first_file(\@list);
-        } elsif (! $is_first && $token eq '>') {
-            return genl_sh_pipe_stdout_to_file(\@list, '');
-        } elsif (! $is_first && $token eq '>>') {
-            return genl_sh_pipe_stdout_to_file(\@list, 1);
-        }
-    }
-    unshift(@list, $head);
-    my $source = _genl_sh_command_sub(\@list, 1, $list_close_line_no);
-    if ($is_first) {
-        $source;
-    } else {
-        " | $source";
-    }
-}
-
-sub _genl_sh_command_sub {
-    my ($list, $is_pipe_element, $list_close_line_no) = @_;
-    my @list = @$list;
-    my $head = shift(@list);
-    unless (defined($head)) {
-        die create_dying_msg_unexpected_closing($list_close_line_no);
-    }
-    if (astlib_is_symbol_or_string($head)) {
-        my $token = astlib_get_symbol_or_string($head);
-        if (! $is_pipe_element && $token eq $KEYWD_SH_PIPE) {
-            return genl_sh_pipe(\@list);
-        }
-    } elsif (astlib_is_list($head)) {
-        my $result = _genl_sh_command_sub_list(
-            \@list, astlib_get_list($head), astlib_get_close_line_no($head));
-        if (defined($result)) {
-            return $result;
-        }
-    }
-    unshift(@list, $head);
-    genl_sh_command_normal(\@list, $list_close_line_no);
-}
-
-sub _genl_sh_command_sub_list {
-    my ($list, $cmd_list, $cmd_list_close_line_no) = @_;
-    my $ver = 1; # TODO
-    my ($lang, $bin_path, $bin_path_for_sh, $source, $ext) =
-        genl_exec_head_body($cmd_list, $cmd_list_close_line_no, $list, $ver, '');
-    return undef unless ($lang);
-    my $bin_path_escaped = escape_sh_string($bin_path_for_sh);
-    my $script_path = save_file($source, $ext, 1, '');
-    my $script_path_escaped = escape_sh_string($script_path);
-    "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
+    die "TODO genl_sh_export";
 }
 
 sub genl_sh_pipe {
-    my ($list) = @_;
+    my ($list, $list_close_line_no, $ver) = @_;
     my @list = @$list;
     my $result = '';
-    my $is_first = 1;
-    while () {
-        my $head = shift(@list);
-        return $result unless (defined($head));
-        my $source = gent_sh_command_pipe_element($head, $is_first);
-        $result = $result . $source;
-        $is_first = '';
-    }
-}
-
-sub genl_sh_pipe_first_file {
-    my ($list) = @_;
-    my @list = @$list;
-    my $result = '';
-    while () {
-        my $head = shift(@list);
-        unless (defined($head)) {
-            if ($result) {
-                return 'cat ' . $result;
-            } else {
-                return 'cat /dev/null';
-            }
-        }
-        my $source = gent_sh_argument($head);
-        $result = $result . ' ' if ($result);
+    foreach my $elem (@list) {
+        my $source = gent_sh_command($elem, 1, 1, '', '', '', $ver);
+        $result = $result . ' | ' if ($result ne '');
         $result = $result . $source;
     }
-}
-
-sub genl_sh_pipe_stdout_to_file {
-    my ($list, $is_append) = @_;
-    my @list = @$list;
-    if (@list == 0) {
-        return '';
-    } elsif (@list == 1) {
-        my $result = '';
-        my $head = shift(@list);
-        my $source = gent_sh_argument($head);
-        if ($is_append) {
-            return ' >> ' . $source;
-        } else {
-            return ' > ' . $source;
-        }
-    } else {
-        my $result = '';
-        while () {
-            my $head = shift(@list);
-            unless (@list) {
-                my $source = gent_sh_argument($head);
-                if ($is_append) {
-                    return '| tee -a ' . $result . ' >> ' . $source;
-                } else {
-                    return '| tee ' . $result . ' > ' . $source;
-                }
-            }
-            my $source = gent_sh_argument($head);
-            $result = $result . ' ' if ($result);
-            $result = $result . $source;
-        }
-    }
-}
-
-sub genl_sh_command_normal {
-    my ($list, $list_close_line_no) = @_;
-    my $result;
-    my $head = shift(@$list);
-    if (astlib_is_symbol_or_string($head)) {
-        my $token = astlib_get_symbol_or_string($head);
-        if ($token eq $KEYWD_SH_ROONDA) {
-            return genl_sh_command_roonda($list, $list_close_line_no);
-        } else {
-            $result = gent_sh_argument($head);
-        }
-    } else {
-        $result = gent_sh_argument($head);
-    }
-    foreach my $elem (@$list) {
-        my $source = gent_sh_argument($elem);
-        $result = $result . ' ' if ($result);
-        $result = $result . $source;
-    }
-    return $result;
+    $result;
 }
 
 sub genl_sh_command_roonda {
-    my ($list, $list_close_line_no) = @_;
-    my $head = shift(@$list);
-    if (astlib_is_symbol_or_string($head)) {
-        my $token = astlib_get_symbol_or_string($head);
-        if ($token =~ /\A([a-z0-9]+)-to-([a-z0-9]+)\Z/) {
+    my ($list, $list_close_line_no, $ver) = @_;
+    my @list = @$list;
+    my $head = shift(@list);
+    if ($head && astlib_is_symbol_or_string($head)) {
+        my $symbol = astlib_get_symbol_or_string($head);
+        if ($symbol =~ /\A([a-z0-9]+)-to-([a-z0-9]+)\Z/) {
             my $format_from = get_src_format_label($1);
             my $lang_to = get_dst_format_label($2);
             if (defined($format_from) && defined($lang_to)) {
-                return genl_sh_command_roonda_embed_2($token, $lang_to, $list, $list_close_line_no);
-            } else {
-                unshift(@$list, $head);
+                return genl_sh_command_roonda_convert($format_from, $lang_to,
+                                                      \@list, $list_close_line_no, $ver);
             }
-        } else {
-            unshift(@$list, $head);
         }
-    } else {
-        unshift(@$list, $head);
     }
+    unshift(@list, $head) if ($head);
     my $result = "\$$ENV_SELF_PATH";
-    foreach my $elem (@$list) {
-        my $source = gent_sh_argument($elem);
-        $result = $result . ' ' . $source;
+    if (@list) {
+        $result = $result . ' ' . _genl_sh_command_arguments(\@list, 1, $ver);
     }
     return $result;
 }
 
-sub genl_sh_command_roonda_embed_2 {
-    my ($from_to_str, $lang_to, $list, $list_close_line_no) = @_;
-    my $ver = 1; # TODO
-    my $result = "\$$ENV_SELF_PATH --v$ver --" . escape_sh_string($from_to_str) . "-obj";
-    my $head = shift(@$list);
+sub genl_sh_command_roonda_convert {
+    my ($format_from, $lang_to, $list, $list_close_line_no, $ver) = @_;
+    my @list = @$list;
+    my $result = "\$$ENV_SELF_PATH --v$ver " . escape_sh_string("--$format_from-to-$lang_to") . "-obj";
+    my $head = shift(@list);
     unless (defined($head)) {
         return $result;
     }
@@ -256,7 +176,7 @@ sub genl_sh_command_roonda_embed_2 {
     }
     my $fname;
     if (astlib_is_heredoc($head)) {
-        die create_dying_msg_unexpected(shift(@$list)) if (@$list);
+        die create_dying_msg_unexpected(shift(@list)) if (@list);
         $fname = astlib_get_heredoc_name($head);
     } elsif (astlib_is_list($head)) {
         my $source = genl_langs($list, $lang_to, $ver);
@@ -269,8 +189,40 @@ sub genl_sh_command_roonda_embed_2 {
     $result;
 }
 
+# return ($source, $is_redirect)
+sub gent_sh_argument_or_redirect {
+    my ($token, $ver) = @_;
+    if (astlib_is_list($token)) {
+        genl_sh_argument_or_redirect(astlib_get_list($token),
+                                     astlib_get_close_line_no($token), $ver);
+    } else {
+        (gent_sh_argument($token, $ver), '');
+    }
+}
+
+# return ($source, $is_redirect)
+sub genl_sh_argument_or_redirect {
+    my ($list, $list_close_line_no, $ver) = @_;
+    my @list = @$list;
+    my $head = shift(@list);
+    unless (defined($head)) {
+        die create_dying_msg_unexpected_closing($list_close_line_no);
+    }
+    if (astlib_is_symbol_or_string($head)) {
+        my $symbol = astlib_get_symbol_or_string($head);
+        if ($symbol eq '<') {
+            return (genl_sh_redirect_in(\@list, $list_close_line_no, $ver), 1);
+        } elsif ($symbol eq '>') {
+            return (genl_sh_redirect_out(\@list, $list_close_line_no, $ver), 1);
+        } elsif ($symbol eq '>>') {
+            return (genl_sh_redirect_append(\@list, $list_close_line_no, $ver), 1);
+        }
+    }
+    (genl_sh_argument($list, $list_close_line_no, $ver), '');
+}
+
 sub gent_sh_argument {
-    my ($token) = @_;
+    my ($token, $ver) = @_;
     if (astlib_is_symbol_or_string($token)) {
         escape_sh_string(astlib_get_symbol_or_string($token));
     } elsif (astlib_is_heredoc($token)) {
@@ -278,27 +230,27 @@ sub gent_sh_argument {
     } elsif (astlib_is_integer($token)) {
         escape_sh_string(astlib_get_integer($token));
     } elsif (astlib_is_list($token)) {
-        genl_sh_argument(astlib_get_list($token));
+        genl_sh_argument(astlib_get_list($token), astlib_get_close_line_no($token), $ver);
     } else {
         die create_dying_msg_unexpected($token);
     }
 }
 
 sub genl_sh_argument {
-    my ($list) = @_;
+    my ($list, $list_close_line_no, $ver) = @_;
     my @list = @$list;
     my $head = shift(@list);
     unless (defined($head)) {
         return "''";
     }
     if (astlib_is_symbol_or_string($head)) {
-        my $token = astlib_get_symbol_or_string($head);
-        if ($token eq $KEYWD_SH_BACKTICKS) {
-            genl_sh_argument_backticks(\@list);
-        } elsif ($token eq $KEYWD_SH_REF) {
-            genl_sh_argument_ref(\@list);
-        } elsif ($token eq $KEYWD_STRCAT) {
-            genl_sh_argument_strcat(\@list);
+        my $symbol = astlib_get_symbol_or_string($head);
+        if ($symbol eq $KEYWD_SH_BACKTICKS) {
+            genl_sh_argument_backticks(\@list, $list_close_line_no, $ver);
+        } elsif ($symbol eq $KEYWD_SH_REF) {
+            genl_sh_argument_ref(\@list, $list_close_line_no, $ver);
+        } elsif ($symbol eq $KEYWD_STRCAT) {
+            genl_sh_argument_strcat(\@list, $list_close_line_no, $ver);
         } else {
             die create_dying_msg_unexpected($head);
         }
@@ -308,40 +260,81 @@ sub genl_sh_argument {
 }
 
 sub genl_sh_argument_backticks {
-    my ($list) = @_;
-    my $list_close_line_no = 0; # TODO
-    my $ver = 1; # TODO
-    my $source = genl_sh_command($list, $list_close_line_no, $ver);
+    my ($list, $list_close_line_no, $ver) = @_;
+    my $source = genl_sh_command($list, $list_close_line_no, 1, 1, '', 1, '', $ver);
     escape_sh_backticks($source);
 }
 
 sub genl_sh_argument_ref {
-    my ($list) = @_;
+    my ($list, $list_close_line_no, $ver) = @_;
     my @list = @$list;
     my $head = shift(@list);
-    die "Unexpected endo of list" unless (defined($head));
+    unless (defined($head)) {
+        die create_dying_msg_unexpected_closing($list_close_line_no);
+    }
     if (astlib_is_symbol($head)) {
         if (@list) {
-            my $head = shift(@list);
-            die create_dying_msg_unexpected($head);
+            die create_dying_msg_unexpected(shift(@list));
         }
-        '$' . astlib_get_symbol($head);
+        my $symbol = astlib_get_symbol($head);
+        '$' . $symbol;
     } else {
         die create_dying_msg_unexpected($head);
     }
 }
 
 sub genl_sh_argument_strcat {
-    my ($list) = @_;
+    my ($list, $list_close_line_no, $ver) = @_;
     my @list = @$list;
     my $result = '';
-    while () {
-        my $head = shift(@list);
-        unless (defined($head)) {
-            return $result;
+    foreach my $elem (@list) {
+        $result = $result . gent_sh_argument($elem, $ver);
+    }
+    $result;
+}
+
+sub genl_sh_redirect_in {
+    my ($list, $list_close_line_no, $ver) = @_;
+    _genl_sh_redirect_in_out_sub($list, $list_close_line_no, $ver, '<', 1);
+}
+
+sub genl_sh_redirect_out {
+    my ($list, $list_close_line_no, $ver) = @_;
+    _genl_sh_redirect_in_out_sub($list, $list_close_line_no, $ver, '>', 1);
+}
+
+sub genl_sh_redirect_append {
+    my ($list, $list_close_line_no, $ver) = @_;
+    _genl_sh_redirect_in_out_sub($list, $list_close_line_no, $ver, '>>', '');
+}
+
+sub _genl_sh_redirect_in_out_sub {
+    my ($list, $list_close_line_no, $ver, $op, $enable_dup) = @_;
+    my @list = @$list;
+    my $head1 = shift(@list);
+    my $head2 = shift(@list);
+    unless  (defined($head1)) {
+        die create_dying_msg_unexpected_closing($list_close_line_no);
+    }
+    my $h;
+    if (defined($head2)) {
+        if (@list) {
+            die create_dying_msg_unexpected(shift(@list));
         }
-        my $source = gent_sh_argument($head);
-        $result = $result . $source;
+        if (astlib_is_integer($head1)) {
+            $h = astlib_get_integer($head1);
+        } else {
+            die create_dying_msg_unexpected($head1);
+        }
+    } else {
+        $h = '';
+        $head2 = $head1;
+    }
+    if ($enable_dup && astlib_is_integer($head2)) {
+        my $num = astlib_get_integer($head2);
+        $h . $op . '&' . $num;
+    } else {
+        $h . $op . ' ' . gent_sh_argument($head2, $ver);
     }
 }
 
