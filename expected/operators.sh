@@ -1,13 +1,13 @@
-perl $ROONDA_TMP_PATH/roonda_ea6afd40aea39a2737d9e1734464cccd2dcf304f.pl
-ruby $ROONDA_TMP_PATH/roonda_0b8512486083b6051e4b2bbd7e2a5612801a05a2.rb
-python2 $ROONDA_TMP_PATH/roonda_57ee6d0e2e4921200943084d61c7df5349df42fd.py
-python3 $ROONDA_TMP_PATH/roonda_57ee6d0e2e4921200943084d61c7df5349df42fd.py
-php $ROONDA_TMP_PATH/roonda_bc9755424dddcb0e6d7885651f3de20197d663a7.php
+perl $ROONDA_TMP_PATH/roonda_ffeff3ca35dd050358ffa0d67398524a5dd9637f.pl
+ruby $ROONDA_TMP_PATH/roonda_f1881de283fa53af2c8e8ba75ce51ffa1870cf36.rb
+python2 $ROONDA_TMP_PATH/roonda_7f090a42bd7ee5ef57d09fec534c9c791aa0a6f3.py
+python3 $ROONDA_TMP_PATH/roonda_7f090a42bd7ee5ef57d09fec534c9c791aa0a6f3.py
+php $ROONDA_TMP_PATH/roonda_93f75d513dd89c0fe1f7850889e9e541c94bf3bc.php
 
 #################################################
-# roonda_ea6afd40aea39a2737d9e1734464cccd2dcf304f.pl:
+# roonda_ffeff3ca35dd050358ffa0d67398524a5dd9637f.pl:
 #################################################
-# print 3 * 4 * (5 + 6);
+# print 3 * 4 * (5 + -6 + (10 - 8));
 # print "\n";
 # print 100 % 7;
 # print "\n";
@@ -16,9 +16,9 @@ php $ROONDA_TMP_PATH/roonda_bc9755424dddcb0e6d7885651f3de20197d663a7.php
 # print "abc" . "def" . "\n";
 
 #################################################
-# roonda_0b8512486083b6051e4b2bbd7e2a5612801a05a2.rb:
+# roonda_f1881de283fa53af2c8e8ba75ce51ffa1870cf36.rb:
 #################################################
-# print 3 * 4 * (5 + 6)
+# print 3 * 4 * (5 + -6 + (10 - 8))
 # print "\n"
 # print 100 % 7
 # print "\n"
@@ -27,11 +27,11 @@ php $ROONDA_TMP_PATH/roonda_bc9755424dddcb0e6d7885651f3de20197d663a7.php
 # print "abc" + "def" + "\n"
 
 #################################################
-# roonda_57ee6d0e2e4921200943084d61c7df5349df42fd.py:
+# roonda_7f090a42bd7ee5ef57d09fec534c9c791aa0a6f3.py:
 #################################################
 # import sys
 # 
-# sys.stdout.write(str(3 * 4 * (5 + 6)))
+# sys.stdout.write(str(3 * 4 * (5 + -6 + (10 - 8))))
 # sys.stdout.write(str("\n"))
 # sys.stdout.write(str(100 % 7))
 # sys.stdout.write(str("\n"))
@@ -40,11 +40,11 @@ php $ROONDA_TMP_PATH/roonda_bc9755424dddcb0e6d7885651f3de20197d663a7.php
 # sys.stdout.write(str("abc" + "def" + "\n"))
 
 #################################################
-# roonda_bc9755424dddcb0e6d7885651f3de20197d663a7.php:
+# roonda_93f75d513dd89c0fe1f7850889e9e541c94bf3bc.php:
 #################################################
 # <?php
 # 
-# echo 3 * 4 * (5 + 6);
+# echo 3 * 4 * (5 + -6 + (10 - 8));
 # echo "\n";
 # echo 100 % 7;
 # echo "\n";
