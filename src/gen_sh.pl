@@ -24,6 +24,21 @@ sub genl_sh_command {
         die create_dying_msg_unexpected_closing($list_close_line_no);
     }
     my @args_list = ();
+    if (astlib_is_symbol($head)) {
+        my $symbol = astlib_get_symbol($head);
+        my $lang = get_dst_format_label($symbol);
+        if ($lang) {
+            if ($lang eq $LANG_SEXPR) {
+                die create_dying_msg_unexpected($head);
+            }
+            my $source = genl_exec_lang(\@list, $list_close_line_no, $lang, $ver);
+            my ($lang, $bin_path, $bin_path_for_sh, $ext) = bin_path_to_lang($lang);
+            my $bin_path_escaped = escape_sh_string($bin_path_for_sh);
+            my $script_path = save_file($source, $ext, 1, '');
+            my $script_path_escaped = escape_sh_string($script_path);
+            return "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
+        }
+    }
     if (astlib_is_symbol_or_string($head)) {
         my $symbol = astlib_get_symbol_or_string($head);
         if ($symbol eq $KEYWD_SH_EXEC) {
@@ -51,19 +66,8 @@ sub genl_sh_command {
         } else {
             push(@args_list, $head);
         }
-    } elsif (astlib_is_list($head)) {
-        my $cmd_list = astlib_get_list($head);
-        my $cmd_list_close_line_no = astlib_get_close_line_no($head);
-        my ($lang, $bin_path, $bin_path_for_sh, $source, $ext) =
-            genl_exec_head_body($cmd_list, $cmd_list_close_line_no, \@list, $ver, '');
-        if ($lang) {
-            my $bin_path_escaped = escape_sh_string($bin_path_for_sh);
-            my $script_path = save_file($source, $ext, 1, '');
-            my $script_path_escaped = escape_sh_string($script_path);
-            return "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
-        } else {
-            push(@args_list, $head);
-        }
+    } else {
+        push(@args_list, $head);
     }
     push(@args_list, @list);
     _genl_sh_command_arguments(\@args_list, $enable_redirect_only, $ver);
@@ -166,27 +170,10 @@ sub genl_sh_command_roonda {
 sub genl_sh_command_roonda_convert {
     my ($format_from, $lang_to, $list, $list_close_line_no, $ver) = @_;
     my @list = @$list;
-    my $result = "\$$ENV_SELF_PATH --v$ver " . escape_sh_string("--$format_from-to-$lang_to") . "-obj";
-    my $head = shift(@list);
-    unless (defined($head)) {
-        return $result;
+    if (@list) {
+        die create_dying_msg_unexpected(shift(@list));
     }
-    if ($lang_to eq $LANG_SEXPR) {
-        die create_dying_msg_unexpected($head);
-    }
-    my $fname;
-    if (astlib_is_heredoc($head)) {
-        die create_dying_msg_unexpected(shift(@list)) if (@list);
-        $fname = astlib_get_heredoc_name($head);
-    } elsif (astlib_is_list($head)) {
-        my $source = genl_langs($list, $lang_to, $ver);
-        my ($bin_path, $ext) = lang_to_bin_path($lang_to);
-        $fname = save_file($source, $ext, 1, '');
-    } else {
-        die create_dying_msg_unexpected($head);
-    }
-    $result = $result . " \$$ENV_TMP_PATH/" . escape_sh_string($fname);
-    $result;
+    "\$$ENV_SELF_PATH --v$ver " . escape_sh_string("--$format_from-to-$lang_to") . "-obj";
 }
 
 # return ($source, $is_redirect)

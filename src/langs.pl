@@ -82,6 +82,8 @@ sub get_dst_format_label {
     my ($str) = @_;
     if ($str eq 'sexpr') {
         $LANG_SEXPR;
+    } elsif ($str eq 'sh') {
+        $LANG_SH;
     } elsif ($str eq 'perl') {
         $LANG_PERL;
     } elsif ($str eq 'ruby') {

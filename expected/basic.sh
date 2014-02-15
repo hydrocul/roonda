@@ -6,7 +6,7 @@ $ROONDA_SELF_PATH $ROONDA_TMP_PATH/php.rd
 #################################################
 # perl.rd:
 #################################################
-# (perl v1)
+# perl v1
 # (apply print "Hello, world!\n")
 # (print (+ 1 2))
 # (print "\n")
@@ -14,7 +14,7 @@ $ROONDA_SELF_PATH $ROONDA_TMP_PATH/php.rd
 #################################################
 # ruby.rd:
 #################################################
-# (ruby v1)
+# ruby v1
 # (apply print "Hello, world!\n")
 # (print (+ 1 2))
 # (print "\n")
@@ -22,7 +22,7 @@ $ROONDA_SELF_PATH $ROONDA_TMP_PATH/php.rd
 #################################################
 # python2.rd:
 #################################################
-# (python2 v1)
+# python2 v1
 # (apply print "Hello, world!")
 # (print (+ 1 2))
 # (print "\n")
@@ -30,7 +30,7 @@ $ROONDA_SELF_PATH $ROONDA_TMP_PATH/php.rd
 #################################################
 # php.rd:
 #################################################
-# (php v1)
+# php v1
 # (apply echo "Hello, world!\n")
 # (print (+ 1 2))
 # (print "\n")

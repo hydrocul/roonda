@@ -1,4 +1,4 @@
-(sh v1)
+sh v1
 
 (pipe (cat data.js)
       (roonda --v1 --json-to-python2-obj))
@@ -38,7 +38,7 @@ data.js >>
 data.rd >>
 
 << pipe.rd
-(python2 v1)
+python2 v1
 (print (stdin_data json))
 (print "\n")
 pipe.rd >>

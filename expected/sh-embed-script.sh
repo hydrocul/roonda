@@ -22,6 +22,6 @@ cat $ROONDA_TMP_PATH/data.js | $ROONDA_SELF_PATH $ROONDA_TMP_PATH/pipe.rd
 #################################################
 # pipe.rd:
 #################################################
-# (python2 v1)
+# python2 v1
 # (print (stdin_data json))
 # (print "\n")

@@ -1,4 +1,4 @@
-(sh v1)
+sh v1
 
 (pipe (cat data.js)
       (roonda json-to-perl))

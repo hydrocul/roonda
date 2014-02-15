@@ -1,30 +1,30 @@
-(sh v1)
+sh v1
 
-((perl)
+(perl
  (print (* 3 4 (+ 5 -6 (- 10 8)))) (print "\n")
  (print (% 100 7)) (print "\n")
  (print (** 3 5)) (print "\n")
  (print (strcat "abc" "def" "\n")))
 
-((ruby)
+(ruby
  (print (* 3 4 (+ 5 -6 (- 10 8)))) (print "\n")
  (print (% 100 7)) (print "\n")
  (print (** 3 5)) (print "\n")
  (print (strcat "abc" "def" "\n")))
 
-((python2)
+(python2
  (print (* 3 4 (+ 5 -6 (- 10 8)))) (print "\n")
  (print (% 100 7)) (print "\n")
  (print (** 3 5)) (print "\n")
  (print (strcat "abc" "def" "\n")))
 
-((python3)
+(python3
  (print (* 3 4 (+ 5 -6 (- 10 8)))) (print "\n")
  (print (% 100 7)) (print "\n")
  (print (** 3 5)) (print "\n")
  (print (strcat "abc" "def" "\n")))
 
-((php)
+(php
  (print (* 3 4 (+ 5 -6 (- 10 8)))) (print "\n")
  (print (% 100 7)) (print "\n")
  (print (** 3 5)) (print "\n")

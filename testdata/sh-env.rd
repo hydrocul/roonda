@@ -1,4 +1,4 @@
-(sh v1)
+sh v1
 
 (echo (ref ROONDA_TEST))
 

@@ -1,3 +1,3 @@
-(sh v1)
+sh v1
 
 (echo (backticks date))
