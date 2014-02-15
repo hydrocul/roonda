@@ -27,6 +27,7 @@ my $OP_ORDER_MIN       = 0;
 my $OP_ORDER_ARG_COMMA = 5;
 my $OP_ORDER_PLUS      = 10;
 my $OP_ORDER_MULTIPLY  = 20;
+my $OP_ORDER_POWER     = 30; # Python のべき乗演算子 **
 
 my $KEYWD_SH_EXEC      = 'exec';
 my $KEYWD_SH_ASSIGN    = 'assign';

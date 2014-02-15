@@ -39,16 +39,30 @@ sub genl_langs_expr {
         die create_dying_msg_unexpected_closing($close_line_no);
     }
     if (astlib_is_symbol_or_string($head)) {
-        my $token = astlib_get_symbol_or_string($head);
-        if ($token eq $KEYWD_APPLY) {
+        my $symbol = astlib_get_symbol_or_string($head);
+        if ($symbol eq $KEYWD_APPLY) {
             genl_langs_apply(\@list, $close_line_no, $lang, $ver);
-        } elsif ($token eq $KEYWD_STDIN_DATA) {
+        } elsif ($symbol eq $KEYWD_STDIN_DATA) {
             genl_langs_stdin_data(\@list, $close_line_no, $lang, $ver);
-        } elsif ($token eq '+' || $token eq '-') {
-            genl_langs_binop($token, $OP_ORDER_PLUS, $op_order, \@list, $lang, $ver);
-        } elsif ($token eq '*' || $token eq '/') {
-            genl_langs_binop($token, $OP_ORDER_MULTIPLY, $op_order, \@list, $lang, $ver);
-        } elsif ($token eq $KEYWD_STRCAT) {
+        } elsif ($symbol eq '+' || $symbol eq '-') {
+            genl_langs_binop($symbol, $OP_ORDER_PLUS, $op_order, '',
+                             \@list, $close_line_no, $lang, $ver);
+        } elsif ($symbol eq '*' || $symbol eq '/') {
+            genl_langs_binop($symbol, $OP_ORDER_MULTIPLY, $op_order, '',
+                             \@list, $close_line_no, $lang, $ver);
+        } elsif ($symbol eq '%') {
+            genl_langs_binop($symbol, $OP_ORDER_MULTIPLY, $op_order, 1,
+                             \@list, $close_line_no, $lang, $ver);
+        } elsif ($symbol eq '**') {
+            if ($lang eq $LANG_PERL || $lang eq $LANG_RUBY ||
+                $lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+                genl_langs_binop($symbol, $OP_ORDER_POWER, $op_order, '',
+                                 \@list, $close_line_no, $lang, $ver);
+            } elsif ($lang eq $LANG_PHP) {
+                genl_langs_apply_1('pow', \@list, $close_line_no, 2, $lang, $ver);
+            }
+            # TODO pythonの演算子優先順位は確認済み、perl, rubyは未確認
+        } elsif ($symbol eq $KEYWD_STRCAT) {
             my $op;
             my $op_order_plus;
             if ($lang eq $LANG_PERL) {
@@ -66,7 +80,8 @@ sub genl_langs_expr {
             } else {
                 die;
             }
-            genl_langs_binop($op, $op_order_plus, $op_order, \@list, $lang, $ver);
+            genl_langs_binop($op, $op_order_plus, $op_order, '',
+                             \@list, $close_line_no, $lang, $ver);
         } else {
             unshift(@list, $head);
             genl_langs_apply(\@list, $close_line_no, $lang, $ver);
@@ -87,18 +102,25 @@ sub genl_langs_apply {
     }
     if (astlib_is_symbol_or_string($head)) {
         my $funcname = astlib_get_symbol_or_string($head);
-        genl_langs_apply_1($funcname, \@list, $lang, $ver);
+        genl_langs_apply_1($funcname, \@list, $close_line_no, -1, $lang, $ver);
     } else {
         die create_dying_msg_unexpected($head);
     }
 }
 
 sub genl_langs_apply_1 {
-    my ($funcname, $list, $lang, $ver) = @_;
+    my ($funcname, $list, $list_close_line_no, $args_count, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
+    my @list = @$list;
+    if ($args_count >= 0 && (scalar @list) > $args_count) {
+        die create_dying_msg_unexpected($list[$args_count]);
+    }
+    if ($args_count >= 0 && (scalar @list) < $args_count) {
+        die create_dying_msg_unexpected_closing($list_close_line_no);
+    }
     my $result = '';
-    foreach my $elem (@$list) {
+    foreach my $elem (@list) {
         my $source = gent_langs_argument($elem, $OP_ORDER_ARG_COMMA, $lang, $ver);
         $result = $result . ', ' if ($result);
         $result = $result . $source;
@@ -127,10 +149,15 @@ sub genl_langs_stdin_data {
 }
 
 sub genl_langs_binop {
-    my ($op, $op_order, $outer_op_order, $list, $lang, $ver) = @_;
+    my ($op, $op_order, $outer_op_order, $is_bin_only, $list, $list_close_line_no, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
     my @list = @$list;
+    if ($is_bin_only) {
+        die create_dying_msg_unexpected_closing($list_close_line_no) if ((scalar @list) == 0);
+        die create_dying_msg_unexpected_closing($list_close_line_no) if ((scalar @list) == 1);
+        die create_dying_msg_unexpected($list[2]) if ((scalar @list) > 2);
+    }
     my $result = '';
     while () {
         my $head = shift(@list);

@@ -66,7 +66,7 @@ sub _parse_sexpr_line {
                                       ':[^ ]+' . '|' .
                                       '<+' . '|' .
                                       '>+' . '|' .
-                                      '[-+*/._a-zA-Z0-9]+' .
+                                      '[-+*/%._a-zA-Z0-9]+' .
                            ')'));
         unless ($f) {
             die "Unknown token: $line (Line: $line_no)" if ($line !~ /\A\s*\Z/);
