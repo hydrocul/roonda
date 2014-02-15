@@ -38,7 +38,9 @@ sub save_file_from_tempfile {
     }
 
     if ($keep) {
-        push(@saved_files, $target_name);
+        if (!grep { $_ eq $target_name } @saved_files) {
+            push(@saved_files, $target_name);
+        }
         $saved_files_content{$target_name} = $content;
     }
 
