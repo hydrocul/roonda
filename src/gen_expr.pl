@@ -177,7 +177,9 @@ sub genl_langs_binop {
 sub gent_langs_argument {
     my ($token, $op_order, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
-    die if ($lang eq $LANG_SH);
+    if ($lang eq $LANG_SH) {
+        return gent_sh_argument($token, $ver);
+    }
     gent_langs_expr($token, $op_order, $lang, $ver);
 }
 

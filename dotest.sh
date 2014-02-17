@@ -91,6 +91,12 @@ diff -u expected/operators.sh actual/operators.sh
 cat ./testdata/operators.rd | ./target/roonda > ./actual/operators.txt || RESULT=1
 diff -u expected/operators.txt actual/operators.txt
 
+echo ./testdata/statements.rd
+cat ./testdata/statements.rd | ./target/roonda --output-code > ./actual/statements.sh || RESULT=1
+diff -u expected/statements.sh actual/statements.sh
+cat ./testdata/statements.rd | ./target/roonda  > ./actual/statements.txt || RESULT=1
+diff -u expected/statements.txt actual/statements.txt
+
 
 if [ $RESULT != 0 ]; then
     echo "Failed!"

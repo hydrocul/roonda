@@ -26,22 +26,23 @@ sub genl_sh_command {
     my @args_list = ();
     if (astlib_is_symbol($head)) {
         my $symbol = astlib_get_symbol($head);
-        my $lang = get_dst_format_label($symbol);
-        if ($lang) {
-            if ($lang eq $LANG_SEXPR) {
+        my $target_lang = get_dst_format_label($symbol);
+        if ($target_lang) {
+            if ($target_lang eq $LANG_SEXPR) {
                 die create_dying_msg_unexpected($head);
             }
-            my $source = genl_exec_lang(\@list, $list_close_line_no, $lang, $ver);
-            my ($lang, $bin_path, $bin_path_for_sh, $ext) = bin_path_to_lang($lang);
+            my $source = genl_exec_lang(\@list, $list_close_line_no, $target_lang, $ver);
+            my ($lang, $bin_path, $bin_path_for_sh, $ext) = bin_path_to_lang($target_lang);
             my $bin_path_escaped = escape_sh_string($bin_path_for_sh);
             my $script_path = save_file($source, $ext, 1, '');
             my $script_path_escaped = escape_sh_string($script_path);
             return "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
         }
-    }
-    if (astlib_is_symbol_or_string($head)) {
-        my $symbol = astlib_get_symbol_or_string($head);
-        if ($symbol eq $KEYWD_SH_EXEC) {
+        if ($symbol eq $KEYWD_IF) {
+            return genl_langs_if(\@list, $list_close_line_no, $LANG_SH, $ver) . "\n";
+        } elsif ($symbol eq $KEYWD_PRINT) {
+            return genl_langs_print(\@list, $list_close_line_no, $LANG_SH, $ver) . "\n";
+        } elsif ($symbol eq $KEYWD_SH_EXEC) {
             unless ($enable_exec) {
                 die create_dying_msg_unexpected($head);
             }
