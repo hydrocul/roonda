@@ -4,7 +4,14 @@ sub gent_langs_expr {
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
     if (astlib_is_symbol($token)) {
-        die create_dying_msg_unexpected($token);
+        my $symbol = astlib_get_symbol($token);
+        if ($symbol eq $KEYWD_TRUE) {
+            gent_langs_boolean(1, $lang, $ver);
+        } elsif ($symbol eq $KEYWD_FALSE) {
+            gent_langs_boolean('', $lang, $ver);
+        } else {
+            die create_dying_msg_unexpected($token);
+        }
     } elsif (astlib_is_string($token)) {
         if ($lang eq $LANG_PERL) {
             escape_perl_string(astlib_get_string($token));
@@ -182,5 +189,38 @@ sub gent_langs_argument {
         return gent_sh_argument($token, $ver);
     }
     gent_langs_expr($token, $op_order, $indent, $lang, $ver);
+}
+
+sub gent_langs_boolean {
+    my ($boolValue, $lang, $ver) = @_;
+    die if ($lang eq $LANG_SEXPR);
+    die if ($lang eq $LANG_SH);
+    if ($lang eq $LANG_PERL) {
+        if ($boolValue) {
+            '1';
+        } else {
+            "''";
+        }
+    } elsif ($lang eq $LANG_RUBY) {
+        if ($boolValue) {
+            'true'
+        } else {
+            'false'
+        }
+    } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+        if ($boolValue) {
+            'True'
+        } else {
+            'False'
+        }
+    } elsif ($lang eq $LANG_PHP) {
+        if ($boolValue) {
+            'TRUE'
+        } else {
+            'FALSE'
+        }
+    } else {
+        die;
+    }
 }
 

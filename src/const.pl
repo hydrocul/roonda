@@ -43,4 +43,6 @@ my $KEYWD_IF           = 'if';
 my $KEYWD_APPLY        = 'apply';
 my $KEYWD_PRINT        = 'print';
 my $KEYWD_STRCAT       = 'strcat';
+my $KEYWD_TRUE         = 'true';
+my $KEYWD_FALSE        = 'false';
 

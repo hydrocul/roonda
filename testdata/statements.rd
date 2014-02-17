@@ -1,27 +1,42 @@
 sh v1
 
 (perl
- (if 1
+ (if true
      ((print "Hello ")
       (print "World!\n"))
-     ((print "ELSE\n"))))
+     ((print "ELSE\n")))
+ (if false
+     ((print "TRUE\n"))
+     ((print "OK\n"))))
 (ruby
- (if 1
+ (if true
      ((print "Hello ")
       (print "World!\n"))
-     ((print "ELSE\n"))))
+     ((print "ELSE\n")))
+ (if false
+     ((print "TRUE\n"))
+     ((print "OK\n"))))
 (python2
- (if 1
+ (if true
      ((print "Hello ")
       (print "World!\n"))
-     ((print "ELSE\n"))))
+     ((print "ELSE\n")))
+ (if false
+     ((print "TRUE\n"))
+     ((print "OK\n"))))
 (python3
- (if 1
+ (if true
      ((print "Hello ")
       (print "World!\n"))
-     ((print "ELSE\n"))))
+     ((print "ELSE\n")))
+ (if false
+     ((print "TRUE\n"))
+     ((print "OK\n"))))
 (php
- (if 1
+ (if true
      ((print "Hello ")
       (print "World!\n"))
-     ((print "ELSE\n"))))
+     ((print "ELSE\n")))
+ (if false
+     ((print "TRUE\n"))
+     ((print "OK\n"))))
