@@ -132,7 +132,12 @@ sub genl_langs_print {
     my @list = @$list;
     my $elem = shift(@list);
     die create_dying_msg_unexpected_closing($list_close_line_no) unless ($elem);
-    my $source = gent_langs_argument($elem, $OP_ORDER_ARG_COMMA, $lang, $ver);
+    my $source;
+    if ($lang eq $LANG_SH) {
+        $source = gent_sh_argument($elem, $ver);
+    } else {
+        $source = gent_langs_argument($elem, $OP_ORDER_ARG_COMMA, $lang, $ver);
+    }
     if ($lang eq $LANG_SH) {
         "echo -n $source";
     } elsif ($lang eq $LANG_PERL) {

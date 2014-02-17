@@ -2,7 +2,7 @@ sh v1
 
 (sh
  (echo "Hello, world!")
- (print 3)
+ (print (+ 1 2))
  (print "\n"))
 
 (perl

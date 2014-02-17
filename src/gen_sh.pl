@@ -228,6 +228,7 @@ sub gent_sh_argument {
 
 sub genl_sh_argument {
     my ($list, $list_close_line_no, $ver) = @_;
+    my $indent = ''; # TODO
     my @list = @$list;
     my $head = shift(@list);
     unless (defined($head)) {
@@ -241,6 +242,10 @@ sub genl_sh_argument {
             genl_sh_argument_ref(\@list, $list_close_line_no, $ver);
         } elsif ($symbol eq $KEYWD_STRCAT) {
             genl_sh_argument_strcat(\@list, $list_close_line_no, $ver);
+        } elsif ($symbol eq '+' || $symbol eq '-' ||
+            $symbol eq '*' || $symbol eq '/' || $symbol eq '%') {
+            my $source = genl_langs_expr($list, $OP_ORDER_MIN, $list_close_line_no, $indent, $LANG_SH, $ver);
+            escape_sh_backticks('expr ' . $source);
         } else {
             die create_dying_msg_unexpected($head);
         }
