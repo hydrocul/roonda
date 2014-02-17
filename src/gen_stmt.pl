@@ -95,7 +95,19 @@ sub genl_langs_if {
     my $then_source = gent_langs_statements($then_elem, $then_indent, $lang, $ver);
     if (defined($else_elem)) {
         my $else_source = gent_langs_statements($else_elem, $then_indent, $lang, $ver);
-        die "TODO";
+        if ($lang eq $LANG_SH) {
+            die "TODO";
+        } elsif ($lang eq $LANG_PERL) {
+            "if ($cond_source) {\n$then_indent$then_source\n$indent} else {\n$then_indent$else_source\n$indent}";
+        } elsif ($lang eq $LANG_RUBY) {
+            "if $cond_source\n$then_indent$then_source\n${indent}else\n$then_indent$else_source\n${indent}end";
+        } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+            "if $cond_source:\n$then_indent$then_source\nelse:\n$then_indent$else_source";
+        } elsif ($lang eq $LANG_PHP) {
+            "if ($cond_source) {\n$then_indent$then_source\n$indent} else {\n$then_indent$else_source\n$indent}";
+        } else {
+            die;
+        }
     } else {
         if ($lang eq $LANG_SH) {
             # "if $cond_source; then\n$then_source\nfi";
@@ -108,6 +120,8 @@ sub genl_langs_if {
             "if $cond_source:\n$then_indent$then_source";
         } elsif ($lang eq $LANG_PHP) {
             "if ($cond_source) {\n$then_indent$then_source\n$indent}";
+        } else {
+            die;
         }
     }
 }
