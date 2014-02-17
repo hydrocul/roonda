@@ -1,35 +1,32 @@
 sh v1
 
-(roonda perl.rd)
-(roonda ruby.rd)
-(roonda python2.rd)
-(roonda php.rd)
+(sh
+ (echo "Hello, world!")
+ (print 3)
+ (print "\n"))
 
-<< perl.rd
-perl v1
-(apply print "Hello, world!\n")
-(print (+ 1 2))
-(print "\n")
-perl.rd >>
+(perl
+ (apply print "Hello, world!\n")
+ (print (+ 1 2))
+ (print "\n"))
 
-<< ruby.rd
-ruby v1
-(apply print "Hello, world!\n")
-(print (+ 1 2))
-(print "\n")
-ruby.rd >>
+(ruby
+ (apply print "Hello, world!\n")
+ (print (+ 1 2))
+ (print "\n"))
 
-<< python2.rd
-python2 v1
-(apply print "Hello, world!")
-(print (+ 1 2))
-(print "\n")
-python2.rd >>
+(python2
+ (apply print "Hello, world!")
+ (print (+ 1 2))
+ (print "\n"))
 
-<< php.rd
-php v1
-(apply echo "Hello, world!\n")
-(print (+ 1 2))
-(print "\n")
-php.rd >>
+(python3
+ (apply print "Hello, world!")
+ (print (+ 1 2))
+ (print "\n"))
+
+(php
+ (apply echo "Hello, world!\n")
+ (print (+ 1 2))
+ (print "\n"))
 
