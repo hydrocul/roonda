@@ -67,6 +67,15 @@ sub get_source_header {
     }
 }
 
+sub get_source_indent {
+    my ($lang, $ver) = @_;
+    if ($lang eq $LANG_RUBY) {
+        "  ";
+    } else {
+        "    ";
+    }
+}
+
 sub get_src_format_label {
     my ($str) = @_;
     if ($str eq 'sexpr') {

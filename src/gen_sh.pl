@@ -1,7 +1,8 @@
 
 sub genl_sh_statement {
     my ($list, $indent, $list_close_line_no, $ver) = @_;
-    genl_sh_command($list, $list_close_line_no, 1, 1, 1, 1, '', $ver) . "\n";
+    # TODO $indentの対応
+    genl_sh_command($list, $list_close_line_no, 1, 1, 1, 1, '', $ver);
 }
 
 sub gent_sh_command {
@@ -18,6 +19,7 @@ sub gent_sh_command {
 sub genl_sh_command {
     my ($list, $list_close_line_no,
         $enable_assign, $enable_export, $enable_exec, $enable_pipe, $enable_redirect_only, $ver) = @_;
+    my $indent = ''; # TODO
     my @list = @$list;
     my $head = shift(@list);
     unless (defined($head)) {
@@ -41,7 +43,7 @@ sub genl_sh_command {
         if ($symbol eq $KEYWD_IF) {
             return genl_langs_if(\@list, $list_close_line_no, $LANG_SH, $ver) . "\n";
         } elsif ($symbol eq $KEYWD_PRINT) {
-            return genl_langs_print(\@list, $list_close_line_no, $LANG_SH, $ver) . "\n";
+            return genl_langs_print(\@list, $list_close_line_no, $indent, $LANG_SH, $ver) . "\n";
         } elsif ($symbol eq $KEYWD_SH_EXEC) {
             unless ($enable_exec) {
                 die create_dying_msg_unexpected($head);
