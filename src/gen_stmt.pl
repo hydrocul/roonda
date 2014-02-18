@@ -75,7 +75,6 @@ sub genl_langs_statement {
 sub genl_langs_if {
     my ($list, $list_close_line_no, $indent, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
-    die "TODO" if ($lang eq $LANG_SH);
     my $cond_indent = $indent . get_source_indent($lang, $ver);
     my $then_indent = $indent . get_source_indent($lang, $ver);
     my @list = @$list;
@@ -91,12 +90,17 @@ sub genl_langs_if {
     if (@list) {
         die create_dying_msg_unexpected(shift(@list));
     }
-    my $cond_source = gent_langs_expr($cond_elem, $OP_ORDER_MIN, $cond_indent, $lang, $ver);
+    my $cond_source;
+    if ($lang eq $LANG_SH) {
+        $cond_source = gent_sh_command($cond_elem, '', '', '', 1, '', $ver);
+    } else {
+        $cond_source = gent_langs_expr($cond_elem, $OP_ORDER_MIN, $cond_indent, $lang, $ver);
+    }
     my $then_source = gent_langs_statements($then_elem, $then_indent, $lang, $ver);
     if (defined($else_elem)) {
         my $else_source = gent_langs_statements($else_elem, $then_indent, $lang, $ver);
         if ($lang eq $LANG_SH) {
-            die "TODO";
+            "if $cond_source; then\n$then_indent$then_source\n${indent}else\n$then_indent$else_source\n${indent}fi";
         } elsif ($lang eq $LANG_PERL) {
             "if ($cond_source) {\n$then_indent$then_source\n$indent} else {\n$then_indent$else_source\n$indent}";
         } elsif ($lang eq $LANG_RUBY) {
@@ -110,8 +114,7 @@ sub genl_langs_if {
         }
     } else {
         if ($lang eq $LANG_SH) {
-            # "if $cond_source; then\n$then_source\nfi";
-            die "TODO";
+            "if $cond_source; then\n$then_indent$then_source\n${indent}fi";
         } elsif ($lang eq $LANG_PERL) {
             "if ($cond_source) {\n$then_indent$then_source\n$indent}";
         } elsif ($lang eq $LANG_RUBY) {

@@ -1,5 +1,13 @@
 sh v1
 
+(sh
+ (if (echo "a" (> "/dev/null"))
+     ((print "Hello ")
+      (print "World!\n"))
+     ((print "ELSE\n")))
+ (if (ls "/dummy" (> 2 "/dev/null"))
+     ((print "TRUE\n"))
+     ((print "OK\n"))))
 (perl
  (if true
      ((print "Hello ")

@@ -29,7 +29,7 @@ sub gent_langs_expr {
         } elsif ($lang eq $LANG_PHP) {
             escape_php_string(astlib_get_string($token));
         } else {
-            die;
+            die "Died: $lang";
         }
     } elsif (astlib_is_integer($token)) {
         astlib_get_integer($token);

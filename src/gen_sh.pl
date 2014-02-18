@@ -41,9 +41,9 @@ sub genl_sh_command {
             return "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
         }
         if ($symbol eq $KEYWD_IF) {
-            return genl_langs_if(\@list, $list_close_line_no, $LANG_SH, $ver) . "\n";
+            return genl_langs_if(\@list, $list_close_line_no, $indent, $LANG_SH, $ver);
         } elsif ($symbol eq $KEYWD_PRINT) {
-            return genl_langs_print(\@list, $list_close_line_no, $indent, $LANG_SH, $ver) . "\n";
+            return genl_langs_print(\@list, $list_close_line_no, $indent, $LANG_SH, $ver);
         } elsif ($symbol eq $KEYWD_SH_EXEC) {
             unless ($enable_exec) {
                 die create_dying_msg_unexpected($head);
