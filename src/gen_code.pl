@@ -41,7 +41,7 @@ sub genl_exec_lang {
     my $head = shift(@list);
     if (astlib_is_symbol($head)) {
         my $symbol = astlib_get_symbol($head);
-        if ($symbol =~ /\Av([1-9][0-9]*)\Z/) {
+        if ($symbol =~ /\Av([1-9][0-9]*)\z/) {
             $ver = $1;
         } else {
             unshift(@list, $head);

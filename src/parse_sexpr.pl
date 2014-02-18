@@ -22,10 +22,10 @@ sub _parse_sexpr_get_heredoc {
     my $heredoc_content = '';
     foreach my $line (@lines) {
         if ($heredoc) {
-            if ($line =~ ('\A' . quotemeta($heredoc) . '\s*>>\s*\Z')) {
+            if ($line =~ ('\A' . quotemeta($heredoc) . '\s*>>\s*\z')) {
                 my $ext = '';
                 my $name;
-                if ($heredoc =~ /\A(.+)\.([-_a-zA-Z0-9]+)\Z/) {
+                if ($heredoc =~ /\A(.+)\.([-_a-zA-Z0-9]+)\z/) {
                     $name = $1;
                     $ext = $2;
                 }
@@ -40,7 +40,7 @@ sub _parse_sexpr_get_heredoc {
             push(@new_lines, "\n");
             next;
         }
-        if ($line =~ /\A<<\s*([-+*\/._a-zA-Z0-9]+)\s*\Z/) {
+        if ($line =~ /\A<<\s*([-+*\/._a-zA-Z0-9]+)\s*\z/) {
             $heredoc = $1;
             push(@new_lines, "\n");
             next;
@@ -74,7 +74,7 @@ sub _parse_sexpr_line {
                                       '[_a-zA-Z0-9][-._a-zA-Z0-9]*' .
                            ')'));
         unless ($f) {
-            die "Unknown token: $line (Line: $line_no)" if ($line !~ /\A\s*\Z/);
+            die "Unknown token: $line (Line: $line_no)" if ($line !~ /\A\s*\z/);
             last;
         }
         my $token = $1;
@@ -88,13 +88,13 @@ sub _parse_sexpr_line {
         } elsif ($token eq '0') {
             $token = 0;
             $token_type = $TOKEN_TYPE_INTEGER;
-        } elsif ($token =~ /\A-?[1-9][0-9]*\Z/) {
+        } elsif ($token =~ /\A-?[1-9][0-9]*\z/) {
             $token = $token + 0; # convert to integer
             $token_type = $TOKEN_TYPE_INTEGER;
-        } elsif ($token =~ /\A"(.*)"\Z/) {
+        } elsif ($token =~ /\A"(.*)"\z/) {
             $token = unescape_sexpr_string($1);
             $token_type = $TOKEN_TYPE_STRING;
-        } elsif ($token =~ /\A:(.+)\Z/) {
+        } elsif ($token =~ /\A:(.+)\z/) {
             $token = $1;
             $token_type = $TOKEN_TYPE_SYMBOL;
         } else {

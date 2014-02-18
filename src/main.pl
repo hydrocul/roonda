@@ -14,21 +14,21 @@ my $format_to = ''; # オブジェクト生成の場合のみ
 while () {
     last if (!@ARGV);
     my $arg = shift;
-    if ($arg =~ /\A--v(\d+)\Z/) {
+    if ($arg =~ /\A--v(\d+)\z/) {
         die if ($ver ne '');
         $ver = $1;
-    } elsif ($arg =~ /\A--from-([a-z0-9]+)\Z/) {
+    } elsif ($arg =~ /\A--from-([a-z0-9]+)\z/) {
         die if ($format_from ne '');
         $format_from = get_src_format_label($1);
         die "Unknown argument: $arg" unless (defined($format_from));
-    } elsif ($arg =~ /\A--([a-z0-9]+)-to-([a-z0-9]+)-obj\Z/) {
+    } elsif ($arg =~ /\A--([a-z0-9]+)-to-([a-z0-9]+)-obj\z/) {
         die if ($format_from ne '');
         $format_from = get_src_format_label($1);
         die "Unknown argument: $arg" unless (defined($format_from));
         die if ($format_to ne '');
         $format_to = get_dst_format_label($2);
         die "Unknown argument: $arg" unless (defined($format_to));
-    } elsif ($arg =~ /\A--to-([a-z0-9]+)-obj\Z/) {
+    } elsif ($arg =~ /\A--to-([a-z0-9]+)-obj\z/) {
         die if ($format_to ne '');
         $format_to = get_dst_format_label($1);
         die "Unknown argument: $arg" unless (defined($format_to));

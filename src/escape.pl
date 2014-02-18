@@ -40,9 +40,9 @@ sub escape_sh_backticks {
 sub escape_sh_multiline_comment {
     my ($str) = @_;
     $str =~ s/\n/\n# /g;
-    $str =~ s/# \Z//g;
+    $str =~ s/# \z//g;
     $str = $str . "\n";
-    $str =~ s/\n\n\Z/\n/g;
+    $str =~ s/\n\n\z/\n/g;
     $str = '# ' . $str;
     $str;
 }
@@ -66,9 +66,9 @@ sub escape_perl_string {
 sub escape_perl_multiline_comment {
     my ($str) = @_;
     $str =~ s/\n/\n# /g;
-    $str =~ s/# \Z//g;
+    $str =~ s/# \z//g;
     $str = $str . "\n";
-    $str =~ s/\n\n\Z/\n/g;
+    $str =~ s/\n\n\z/\n/g;
     $str = '# ' . $str;
     $str;
 }

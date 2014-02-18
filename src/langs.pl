@@ -48,7 +48,7 @@ sub _get_cmd_path {
         return $bin_path_map{$cmd};
     }
     my $path = `sh -c "which $cmd"`;
-    $path =~ s/\A(.*)\s*\Z/$1/;
+    $path =~ s/\A(.*)\s*\z/$1/;
     unless ($path) {
         die "Command not found: $cmd";
     }

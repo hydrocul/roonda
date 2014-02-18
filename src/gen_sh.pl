@@ -153,7 +153,7 @@ sub genl_sh_command_roonda {
     my $head = shift(@list);
     if ($head && astlib_is_symbol_or_string($head)) {
         my $symbol = astlib_get_symbol_or_string($head);
-        if ($symbol =~ /\A([a-z0-9]+)-to-([a-z0-9]+)\Z/) {
+        if ($symbol =~ /\A([a-z0-9]+)-to-([a-z0-9]+)\z/) {
             my $format_from = get_src_format_label($1);
             my $lang_to = get_dst_format_label($2);
             if (defined($format_from) && defined($lang_to)) {
