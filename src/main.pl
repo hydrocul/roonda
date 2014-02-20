@@ -45,13 +45,16 @@ while () {
 my $run_type = '';
 
 if ($ver eq '') {
-    $ver = 1;
+    $ver = 0;
 } else {
     my $ver2 = $ver + 0;
     if ($ver2 ne $ver) {
         die "Unknown argument: --v$ver";
     }
     $ver = $ver2;
+    if ($ver > $MAX_VERSION) {
+        die "Unknown version: $ver";
+    }
 }
 
 if ($source_filepath eq '') {
@@ -91,14 +94,15 @@ $ENV{$ENV_TMP_PATH} = tempdir(CLEANUP => 1);
 
 my $ast;
 if ($source_format eq $FORMAT_SEXPR) {
-    $ast = parse_sexpr(\@lines, $ver);
+    $ast = parse_sexpr(\@lines);
 } elsif ($source_format eq $FORMAT_JSON) {
-    $ast = parse_json(\@lines, $ver);
+    $ast = parse_json(\@lines);
 } else {
     die;
 }
 
 if ($format_to) {
+    die "Unspecified version" if $ver < 1;
     my $source = gent_obj($ast, $format_to, $ver);
 
     print encode('utf-8', $source);

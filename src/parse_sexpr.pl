@@ -1,6 +1,6 @@
 
 sub parse_sexpr {
-    my ($lines, $ver) = @_;
+    my ($lines) = @_;
     my @lines = @$lines;
     my ($lines_ref, $fname_map_ref) = _parse_sexpr_get_heredoc(@lines);
     @lines = @$lines_ref;

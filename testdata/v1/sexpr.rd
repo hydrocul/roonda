@@ -5,9 +5,6 @@ sh v1
 
 (cat attachedfile.txt)
 
-(perl (print "Hello\n"))
-(perl (print "Hello\n"))
-
 << attachedfile.txt
 
 Hello Hello

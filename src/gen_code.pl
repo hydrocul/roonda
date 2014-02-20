@@ -43,12 +43,16 @@ sub genl_exec_lang {
         my $symbol = astlib_get_symbol($head);
         if ($symbol =~ /\Av([1-9][0-9]*)\z/) {
             $ver = $1;
+            if ($ver > $MAX_VERSION) {
+                die "Unknown version: $ver";
+            }
         } else {
             unshift(@list, $head);
         }
     } else {
         unshift(@list, $head);
     }
+    die "Unspecified version" if $ver < 1;
     genl_exec_lang_ver(\@list, $list_close_line_no, $lang, $ver);
 }
 
