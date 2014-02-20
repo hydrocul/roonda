@@ -32,7 +32,7 @@ while () {
         die if ($format_to ne '');
         $format_to = get_dst_format_label($1);
         die "Unknown argument: $arg" unless (defined($format_to));
-    } elsif ($arg eq '--output-code') {
+    } elsif ($arg eq '--dry-run') {
         $is_dryrun = 1;
     } elsif ($arg =~ /\A-/) {
         die "Unknown argument: $arg";
