@@ -30,7 +30,6 @@ my $OP_ORDER_MULTIPLY  = 20;
 my $OP_ORDER_POWER     = 30; # Python のべき乗演算子 **
 
 my $KEYWD_SH_EXEC      = 'exec';
-my $KEYWD_SH_ASSIGN    = 'assign';
 my $KEYWD_SH_EXPORT    = 'export';
 my $KEYWD_SH_PIPE      = 'pipe';
 my $KEYWD_SH_ROONDA    = 'roonda';
@@ -42,6 +41,7 @@ my $KEYWD_STDIN_DATA   = 'stdin_data';
 my $KEYWD_IF           = 'if';
 my $KEYWD_APPLY        = 'apply';
 my $KEYWD_PRINT        = 'print';
+my $KEYWD_ASSIGN       = 'assign';
 my $KEYWD_STRCAT       = 'strcat';
 my $KEYWD_TRUE         = 'true';
 my $KEYWD_FALSE        = 'false';

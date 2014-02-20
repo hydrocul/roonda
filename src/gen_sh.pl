@@ -49,11 +49,11 @@ sub genl_sh_command {
                 die create_dying_msg_unexpected($head);
             }
             return 'exec ' . genl_sh_command(\@list, $list_close_line_no, '', '', '', '', 1, $ver);
-        } elsif ($symbol eq $KEYWD_SH_ASSIGN) {
+        } elsif ($symbol eq $KEYWD_ASSIGN) {
             unless ($enable_assign) {
                 die create_dying_msg_unexpected($head);
             }
-            return genl_sh_assign(\@list, $list_close_line_no, $ver);
+            return genl_langs_assign(\@list, $list_close_line_no, $indent, $LANG_SH, $ver);
         } elsif ($symbol eq $KEYWD_SH_EXPORT) {
             unless ($enable_export) {
                 die create_dying_msg_unexpected($head);
@@ -104,20 +104,8 @@ sub _genl_sh_command_arguments {
     }
 }
 
-sub genl_sh_assign {
-    my ($list, $list_close_line_no, $ver) = @_;
-    my @list = @$list;
-    my $head = shift(@list);
-    die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
-    if (astlib_is_symbol($head)) {
-        genl_sh_assign_1(astlib_get_symbol($head), \@list, $list_close_line_no, $ver);
-    } else {
-        die create_dying_msg_unexpected($head);
-    }
-}
-
 sub genl_sh_assign_1 {
-    my ($varname, $list, $list_close_line_no, $ver) = @_;
+    my ($varname, $list, $list_close_line_no, $indent, $ver) = @_;
     my @list = @$list;
     my $head = shift(@list);
     die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));

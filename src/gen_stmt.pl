@@ -51,6 +51,8 @@ sub genl_langs_statement {
             $expr_source = genl_langs_if(\@list, $list_close_line_no, $indent, $lang, $ver);
         } elsif ($symbol eq $KEYWD_PRINT) {
             $expr_source = genl_langs_print(\@list, $list_close_line_no, $indent, $lang, $ver);
+        } elsif ($symbol eq $KEYWD_ASSIGN) {
+            $expr_source = genl_langs_assign(\@list, $list_close_line_no, $indent, $lang, $ver);
         } else {
             unshift(@list, $head);
             $expr_source = genl_langs_expr(\@list, $OP_ORDER_MIN, $list_close_line_no, $indent, $lang, $ver);
@@ -151,6 +153,46 @@ sub genl_langs_print {
         "sys.stdout.write(str($source))";
     } elsif ($lang eq $LANG_PHP) {
         "echo $source";
+    } else {
+        die;
     }
 }
+
+sub genl_langs_assign {
+    my ($list, $list_close_line_no, $indent, $lang, $ver) = @_;
+    die if ($lang eq $LANG_SEXPR);
+    my @list = @$list;
+    my $head = shift(@list);
+    die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
+    if (astlib_is_symbol($head)) {
+        genl_langs_assign_1(astlib_get_symbol($head), \@list, $list_close_line_no, $indent, $lang, $ver);
+    } else {
+        die create_dying_msg_unexpected($head);
+    }
+}
+
+sub genl_langs_assign_1 {
+    my ($varname, $list, $list_close_line_no, $indent, $lang, $ver) = @_;
+    die if ($lang eq $LANG_SEXPR);
+    if ($lang eq $LANG_SH) {
+        return genl_sh_assign_1($varname, $list, $list_close_line_no, $indent, $ver);
+    }
+    my @list = @$list;
+    my $head = shift(@list);
+    die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
+    die create_dying_msg_unexpected(shift(@list)) if (@list);
+    my $source = gent_sh_argument($head);
+    my $result;
+    if ($lang eq $LANG_PERL) {
+        $result = '$' . $varname . ' = ' . $source;
+    } elsif ($lang eq $LANG_RUBY) {
+        $result = $varname . ' = ' . $source;
+    } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+        $result = $varname . ' = ' . $source;
+    } elsif ($lang eq $LANG_PHP) {
+        $result = '$' . $varname . ' = ' . $source;
+    }
+    $result;
+}
+
 
