@@ -7,7 +7,6 @@
 
 my $ver = '';
 my $format_from = '';
-my $is_dryrun = '';
 my $source_filepath = '';
 my $format_to = ''; # オブジェクト生成の場合のみ
 
@@ -34,6 +33,8 @@ while () {
         die "Unknown argument: $arg" unless (defined($format_to));
     } elsif ($arg eq '--dry-run') {
         $is_dryrun = 1;
+    } elsif ($arg eq '--experimental') {
+        $is_experimental = 1;
     } elsif ($arg =~ /\A-/) {
         die "Unknown argument: $arg";
     } else {
@@ -41,6 +42,11 @@ while () {
         $source_filepath = $arg;
     }
 }
+
+if (defined($ENV{$ENV_EXPERIMENTAL}) && $ENV{$ENV_EXPERIMENTAL} ne '') {
+    $is_experimental = 1;
+}
+
 
 my $run_type = '';
 
@@ -54,6 +60,9 @@ if ($ver eq '') {
     $ver = $ver2;
     if ($ver > $MAX_VERSION) {
         die "Unknown version: $ver";
+    }
+    if ($ver == $MAX_VERSION && !$is_experimental) {
+        die "version $ver is experimental";
     }
 }
 
@@ -76,8 +85,6 @@ if ($run_type eq 'from_file') {
     $source_from = 'stdin';
     $source_format = $format_from;
 }
-
-$save_file_dryrun = $is_dryrun;
 
 my @lines;
 if ($source_from eq 'file') {

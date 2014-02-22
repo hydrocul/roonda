@@ -44,7 +44,7 @@ sub save_file_from_tempfile {
         $saved_files_content{$target_name} = $content;
     }
 
-    if ($save_file_dryrun) {
+    if ($is_dryrun) {
         `rm $filename`;
     } elsif ( -e $target_path) {
         `rm $filename`;

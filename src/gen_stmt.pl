@@ -4,7 +4,7 @@ sub gent_langs_statements {
     die if ($lang eq $LANG_SEXPR);
     if (astlib_is_list($token)) {
         genl_langs_statements(astlib_get_list($token),
-                             astlib_get_close_line_no($token), $indent, $lang, $ver);
+                              astlib_get_close_line_no($token), $indent, $lang, $ver);
     } else {
         die create_dying_msg_unexpected($token);
     }

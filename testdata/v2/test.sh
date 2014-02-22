@@ -1,5 +1,6 @@
 
 VERSION=v2
+export ROONDA_EXPERIMENTAL=1
 
 mkdir -p actual/$VERSION
 

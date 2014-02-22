@@ -16,7 +16,7 @@ sh v2
       (roonda json-to-sexpr))
 
 (pipe (cat data.js)
-      (roonda pipe.rd))
+      (roonda --v2 pipe.rd))
 
 # TODO
 #(pipe (cat data.js)
