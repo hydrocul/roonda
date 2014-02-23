@@ -1,6 +1,6 @@
 
 sub gent_langs_expr {
-    my ($token, $op_order, $indent, $lang, $ver) = @_;
+    my ($token, $op_order, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     # LANG_SH では expr コマンドのパラメータとして計算式を組み立てる
     if (astlib_is_symbol($token)) {
@@ -35,14 +35,14 @@ sub gent_langs_expr {
         astlib_get_integer($token);
     } elsif (astlib_is_list($token)) {
         genl_langs_expr(astlib_get_list($token), $op_order,
-                        astlib_get_close_line_no($token), $indent, $lang, $ver);
+                        astlib_get_close_line_no($token), $istack, $lang, $ver);
     } else {
         die create_dying_msg_unexpected($token);
     }
 }
 
 sub genl_langs_expr {
-    my ($list, $op_order, $close_line_no, $indent, $lang, $ver) = @_;
+    my ($list, $op_order, $close_line_no, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     # LANG_SH では expr コマンドのパラメータとして計算式を組み立てる
     my @list = @$list;
@@ -177,7 +177,7 @@ sub genl_langs_stdin_data {
 
 sub genl_langs_binop {
     my ($op, $op_order, $outer_op_order, $is_bin_only, $list, $list_close_line_no, $lang, $ver) = @_;
-    my $indent = ''; # TODO
+    my $istack = istack_create(); # TODO istack
     die if ($lang eq $LANG_SEXPR);
     # LANG_SH では expr コマンドのパラメータとして計算式を組み立てる
     my @list = @$list;
@@ -200,7 +200,7 @@ sub genl_langs_binop {
                 return $result;
             }
         }
-        my $source = gent_langs_expr($head, $op_order, $indent, $lang, $ver);
+        my $source = gent_langs_expr($head, $op_order, $istack, $lang, $ver);
         if ($result) {
             if ($lang eq $LANG_SH) {
                 $result = $result . ' ' . escape_sh_string($op) . ' ';
@@ -214,10 +214,10 @@ sub genl_langs_binop {
 
 sub gent_langs_argument {
     my ($token, $op_order, $lang, $ver) = @_;
-    my $indent = ''; # TODO
+    my $istack = istack_create(); # TODO istack
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
-    gent_langs_expr($token, $op_order, $indent, $lang, $ver);
+    gent_langs_expr($token, $op_order, $istack, $lang, $ver);
 }
 
 sub gent_langs_boolean {

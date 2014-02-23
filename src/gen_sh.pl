@@ -1,7 +1,7 @@
 
 sub genl_sh_statement {
-    my ($list, $indent, $list_close_line_no, $ver) = @_;
-    # TODO $indentの対応
+    my ($list, $istack, $list_close_line_no, $ver) = @_;
+    # TODO indent
     genl_sh_command($list, $list_close_line_no, 1, 1, 1, 1, '', $ver);
 }
 
@@ -19,7 +19,7 @@ sub gent_sh_command {
 sub genl_sh_command {
     my ($list, $list_close_line_no,
         $enable_assign, $enable_export, $enable_exec, $enable_pipe, $enable_redirect_only, $ver) = @_;
-    my $indent = ''; # TODO
+    my $istack = istack_create(); # TODO istack
     my @list = @$list;
     my $head = shift(@list);
     unless (defined($head)) {
@@ -44,9 +44,9 @@ sub genl_sh_command {
             return "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
         }
         if ($symbol eq $KEYWD_IF) {
-            return genl_langs_if(\@list, $list_close_line_no, $indent, $LANG_SH, $ver);
+            return genl_langs_if(\@list, $list_close_line_no, $istack, $LANG_SH, $ver);
         } elsif ($symbol eq $KEYWD_PRINT) {
-            return genl_langs_print(\@list, $list_close_line_no, $indent, $LANG_SH, $ver);
+            return genl_langs_print(\@list, $list_close_line_no, $istack, $LANG_SH, $ver);
         } elsif ($symbol eq $KEYWD_SH_EXEC) {
             unless ($enable_exec) {
                 die create_dying_msg_unexpected($head);
@@ -56,7 +56,7 @@ sub genl_sh_command {
             unless ($enable_assign) {
                 die create_dying_msg_unexpected($head);
             }
-            return genl_langs_assign(\@list, $list_close_line_no, $indent, $LANG_SH, $ver);
+            return genl_langs_assign(\@list, $list_close_line_no, $istack, $LANG_SH, $ver);
         } elsif ($symbol eq $KEYWD_SH_EXPORT) {
             unless ($enable_export) {
                 die create_dying_msg_unexpected($head);
@@ -108,7 +108,8 @@ sub _genl_sh_command_arguments {
 }
 
 sub genl_sh_assign_1 {
-    my ($varname, $list, $list_close_line_no, $indent, $ver) = @_;
+    my ($varname, $list, $list_close_line_no, $istack, $ver) = @_;
+    # TODO indent
     my @list = @$list;
     my $head = shift(@list);
     die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
@@ -219,7 +220,6 @@ sub gent_sh_argument {
 
 sub genl_sh_argument {
     my ($list, $list_close_line_no, $ver) = @_;
-    my $indent = ''; # TODO
     my @list = @$list;
     my $head = shift(@list);
     unless (defined($head)) {
@@ -235,7 +235,8 @@ sub genl_sh_argument {
             genl_sh_argument_strcat(\@list, $list_close_line_no, $ver);
         } elsif ($symbol eq '+' || $symbol eq '-' ||
             $symbol eq '*' || $symbol eq '/' || $symbol eq '%') {
-            my $source = genl_langs_expr($list, $OP_ORDER_MIN, $list_close_line_no, $indent, $LANG_SH, $ver);
+            my $istack = istack_create(); # TODO istack
+            my $source = genl_langs_expr($list, $OP_ORDER_MIN, $list_close_line_no, $istack, $LANG_SH, $ver);
             escape_sh_backticks('expr ' . $source);
         } else {
             die create_dying_msg_unexpected($head);

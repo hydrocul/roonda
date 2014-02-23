@@ -66,7 +66,8 @@ sub genl_exec_lang_ver {
     my ($list, $list_close_line_no, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     my $result = get_source_header($lang, $ver);
-    $result = $result . genl_langs_statements($list, $list_close_line_no, '', $lang, $ver);
+    my $istack = istack_create();
+    $result = $result . genl_langs_statements($list, $list_close_line_no, $istack, $lang, $ver);
     $result = $result . "\n";
     $result;
 }
