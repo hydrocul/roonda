@@ -235,6 +235,9 @@ sub genl_sh_argument {
             genl_sh_argument_strcat(\@list, $list_close_line_no, $ver);
         } elsif ($symbol eq '+' || $symbol eq '-' ||
             $symbol eq '*' || $symbol eq '/' || $symbol eq '%') {
+            if ($ver < 2) {
+                die "Unsupported: $symbol";
+            }
             my $istack = istack_create(); # TODO istack
             my $source = genl_langs_expr($list, $OP_ORDER_MIN, $list_close_line_no, $istack, $LANG_SH, $ver);
             escape_sh_backticks('expr ' . $source);
