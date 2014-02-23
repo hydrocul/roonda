@@ -7,8 +7,7 @@ sh v2
      ((print "ELSE\n")))
  (if (ls "/dummy" (> 2 "/dev/null"))
      ((print "TRUE\n"))
-     ((print "OK\n")))
- (assign a 1))
+     ((print "OK\n"))))
 (perl
  (if true
      ((print "Hello ")
@@ -16,8 +15,7 @@ sh v2
      ((print "ELSE\n")))
  (if false
      ((print "TRUE\n"))
-     ((print "OK\n")))
- (assign a 1))
+     ((print "OK\n"))))
 (ruby
  (if true
      ((print "Hello ")
@@ -25,8 +23,7 @@ sh v2
      ((print "ELSE\n")))
  (if false
      ((print "TRUE\n"))
-     ((print "OK\n")))
- (assign a 1))
+     ((print "OK\n"))))
 (python2
  (if true
      ((print "Hello ")
@@ -34,8 +31,7 @@ sh v2
      ((print "ELSE\n")))
  (if false
      ((print "TRUE\n"))
-     ((print "OK\n")))
- (assign a 1))
+     ((print "OK\n"))))
 (python3
  (if true
      ((print "Hello ")
@@ -43,8 +39,7 @@ sh v2
      ((print "ELSE\n")))
  (if false
      ((print "TRUE\n"))
-     ((print "OK\n")))
- (assign a 1))
+     ((print "OK\n"))))
 (php
  (if true
      ((print "Hello ")
@@ -52,5 +47,4 @@ sh v2
      ((print "ELSE\n")))
  (if false
      ((print "TRUE\n"))
-     ((print "OK\n")))
- (assign a 1))
+     ((print "OK\n"))))

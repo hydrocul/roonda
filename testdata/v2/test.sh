@@ -48,5 +48,11 @@ diff -u expected/$VERSION/statements.sh actual/$VERSION/statements.sh
 cat ./testdata/$VERSION/statements.rd | ./target/roonda  > ./actual/$VERSION/statements.txt || RESULT=1
 diff -u expected/$VERSION/statements.txt actual/$VERSION/statements.txt
 
+echo ./testdata/$VERSION/vars.rd
+cat ./testdata/$VERSION/vars.rd | ./target/roonda --dry-run > ./actual/$VERSION/vars.sh || RESULT=1
+diff -u expected/$VERSION/vars.sh actual/$VERSION/vars.sh
+cat ./testdata/$VERSION/vars.rd | ./target/roonda  > ./actual/$VERSION/vars.txt || RESULT=1
+diff -u expected/$VERSION/vars.txt actual/$VERSION/vars.txt
+
 exit $RESULT
 
