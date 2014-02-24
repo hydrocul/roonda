@@ -75,5 +75,11 @@ diff -u expected/$VERSION/escape.sh actual/$VERSION/escape.sh
 cat ./testdata/$VERSION/escape.rd | ./target/roonda  > ./actual/$VERSION/escape.txt || RESULT=1
 diff -u expected/$VERSION/escape.txt actual/$VERSION/escape.txt
 
+echo ./testdata/$VERSION/var-trimmed.rd
+cat ./testdata/$VERSION/var-trimmed.rd | ./target/roonda --dry-run > ./actual/$VERSION/var-trimmed.sh || RESULT=1
+diff -u expected/$VERSION/var-trimmed.sh actual/$VERSION/var-trimmed.sh
+cat ./testdata/$VERSION/var-trimmed.rd | ./target/roonda  > ./actual/$VERSION/var-trimmed.txt || RESULT=1
+diff -u expected/$VERSION/var-trimmed.txt actual/$VERSION/var-trimmed.txt
+
 exit $RESULT
 

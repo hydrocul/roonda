@@ -228,9 +228,9 @@ sub genl_sh_argument {
     if (astlib_is_symbol_or_string($head)) {
         my $symbol = astlib_get_symbol_or_string($head);
         if ($symbol eq $KEYWD_SH_BACKTICKS) {
-            genl_sh_argument_backticks(\@list, $list_close_line_no, $ver);
+            '"' . genl_sh_argument_backticks(\@list, $list_close_line_no, $ver) . '"';
         } elsif ($symbol eq $KEYWD_SH_REF) {
-            genl_sh_argument_ref(\@list, $list_close_line_no, $ver);
+            '"' . genl_sh_argument_ref(\@list, $list_close_line_no, $ver) . '"';
         } elsif ($symbol eq $KEYWD_STRCAT) {
             genl_sh_argument_strcat(\@list, $list_close_line_no, $ver);
         } elsif ($symbol eq '+' || $symbol eq '-' ||

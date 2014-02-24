@@ -144,7 +144,7 @@ sub genl_langs_print {
     if ($lang eq $LANG_SH) {
         $source = gent_sh_argument($elem, $ver);
     } else {
-        $source = gent_langs_argument($elem, $OP_ORDER_ARG_COMMA, $lang, $ver);
+        $source = gent_langs_expr($elem, $OP_ORDER_ARG_COMMA, $istack, $lang, $ver);
     }
     if ($lang eq $LANG_SH) {
         "echo -n $source";

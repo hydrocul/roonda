@@ -1,1 +1,1 @@
-echo Hey.' ''uh... '`echo aaa`' '$ROONDA_TEST
+echo Hey.' ''uh... '"`echo aaa`"' '"$ROONDA_TEST"

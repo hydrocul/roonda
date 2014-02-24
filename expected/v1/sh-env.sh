@@ -1,5 +1,5 @@
-echo $ROONDA_TEST
+echo "$ROONDA_TEST"
 T=abc
-echo $T
+echo "$T"
 T=echo
-$T def
+"$T" def
