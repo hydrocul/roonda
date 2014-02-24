@@ -30,6 +30,12 @@ diff -u expected/$VERSION/sh-call-langs.sh actual/$VERSION/sh-call-langs.sh
 cat ./testdata/$VERSION/sh-call-langs.rd | ./target/roonda > ./actual/$VERSION/sh-call-langs.txt || RESULT=1
 diff -u expected/$VERSION/sh-call-langs.txt actual/$VERSION/sh-call-langs.txt
 
+echo ./testdata/$VERSION/escape.rd
+cat ./testdata/$VERSION/escape.rd | ./target/roonda --dry-run > ./actual/$VERSION/escape.sh || RESULT=1
+diff -u expected/$VERSION/escape.sh actual/$VERSION/escape.sh
+cat ./testdata/$VERSION/escape.rd | ./target/roonda  > ./actual/$VERSION/escape.txt || RESULT=1
+diff -u expected/$VERSION/escape.txt actual/$VERSION/escape.txt
+
 echo ./testdata/$VERSION/basic.rd
 cat ./testdata/$VERSION/basic.rd | ./target/roonda --dry-run > ./actual/$VERSION/basic.sh || RESULT=1
 diff -u expected/$VERSION/basic.sh actual/$VERSION/basic.sh

@@ -69,5 +69,11 @@ diff -u expected/$VERSION/sh-call-roonda.sh actual/$VERSION/sh-call-roonda.sh
 cat ./testdata/$VERSION/sh-call-roonda.rd | ./target/roonda > ./actual/$VERSION/sh-call-roonda.txt || RESULT=1
 diff -u expected/$VERSION/sh-call-roonda.txt actual/$VERSION/sh-call-roonda.txt
 
+echo ./testdata/$VERSION/escape.rd
+cat ./testdata/$VERSION/escape.rd | ./target/roonda --dry-run > ./actual/$VERSION/escape.sh || RESULT=1
+diff -u expected/$VERSION/escape.sh actual/$VERSION/escape.sh
+cat ./testdata/$VERSION/escape.rd | ./target/roonda  > ./actual/$VERSION/escape.txt || RESULT=1
+diff -u expected/$VERSION/escape.txt actual/$VERSION/escape.txt
+
 exit $RESULT
 
