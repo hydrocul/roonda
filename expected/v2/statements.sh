@@ -1,9 +1,3 @@
-sh $ROONDA_TMP_PATH/roonda_684709aa769bd5d9ca52f76a55441efcbaaf5f01.sh
-perl $ROONDA_TMP_PATH/roonda_588d5ace0aacf7da9baf21f7422bd6ed63b5007d.pl
-ruby $ROONDA_TMP_PATH/roonda_f2938991edc48ead7fce2ca06e77c029fee9e60a.rb
-python2 $ROONDA_TMP_PATH/roonda_12490481c77aebd09586d30180bdde28cf0edd69.py
-python3 $ROONDA_TMP_PATH/roonda_12490481c77aebd09586d30180bdde28cf0edd69.py
-php $ROONDA_TMP_PATH/roonda_85c77d448806654da7960a34cc66c1560357b2be.php
 
 #################################################
 # roonda_684709aa769bd5d9ca52f76a55441efcbaaf5f01.sh:
@@ -85,3 +79,9 @@ php $ROONDA_TMP_PATH/roonda_85c77d448806654da7960a34cc66c1560357b2be.php
 # } else {
 #     echo "OK\n";
 # };
+sh $ROONDA_TMP_PATH/roonda_684709aa769bd5d9ca52f76a55441efcbaaf5f01.sh
+perl $ROONDA_TMP_PATH/roonda_588d5ace0aacf7da9baf21f7422bd6ed63b5007d.pl
+ruby $ROONDA_TMP_PATH/roonda_f2938991edc48ead7fce2ca06e77c029fee9e60a.rb
+python2 $ROONDA_TMP_PATH/roonda_12490481c77aebd09586d30180bdde28cf0edd69.py
+python3 $ROONDA_TMP_PATH/roonda_12490481c77aebd09586d30180bdde28cf0edd69.py
+php $ROONDA_TMP_PATH/roonda_85c77d448806654da7960a34cc66c1560357b2be.php

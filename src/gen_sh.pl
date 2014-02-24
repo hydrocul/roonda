@@ -36,7 +36,8 @@ sub genl_sh_command {
             if ($ver < 2 && $target_lang ne $LANG_SH) {
                 die "Unsupported language: $target_lang";
             }
-            my $source = genl_exec_lang(\@list, $list_close_line_no, $target_lang, $ver);
+            my ($source_head, $source_body) = genl_exec_lang(\@list, $list_close_line_no, $target_lang, $ver);
+            my $source = $source_head . $source_body;
             my ($lang, $bin_path, $bin_path_for_sh, $ext) = bin_path_to_lang($target_lang);
             my $bin_path_escaped = escape_sh_string($bin_path_for_sh);
             my $script_path = save_file($source, $ext, 1, '');

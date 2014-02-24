@@ -1,17 +1,17 @@
 
-# return: ($lang, $bin_path, $source, $ext)
+# return: ($lang, $bin_path, $source_head, $source_body, $ext)
 sub gent_exec {
     my ($token, $ver) = @_;
     if (astlib_is_list($token)) {
-        my ($lang, $bin_path, $bin_path_for_sh, $source, $ext) =
+        my ($lang, $bin_path, $bin_path_for_sh, $source_head, $source_body, $ext) =
             genl_exec(astlib_get_list($token), astlib_get_close_line_no($token), $ver);
-        ($lang, $bin_path, $source, $ext);
+        ($lang, $bin_path, $source_head, $source_body, $ext);
     } else {
         die create_dying_msg_unexpected($token);
     }
 }
 
-# return: ($lang, $bin_path, $bin_path_for_sh, $source, $ext)
+# return: ($lang, $bin_path, $bin_path_for_sh, $source_head, $source_body, $ext)
 sub genl_exec {
     my ($list, $list_close_line_no, $ver) = @_;
     my @list = @$list;
@@ -28,15 +28,15 @@ sub genl_exec {
         if ($ver < 2 && $lang ne $LANG_SH) {
             die "Unsupported language: $lang";
         }
-        my $source = genl_exec_lang(\@list, $list_close_line_no, $lang, $ver);
+        my ($source_head, $source_body) = genl_exec_lang(\@list, $list_close_line_no, $lang, $ver);
         my ($lang_, $bin_path, $bin_path_for_sh, $ext) = bin_path_to_lang($lang);
-        ($lang, $bin_path, $bin_path_for_sh, $source, $ext);
+        ($lang, $bin_path, $bin_path_for_sh, $source_head, $source_body, $ext);
     } else {
         die create_dying_msg_unexpected($head);
     }
 }
 
-# return: $source
+# return: ($source_head, $source_body)
 sub genl_exec_lang {
     my ($list, $list_close_line_no, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
@@ -62,13 +62,15 @@ sub genl_exec_lang {
     genl_exec_lang_ver(\@list, $list_close_line_no, $lang, $ver);
 }
 
+# return: ($source_head, $source_body)
 sub genl_exec_lang_ver {
     my ($list, $list_close_line_no, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
-    my $result = get_source_header($lang, $ver);
+    my $result_head = get_source_header($lang, $ver);
     my $istack = istack_create();
+    my $result = '';
     $result = $result . genl_langs_statements($list, $list_close_line_no, $istack, $lang, $ver);
     $result = $result . "\n";
-    $result;
+    ($result_head, $result);
 }
 

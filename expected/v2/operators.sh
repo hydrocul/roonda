@@ -1,8 +1,3 @@
-perl $ROONDA_TMP_PATH/roonda_ffeff3ca35dd050358ffa0d67398524a5dd9637f.pl
-ruby $ROONDA_TMP_PATH/roonda_f1881de283fa53af2c8e8ba75ce51ffa1870cf36.rb
-python2 $ROONDA_TMP_PATH/roonda_7f090a42bd7ee5ef57d09fec534c9c791aa0a6f3.py
-python3 $ROONDA_TMP_PATH/roonda_7f090a42bd7ee5ef57d09fec534c9c791aa0a6f3.py
-php $ROONDA_TMP_PATH/roonda_93f75d513dd89c0fe1f7850889e9e541c94bf3bc.php
 
 #################################################
 # roonda_ffeff3ca35dd050358ffa0d67398524a5dd9637f.pl:
@@ -51,3 +46,8 @@ php $ROONDA_TMP_PATH/roonda_93f75d513dd89c0fe1f7850889e9e541c94bf3bc.php
 # echo pow(3, 5);
 # echo "\n";
 # echo "abc" . "def" . "\n";
+perl $ROONDA_TMP_PATH/roonda_ffeff3ca35dd050358ffa0d67398524a5dd9637f.pl
+ruby $ROONDA_TMP_PATH/roonda_f1881de283fa53af2c8e8ba75ce51ffa1870cf36.rb
+python2 $ROONDA_TMP_PATH/roonda_7f090a42bd7ee5ef57d09fec534c9c791aa0a6f3.py
+python3 $ROONDA_TMP_PATH/roonda_7f090a42bd7ee5ef57d09fec534c9c791aa0a6f3.py
+php $ROONDA_TMP_PATH/roonda_93f75d513dd89c0fe1f7850889e9e541c94bf3bc.php

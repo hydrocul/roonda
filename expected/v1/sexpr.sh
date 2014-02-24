@@ -1,7 +1,3 @@
-echo Hello
-echo Hello World
-echo 'Hello   World!'
-cat $ROONDA_TMP_PATH/attachedfile.txt
 
 #################################################
 # attachedfile.txt:
@@ -9,3 +5,7 @@ cat $ROONDA_TMP_PATH/attachedfile.txt
 # 
 # Hello Hello
 # 
+echo Hello
+echo Hello World
+echo 'Hello   World!'
+cat $ROONDA_TMP_PATH/attachedfile.txt

@@ -118,9 +118,9 @@ if ($format_to) {
 }
 
 my ($exec_source, $bin_path, $ext) = sub {
-    my ($bin_path, $ext, $lang, $source);
-    ($lang, $bin_path, $source, $ext) = gent_exec($ast, $ver);
-    $source = $source . get_comments_about_saved_files($lang);
+    my ($bin_path, $ext, $lang, $source_head, $source_body);
+    ($lang, $bin_path, $source_head, $source_body, $ext) = gent_exec($ast, $ver);
+    my $source = $source_head . get_comments_about_saved_files($lang) . $source_body;
 
     ($source, $bin_path, $ext);
 }->();
