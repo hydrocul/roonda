@@ -88,7 +88,7 @@ sub gen_print_saved_files_by_sh {
             "${content}END_OF_ROONDA_SOURCE_FILE\n$splitter\n";
         $result = $result . $file_source;
     }
-    $source_head . "\n" . $splitter . "\n" . $result . "\n" . $source_body;
+    $source_head . $splitter . "\n" . $result . "\n" . $source_body;
 }
 
 

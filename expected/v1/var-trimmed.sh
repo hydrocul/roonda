@@ -1,3 +1,5 @@
+#!/bin/sh
+
 str='111 '
 echo -n "$str"
 echo -n '!

@@ -1,3 +1,5 @@
+#!/bin/sh
+
 echo abc > "$ROONDA_TMP_PATH"/abc.txt
 cat < "$ROONDA_TMP_PATH"/abc.txt | cat
 cat < "$ROONDA_TMP_PATH"/abc.txt

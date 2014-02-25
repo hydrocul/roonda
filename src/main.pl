@@ -118,14 +118,15 @@ if ($format_to) {
     exit(0);
 }
 
-my ($exec_source, $bin_path, $ext) = sub {
+my ($exec_source, $ext) = sub {
     my ($bin_path, $ext, $lang, $source_head, $source_body);
     ($lang, $bin_path, $source_head, $source_body, $ext) = gent_exec($ast, $ver);
     my $source;
     ($lang, $bin_path, $ext, $source) = gen_print_saved_files($source_head, $source_body,
                                                               $lang, $bin_path, $ext);
 
-    ($source, $bin_path, $ext);
+    $source = '#!' . $bin_path . "\n\n" . $source;
+    ($source, $ext);
 }->();
 
 if ($is_dryrun) {
@@ -134,11 +135,12 @@ if ($is_dryrun) {
 }
 
 my $script_path = $ENV{$ENV_TMP_PATH} . '/' . save_file($exec_source, $ext, '');
+`chmod 700 $script_path`;
 my $pid = fork;
 if ($pid) {
     wait;
 } elsif (defined $pid) {
-    exec($bin_path, $script_path);
+    exec($script_path);
 } else {
     die;
 }
