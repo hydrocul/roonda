@@ -1,51 +1,57 @@
 #!/bin/sh
 
 #################################################
-# roonda_16e4526e86ac3b9fb36516eb16be38ab1bad260f.sh:
+# roonda_d796d68e2464d27e191d38aa93159bcd7cce7d23.sh:
 #################################################
-cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_16e4526e86ac3b9fb36516eb16be38ab1bad260f.sh
+cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_d796d68e2464d27e191d38aa93159bcd7cce7d23.sh
 echo -n 'Hello, world!
 '
 echo -n 'Say "Hello, world!"
 '
+echo -n '\\
+'
 END_OF_ROONDA_SOURCE_FILE
 #################################################
-# roonda_a4328cbc57ff7f97ab899e7e07903bd4dc04701c.pl:
+# roonda_b49d7391a86738e98ef8eabee168b4e36aa473f2.pl:
 #################################################
-cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_a4328cbc57ff7f97ab899e7e07903bd4dc04701c.pl
+cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_b49d7391a86738e98ef8eabee168b4e36aa473f2.pl
 print "Hello, world!\n";
 print "Say \"Hello, world!\"\n";
+print "\\\n";
 END_OF_ROONDA_SOURCE_FILE
 #################################################
-# roonda_12dc3dff281961296eace29a627ebf12f1a0b750.rb:
+# roonda_193ceab912aaa16096a9dc89d612c2806ca03311.rb:
 #################################################
-cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_12dc3dff281961296eace29a627ebf12f1a0b750.rb
+cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_193ceab912aaa16096a9dc89d612c2806ca03311.rb
 print "Hello, world!\n"
 print "Say \"Hello, world!\"\n"
+print "\\\n"
 END_OF_ROONDA_SOURCE_FILE
 #################################################
-# roonda_7448a7bb27fb7a41f95676f3358b029255eaa73e.py:
+# roonda_4e3145305bce8b7b2dd7658f89e856ea13d6eb56.py:
 #################################################
-cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_7448a7bb27fb7a41f95676f3358b029255eaa73e.py
+cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_4e3145305bce8b7b2dd7658f89e856ea13d6eb56.py
 import sys
 
 sys.stdout.write(str("Hello, world!\n"))
 sys.stdout.write(str("Say \"Hello, world!\"\n"))
+sys.stdout.write(str("\\\n"))
 END_OF_ROONDA_SOURCE_FILE
 #################################################
-# roonda_0e79de2683533e3dbd39ecf76f45fea410271cdd.php:
+# roonda_8b751477b3c9ea5bcc4d3c41e10eb0072a94a598.php:
 #################################################
-cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_0e79de2683533e3dbd39ecf76f45fea410271cdd.php
+cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_8b751477b3c9ea5bcc4d3c41e10eb0072a94a598.php
 <?php
 
 echo "Hello, world!\n";
 echo "Say \"Hello, world!\"\n";
+echo "\\\n";
 END_OF_ROONDA_SOURCE_FILE
 #################################################
 
-sh $ROONDA_TMP_PATH/roonda_16e4526e86ac3b9fb36516eb16be38ab1bad260f.sh
-perl $ROONDA_TMP_PATH/roonda_a4328cbc57ff7f97ab899e7e07903bd4dc04701c.pl
-ruby $ROONDA_TMP_PATH/roonda_12dc3dff281961296eace29a627ebf12f1a0b750.rb
-python2 $ROONDA_TMP_PATH/roonda_7448a7bb27fb7a41f95676f3358b029255eaa73e.py
-python3 $ROONDA_TMP_PATH/roonda_7448a7bb27fb7a41f95676f3358b029255eaa73e.py
-php $ROONDA_TMP_PATH/roonda_0e79de2683533e3dbd39ecf76f45fea410271cdd.php
+sh $ROONDA_TMP_PATH/roonda_d796d68e2464d27e191d38aa93159bcd7cce7d23.sh
+perl $ROONDA_TMP_PATH/roonda_b49d7391a86738e98ef8eabee168b4e36aa473f2.pl
+ruby $ROONDA_TMP_PATH/roonda_193ceab912aaa16096a9dc89d612c2806ca03311.rb
+python2 $ROONDA_TMP_PATH/roonda_4e3145305bce8b7b2dd7658f89e856ea13d6eb56.py
+python3 $ROONDA_TMP_PATH/roonda_4e3145305bce8b7b2dd7658f89e856ea13d6eb56.py
+php $ROONDA_TMP_PATH/roonda_8b751477b3c9ea5bcc4d3c41e10eb0072a94a598.php

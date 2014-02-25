@@ -4,25 +4,31 @@ sh v2
 
 (sh
  (print "Hello, world!\n")
- (print "Say \"Hello, world!\"\n"))
+ (print "Say \"Hello, world!\"\n")
+ (print "\\\n"))
 
 (perl
  (print "Hello, world!\n")
- (print "Say \"Hello, world!\"\n"))
+ (print "Say \"Hello, world!\"\n")
+ (print "\\\n"))
 
 (ruby
  (print "Hello, world!\n")
- (print "Say \"Hello, world!\"\n"))
+ (print "Say \"Hello, world!\"\n")
+ (print "\\\n"))
 
 (python2
  (print "Hello, world!\n")
- (print "Say \"Hello, world!\"\n"))
+ (print "Say \"Hello, world!\"\n")
+ (print "\\\n"))
 
 (python3
  (print "Hello, world!\n")
- (print "Say \"Hello, world!\"\n"))
+ (print "Say \"Hello, world!\"\n")
+ (print "\\\n"))
 
 (php
  (print "Hello, world!\n")
- (print "Say \"Hello, world!\"\n"))
+ (print "Say \"Hello, world!\"\n")
+ (print "\\\n"))
 
