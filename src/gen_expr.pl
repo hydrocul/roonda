@@ -42,13 +42,13 @@ sub gent_langs_expr {
 }
 
 sub genl_langs_expr {
-    my ($list, $op_order, $close_line_no, $istack, $lang, $ver) = @_;
+    my ($list, $op_order, $list_close_line_no, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     # LANG_SH では expr コマンドのパラメータとして計算式を組み立てる
     my @list = @$list;
     my $head = shift(@list);
     unless (defined($head)) {
-        die create_dying_msg_unexpected_closing($close_line_no);
+        die create_dying_msg_unexpected_closing($list_close_line_no);
     }
     if (astlib_is_symbol_or_string($head)) {
         my $symbol = astlib_get_symbol_or_string($head);
@@ -56,21 +56,21 @@ sub genl_langs_expr {
             if ($lang eq $LANG_SH) {
                 die create_dying_msg_unexpected($head);
             }
-            genl_langs_apply(\@list, $close_line_no, $lang, $ver);
+            genl_langs_apply(\@list, $list_close_line_no, $lang, $ver);
         } elsif ($symbol eq $KEYWD_STDIN_DATA) {
             if ($lang eq $LANG_SH) {
                 die create_dying_msg_unexpected($head);
             }
-            genl_langs_stdin_data(\@list, $close_line_no, $lang, $ver);
+            genl_langs_stdin_data(\@list, $list_close_line_no, $lang, $ver);
         } elsif ($symbol eq '+' || $symbol eq '-') {
             genl_langs_binop($symbol, $OP_ORDER_PLUS, $op_order, '',
-                             \@list, $close_line_no, $lang, $ver);
+                             \@list, $list_close_line_no, $lang, $ver);
         } elsif ($symbol eq '*' || $symbol eq '/') {
             genl_langs_binop($symbol, $OP_ORDER_MULTIPLY, $op_order, '',
-                             \@list, $close_line_no, $lang, $ver);
+                             \@list, $list_close_line_no, $lang, $ver);
         } elsif ($symbol eq '%') {
             genl_langs_binop($symbol, $OP_ORDER_MULTIPLY, $op_order, 1,
-                             \@list, $close_line_no, $lang, $ver);
+                             \@list, $list_close_line_no, $lang, $ver);
         } elsif ($symbol eq '**') {
             if ($lang eq $LANG_SH) {
                 die create_dying_msg_unexpected($head);
@@ -78,11 +78,13 @@ sub genl_langs_expr {
             if ($lang eq $LANG_PERL || $lang eq $LANG_RUBY ||
                 $lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
                 genl_langs_binop($symbol, $OP_ORDER_POWER, $op_order, '',
-                                 \@list, $close_line_no, $lang, $ver);
+                                 \@list, $list_close_line_no, $lang, $ver);
             } elsif ($lang eq $LANG_PHP) {
-                genl_langs_apply_1('pow', \@list, $close_line_no, 2, $lang, $ver);
+                genl_langs_apply_1('pow', \@list, $list_close_line_no, 2, $lang, $ver);
             }
             # TODO pythonの演算子優先順位は確認済み、perl, rubyは未確認
+        } elsif ($symbol eq $KEYWD_REF) {
+            genl_langs_ref(\@list, $list_close_line_no, $istack, $lang, $ver);
         } elsif ($symbol eq $KEYWD_STRCAT) {
             if ($lang eq $LANG_SH) {
                 die create_dying_msg_unexpected($head);
@@ -105,13 +107,13 @@ sub genl_langs_expr {
                 die;
             }
             genl_langs_binop($op, $op_order_plus, $op_order, '',
-                             \@list, $close_line_no, $lang, $ver);
+                             \@list, $list_close_line_no, $lang, $ver);
         } else {
             if ($lang eq $LANG_SH) {
                 die create_dying_msg_unexpected($head);
             }
             unshift(@list, $head);
-            genl_langs_apply(\@list, $close_line_no, $lang, $ver);
+            genl_langs_apply(\@list, $list_close_line_no, $lang, $ver);
         }
     } else {
         die create_dying_msg_unexpected($head);
@@ -248,6 +250,43 @@ sub gent_langs_boolean {
         } else {
             'FALSE'
         }
+    } else {
+        die;
+    }
+}
+
+sub genl_langs_ref {
+    my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
+    my @list = @$list;
+    my $head = shift(@list);
+    unless (defined($head)) {
+        die create_dying_msg_unexpected_closing($list_close_line_no);
+    }
+    if (astlib_is_symbol($head)) {
+        if (@list) {
+            die create_dying_msg_unexpected(shift(@list));
+        }
+        my $varname = astlib_get_symbol($head);
+        genl_langs_ref_varname($varname, $istack, $lang, $ver);
+    } else {
+        die create_dying_msg_unexpected($head);
+    }
+}
+
+sub genl_langs_ref_varname {
+    my ($varname, $istack, $lang, $ver) = @_;
+    die if ($lang eq $LANG_SEXPR);
+    die if ($lang ne $LANG_SH && $ver < 2);
+    if ($lang eq $LANG_SH) {
+        '$' . $varname;
+    } elsif ($lang eq $LANG_PERL) {
+        '$' . $varname;
+    } elsif ($lang eq $LANG_RUBY) {
+        $varname;
+    } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+        $varname;
+    } elsif ($lang eq $LANG_PHP) {
+        '$' . $varname;
     } else {
         die;
     }

@@ -1,20 +1,26 @@
 sh v2
 
 (sh
- (assign a 1))
+ (assign a "abc\n")
+ (print (ref a)))
 
 (perl
- (assign a 1))
+ (assign a "abc\n")
+ (print (ref a)))
 
 (ruby
- (assign a 1))
+ (assign a "abc\n")
+ (print (ref a)))
 
 (python2
- (assign a 1))
+ (assign a "abc\n")
+ (print (ref a)))
 
 (python3
- (assign a 1))
+ (assign a "abc\n")
+ (print (ref a)))
 
 (php
- (assign a 1))
+ (assign a "abc\n")
+ (print (ref a)))
 

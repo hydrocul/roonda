@@ -38,7 +38,6 @@ my $KEYWD_SH_EXPORT    = 'export';
 my $KEYWD_SH_PIPE      = 'pipe';
 my $KEYWD_SH_ROONDA    = 'roonda';
 my $KEYWD_SH_BACKTICKS = 'backticks';
-my $KEYWD_SH_REF       = 'ref';
 
 my $KEYWD_STDIN_DATA   = 'stdin_data';
 
@@ -46,6 +45,7 @@ my $KEYWD_IF           = 'if';
 my $KEYWD_APPLY        = 'apply';
 my $KEYWD_PRINT        = 'print';
 my $KEYWD_ASSIGN       = 'assign';
+my $KEYWD_REF          = 'ref';
 my $KEYWD_STRCAT       = 'strcat';
 my $KEYWD_TRUE         = 'true';
 my $KEYWD_FALSE        = 'false';

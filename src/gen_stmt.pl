@@ -184,7 +184,7 @@ sub genl_langs_assign_1 {
     my $head = shift(@list);
     die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
     die create_dying_msg_unexpected(shift(@list)) if (@list);
-    my $source = gent_sh_argument($head);
+    my $source = gent_langs_expr($head, $OP_ORDER_MIN, $istack, $lang, $ver);
     my $result;
     if ($lang eq $LANG_PERL) {
         $result = '$' . $varname . ' = ' . $source;

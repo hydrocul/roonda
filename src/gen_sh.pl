@@ -221,6 +221,7 @@ sub gent_sh_argument {
 
 sub genl_sh_argument {
     my ($list, $list_close_line_no, $ver) = @_;
+    my $istack = istack_create(); # TODO istack
     my @list = @$list;
     my $head = shift(@list);
     unless (defined($head)) {
@@ -230,8 +231,8 @@ sub genl_sh_argument {
         my $symbol = astlib_get_symbol_or_string($head);
         if ($symbol eq $KEYWD_SH_BACKTICKS) {
             '"' . genl_sh_argument_backticks(\@list, $list_close_line_no, $ver) . '"';
-        } elsif ($symbol eq $KEYWD_SH_REF) {
-            '"' . genl_sh_argument_ref(\@list, $list_close_line_no, $ver) . '"';
+        } elsif ($symbol eq $KEYWD_REF) {
+            '"' . genl_langs_ref(\@list, $list_close_line_no, $istack, $LANG_SH, $ver) . '"';
         } elsif ($symbol eq $KEYWD_STRCAT) {
             genl_sh_argument_strcat(\@list, $list_close_line_no, $ver);
         } elsif ($symbol eq '+' || $symbol eq '-' ||
@@ -254,24 +255,6 @@ sub genl_sh_argument_backticks {
     my ($list, $list_close_line_no, $ver) = @_;
     my $source = genl_sh_command($list, $list_close_line_no, 1, 1, '', 1, '', $ver);
     escape_sh_backticks($source);
-}
-
-sub genl_sh_argument_ref {
-    my ($list, $list_close_line_no, $ver) = @_;
-    my @list = @$list;
-    my $head = shift(@list);
-    unless (defined($head)) {
-        die create_dying_msg_unexpected_closing($list_close_line_no);
-    }
-    if (astlib_is_symbol($head)) {
-        if (@list) {
-            die create_dying_msg_unexpected(shift(@list));
-        }
-        my $symbol = astlib_get_symbol($head);
-        '$' . $symbol;
-    } else {
-        die create_dying_msg_unexpected($head);
-    }
 }
 
 sub genl_sh_argument_strcat {
