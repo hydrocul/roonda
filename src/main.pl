@@ -9,6 +9,7 @@ my $ver = '';
 my $format_from = '';
 my $source_filepath = '';
 my $format_to = ''; # オブジェクト生成の場合のみ
+my $is_dryrun = '';
 
 while () {
     last if (!@ARGV);
@@ -120,7 +121,9 @@ if ($format_to) {
 my ($exec_source, $bin_path, $ext) = sub {
     my ($bin_path, $ext, $lang, $source_head, $source_body);
     ($lang, $bin_path, $source_head, $source_body, $ext) = gent_exec($ast, $ver);
-    my $source = $source_head . get_comments_about_saved_files($lang) . $source_body;
+    my $source;
+    ($lang, $bin_path, $ext, $source) = gen_print_saved_files($source_head, $source_body,
+                                                              $lang, $bin_path, $ext);
 
     ($source, $bin_path, $ext);
 }->();

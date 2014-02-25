@@ -42,9 +42,6 @@ sub save_file_from_tempfile {
             push(@saved_files, $target_name);
         }
         $saved_files_content{$target_name} = $content;
-    }
-
-    if ($is_dryrun) {
         `rm $filename`;
     } elsif ( -e $target_path) {
         `rm $filename`;
@@ -60,28 +57,38 @@ sub get_saved_file {
     $saved_files_content{$name};
 }
 
-sub get_comments_about_saved_files {
-    my ($lang) = @_;
-    my $roonda_tmp_path = $ENV{$ENV_TMP_PATH};
+sub gen_print_saved_files {
+    my ($source_head, $source_body, $lang, $bin_path, $ext) = @_;
+    if (!@saved_files) {
+        return ($lang, $bin_path, $ext, $source_head . $source_body);
+    }
+    if ($lang eq $LANG_SH) {
+        return ($lang, $bin_path, $ext, gen_print_saved_files_by_sh($source_head, $source_body));
+    }
+    my $main_filename = save_file($source_head . $source_body, $ext, 1, undef);
+    my $sh_source = escape_sh_string($bin_path) . ' ' .
+        '$' . $ENV_TMP_PATH . '/' . escape_sh_string($main_filename) . "\n";
+    ($bin_path, $ext) = lang_to_bin_path($LANG_SH);
+    ($LANG_SH, $bin_path, $ext, gen_print_saved_files_by_sh(get_source_header($LANG_SH, 1),
+                                                            $sh_source));
+}
+
+sub gen_print_saved_files_by_sh {
+    my ($source_head, $source_body) = @_;
+    my ($bin_path, $ext) = lang_to_bin_path($LANG_SH);
     my $result = "";
+    my $splitter = "#################################################";
     foreach my $file_name (@saved_files) {
         my $content = $saved_files_content{$file_name};
-        $result = $result . "\n";
-        my $source_comment;
-        if ($lang eq $LANG_SH) {
-            my $splitter = "#################################################";
-            my $header = "$splitter\n# $file_name:\n$splitter\n";
-            $source_comment = $header . escape_sh_multiline_comment($content);
-        } elsif ($lang eq $LANG_PERL) {
-            my $splitter = "#################################################";
-            my $header = "$splitter\n# $file_name:\n$splitter\n";
-            $source_comment = $header . escape_perl_multiline_comment($content);
-        } else {
-            die;
+        if ($content !~ /\n\z/) {
+            $content = $content . "\n";
         }
-        $result = $result . $source_comment;
+        my $file_source = "# $file_name:\n$splitter\ncat " .
+            "<<\\END_OF_ROONDA_SOURCE_FILE > \$$ENV_TMP_PATH/$file_name\n" .
+            "${content}END_OF_ROONDA_SOURCE_FILE\n$splitter\n";
+        $result = $result . $file_source;
     }
-    $result;
+    $source_head . "\n" . $splitter . "\n" . $result . "\n" . $source_body;
 }
 
 

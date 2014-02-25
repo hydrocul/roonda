@@ -2,14 +2,19 @@
 #################################################
 # attachedfile.txt:
 #################################################
-# 
-# Hello Hello
-# 
+cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/attachedfile.txt
 
+Hello Hello
+
+END_OF_ROONDA_SOURCE_FILE
 #################################################
 # roonda_3772d206f212590b290e2779a784416fef72956e.pl:
 #################################################
-# print "Hello\n";
+cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_3772d206f212590b290e2779a784416fef72956e.pl
+print "Hello\n";
+END_OF_ROONDA_SOURCE_FILE
+#################################################
+
 echo Hello
 echo Hello World
 echo 'Hello   World!'
