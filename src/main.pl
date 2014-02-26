@@ -10,6 +10,7 @@ my $format_from = '';
 my $source_filepath = '';
 my $format_to = ''; # オブジェクト生成の場合のみ
 my $is_dryrun = '';
+my $is_version = '';
 
 while () {
     last if (!@ARGV);
@@ -36,6 +37,8 @@ while () {
         $is_dryrun = 1;
     } elsif ($arg eq '--experimental') {
         $is_experimental = 1;
+    } elsif ($arg eq '--version') {
+        $is_version = 1;
     } elsif ($arg =~ /\A-/) {
         die "Unknown argument: $arg";
     } else {
@@ -48,6 +51,10 @@ if (defined($ENV{$ENV_EXPERIMENTAL}) && $ENV{$ENV_EXPERIMENTAL} ne '') {
     $is_experimental = 1;
 }
 
+if ($is_version) {
+    print "roonda $MAJOR_VERSION.$MINOR_VERSION\n";
+    exit 0;
+}
 
 my $run_type = '';
 
