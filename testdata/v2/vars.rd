@@ -6,7 +6,7 @@ sh v2
 
 (perl
  (assign a "abc\n")
- (print (ref a)))
+ (print a))
 
 (ruby
  (assign a "abc\n")

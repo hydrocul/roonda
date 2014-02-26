@@ -16,13 +16,15 @@ sub genl_langs_statements {
     my $indent = istack_get_indent($istack);
     my $result = '';
     foreach my $elem (@$list) {
-        my $source = gent_langs_statement($elem, $istack, $lang, $ver);
+        my $source;
+        ($source, $istack) = gent_langs_statement($elem, $istack, $lang, $ver);
         $result = $result . "\n" . $indent if ($result);
         $result = $result . $source;
     }
     $result;
 }
 
+# return: ($source, $istack)
 sub gent_langs_statement {
     my ($token, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
@@ -34,11 +36,12 @@ sub gent_langs_statement {
     }
 }
 
+# return: ($source, $istack)
 sub genl_langs_statement {
     my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     if ($lang eq $LANG_SH) {
-        return genl_sh_statement($list, $istack, $list_close_line_no, $ver);
+        return (genl_sh_statement($list, $list_close_line_no, $istack, $ver), $istack); # TODO istack
     }
     my $indent = istack_get_indent($istack); # TODO istack
     my @list = @$list;
@@ -54,7 +57,8 @@ sub genl_langs_statement {
         } elsif ($symbol eq $KEYWD_PRINT) {
             $expr_source = genl_langs_print(\@list, $list_close_line_no, $istack, $lang, $ver);
         } elsif ($symbol eq $KEYWD_ASSIGN) {
-            $expr_source = genl_langs_assign(\@list, $list_close_line_no, $istack, $lang, $ver);
+            ($expr_source, $istack) =
+                genl_langs_assign(\@list, $list_close_line_no, $istack, $lang, $ver);
         }
     }
     if (!defined($expr_source)) {
@@ -62,13 +66,13 @@ sub genl_langs_statement {
         $expr_source = genl_langs_expr(\@list, $OP_ORDER_MIN, $list_close_line_no, $istack, $lang, $ver);
     }
     if ($lang eq $LANG_PERL) {
-        $expr_source . ";";
+        ($expr_source . ";", $istack);
     } elsif ($lang eq $LANG_RUBY) {
-        $expr_source;
+        ($expr_source, $istack);
     } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
-        $expr_source;
+        ($expr_source, $istack);
     } elsif ($lang eq $LANG_PHP) {
-        $expr_source . ";";
+        ($expr_source . ";", $istack);
     } else {
         die;
     }
@@ -97,7 +101,7 @@ sub genl_langs_if {
 
     my $cond_source;
     if ($lang eq $LANG_SH) {
-        $cond_source = gent_sh_command($cond_elem, '', '', '', 1, '', $ver); # TODO istack
+        $cond_source = gent_sh_command($cond_elem, '', '', '', 1, '', $istack, $ver);
     } else {
         $cond_source = gent_langs_expr($cond_elem, $OP_ORDER_MIN, $cond_istack, $lang, $ver);
     }
@@ -161,6 +165,7 @@ sub genl_langs_print {
     }
 }
 
+# return: ($source, $istack)
 sub genl_langs_assign {
     my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
@@ -168,17 +173,19 @@ sub genl_langs_assign {
     my $head = shift(@list);
     die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
     if (astlib_is_symbol($head)) {
+        my $source;
         genl_langs_assign_1(astlib_get_symbol($head), \@list, $list_close_line_no, $istack, $lang, $ver);
     } else {
         die create_dying_msg_unexpected($head);
     }
 }
 
+# return: ($source, $istack)
 sub genl_langs_assign_1 {
     my ($varname, $list, $list_close_line_no, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     if ($lang eq $LANG_SH) {
-        return genl_sh_assign_1($varname, $list, $list_close_line_no, $istack, $ver);
+        return (genl_sh_assign_1($varname, $list, $list_close_line_no, $istack, $ver), $istack); # TODO istack
     }
     my @list = @$list;
     my $head = shift(@list);
@@ -187,15 +194,29 @@ sub genl_langs_assign_1 {
     my $source = gent_langs_expr($head, $OP_ORDER_MIN, $istack, $lang, $ver);
     my $result;
     if ($lang eq $LANG_PERL) {
-        $result = '$' . $varname . ' = ' . $source;
+        if (istack_var_exists($istack, $varname)) {
+            if (istack_perl_var_is_scalar($istack, $varname)) {
+                $result = '$' . $varname . ' = ' . $source;
+            } else {
+                die; # TODO
+            }
+        } else {
+            $result = 'my $' . $varname . ' = ' . $source;
+            $istack = istack_perl_var_declare_scalar($istack, $varname);
+        }
     } elsif ($lang eq $LANG_RUBY) {
         $result = $varname . ' = ' . $source;
+        # TODO istack
     } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
         $result = $varname . ' = ' . $source;
+        # TODO istack
     } elsif ($lang eq $LANG_PHP) {
         $result = '$' . $varname . ' = ' . $source;
+        # TODO istack
+    } else {
+        die;
     }
-    $result;
+    ($result, $istack);
 }
 
 

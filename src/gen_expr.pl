@@ -12,6 +12,16 @@ sub gent_langs_expr {
             gent_langs_boolean(1, $lang, $ver);
         } elsif ($symbol eq $KEYWD_FALSE) {
             gent_langs_boolean('', $lang, $ver);
+        } elsif (istack_var_exists($istack, $symbol)) {
+            if ($lang eq $LANG_PERL) {
+                if (istack_perl_var_is_scalar($istack, $symbol)) {
+                    genl_langs_ref_varname($symbol, $istack, $lang, $ver);
+                } else {
+                    die;
+                }
+            } else {
+                die create_dying_msg_unexpected($token); # TODO
+            }
         } else {
             die create_dying_msg_unexpected($token);
         }
