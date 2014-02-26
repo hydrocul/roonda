@@ -48,7 +48,9 @@ sub genl_sh_command {
         if ($symbol eq $KEYWD_IF) {
             return genl_langs_if(\@list, $list_close_line_no, $istack, $LANG_SH, $ver);
         } elsif ($symbol eq $KEYWD_PRINT) {
-            return genl_langs_print(\@list, $list_close_line_no, $istack, $LANG_SH, $ver);
+            my $source;
+            ($source, $istack) = genl_langs_print(\@list, $list_close_line_no, $istack, $LANG_SH, $ver); # TODO istack
+            return $source;
         } elsif ($symbol eq $KEYWD_SH_EXEC) {
             unless ($enable_exec) {
                 die create_dying_msg_unexpected($head);
@@ -134,7 +136,7 @@ sub genl_sh_export {
 
 sub genl_sh_pipe {
     my ($list, $list_close_line_no, $ver) = @_;
-    my $istack = istack_create(); # TODO istack
+    my $istack = istack_create($LANG_SH, $ver); # TODO istack
     my @list = @$list;
     my $result = '';
     foreach my $elem (@list) {
@@ -226,7 +228,7 @@ sub gent_sh_argument {
 
 sub genl_sh_argument {
     my ($list, $list_close_line_no, $ver) = @_;
-    my $istack = istack_create(); # TODO istack
+    my $istack = istack_create($LANG_SH, $ver); # TODO istack
     my @list = @$list;
     my $head = shift(@list);
     unless (defined($head)) {
@@ -245,7 +247,7 @@ sub genl_sh_argument {
             if ($ver < 2) {
                 die "Unsupported: $symbol";
             }
-            my $istack = istack_create(); # TODO istack
+            my $istack = istack_create($LANG_SH, $ver); # TODO istack
             my $source = genl_langs_expr($list, $OP_ORDER_MIN, $list_close_line_no, $istack, $LANG_SH, $ver);
             escape_sh_backticks('expr ' . $source);
         } else {
@@ -258,7 +260,7 @@ sub genl_sh_argument {
 
 sub genl_sh_argument_backticks {
     my ($list, $list_close_line_no, $ver) = @_;
-    my $istack = istack_create(); # TODO istack
+    my $istack = istack_create($LANG_SH, $ver); # TODO istack
     my $source = genl_sh_command($list, $list_close_line_no, 1, 1, '', 1, '', $istack, $ver);
     escape_sh_backticks($source);
 }

@@ -1,6 +1,11 @@
 Hello, world!
 Say "Hello, world!"
 \
+あ
+Hello, world!
+Say "Hello, world!"
+\
+あ
 Hello, world!
 Say "Hello, world!"
 \
@@ -13,6 +18,4 @@ Say "Hello, world!"
 Hello, world!
 Say "Hello, world!"
 \
-Hello, world!
-Say "Hello, world!"
-\
+あ

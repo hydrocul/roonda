@@ -5,6 +5,7 @@ sub gent_obj {
         if ($lang eq $LANG_SEXPR) {
             escape_sexpr_string(astlib_get_symbol_or_string($token));
         } elsif ($lang eq $LANG_PERL) {
+            # TODO use utf8 のチェック
             escape_perl_string(astlib_get_symbol_or_string($token));
         } elsif ($lang eq $LANG_RUBY) {
             escape_ruby_string(astlib_get_symbol_or_string($token));

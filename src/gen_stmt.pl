@@ -3,13 +3,17 @@ sub gent_langs_statements {
     my ($token, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     if (astlib_is_list($token)) {
-        genl_langs_statements(astlib_get_list($token),
-                              astlib_get_close_line_no($token), $istack, $lang, $ver);
+        my $source;
+        ($source, $istack) =
+            genl_langs_statements(astlib_get_list($token),
+                                  astlib_get_close_line_no($token), $istack, $lang, $ver); # TODO istack
+        $source;
     } else {
         die create_dying_msg_unexpected($token);
     }
 }
 
+# return: ($source, $istack)
 sub genl_langs_statements {
     my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
@@ -21,7 +25,7 @@ sub genl_langs_statements {
         $result = $result . "\n" . $indent if ($result);
         $result = $result . $source;
     }
-    $result;
+    ($result, $istack);
 }
 
 # return: ($source, $istack)
@@ -55,7 +59,8 @@ sub genl_langs_statement {
         if ($symbol eq $KEYWD_IF) {
             $expr_source = genl_langs_if(\@list, $list_close_line_no, $istack, $lang, $ver);
         } elsif ($symbol eq $KEYWD_PRINT) {
-            $expr_source = genl_langs_print(\@list, $list_close_line_no, $istack, $lang, $ver);
+            ($expr_source, $istack) =
+                genl_langs_print(\@list, $list_close_line_no, $istack, $lang, $ver);
         } elsif ($symbol eq $KEYWD_ASSIGN) {
             ($expr_source, $istack) =
                 genl_langs_assign(\@list, $list_close_line_no, $istack, $lang, $ver);
@@ -103,7 +108,7 @@ sub genl_langs_if {
     if ($lang eq $LANG_SH) {
         $cond_source = gent_sh_command($cond_elem, '', '', '', 1, '', $istack, $ver);
     } else {
-        $cond_source = gent_langs_expr($cond_elem, $OP_ORDER_MIN, $cond_istack, $lang, $ver);
+        ($cond_source, $cond_istack) = gent_langs_expr($cond_elem, $OP_ORDER_MIN, $cond_istack, $lang, $ver); # TODO istack
     }
     my $then_source = gent_langs_statements($then_elem, $then_istack, $lang, $ver);
     if (defined($else_elem)) {
@@ -138,6 +143,7 @@ sub genl_langs_if {
     }
 }
 
+# return: ($source, $istack)
 sub genl_langs_print {
     my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
@@ -148,18 +154,18 @@ sub genl_langs_print {
     if ($lang eq $LANG_SH) {
         $source = gent_sh_argument($elem, $ver);
     } else {
-        $source = gent_langs_expr($elem, $OP_ORDER_ARG_COMMA, $istack, $lang, $ver);
+        ($source, $istack) = gent_langs_expr($elem, $OP_ORDER_ARG_COMMA, $istack, $lang, $ver);
     }
     if ($lang eq $LANG_SH) {
-        "echo -n $source";
+        ("echo -n $source", $istack);
     } elsif ($lang eq $LANG_PERL) {
-        "print $source";
+        ("print encode('utf-8', $source)", $istack);
     } elsif ($lang eq $LANG_RUBY) {
-        "print $source";
+        ("print $source", $istack);
     } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
-        "sys.stdout.write(str($source))";
+        ("sys.stdout.write(str($source))", $istack);
     } elsif ($lang eq $LANG_PHP) {
-        "echo $source";
+        ("echo $source", $istack);
     } else {
         die;
     }
@@ -191,10 +197,11 @@ sub genl_langs_assign_1 {
     my $head = shift(@list);
     die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
     die create_dying_msg_unexpected(shift(@list)) if (@list);
-    my $source = gent_langs_expr($head, $OP_ORDER_MIN, $istack, $lang, $ver);
+    my $source;
+    ($source, $istack) = gent_langs_expr($head, $OP_ORDER_MIN, $istack, $lang, $ver);
     my $result;
     if ($lang eq $LANG_PERL) {
-        if (istack_var_exists($istack, $varname)) {
+        if (istack_perl_var_exists($istack, $varname)) {
             if (istack_perl_var_is_scalar($istack, $varname)) {
                 $result = '$' . $varname . ' = ' . $source;
             } else {

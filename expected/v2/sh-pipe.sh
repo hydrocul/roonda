@@ -1,14 +1,16 @@
 #!/bin/sh
 
 #################################################
-# roonda_3772d206f212590b290e2779a784416fef72956e.pl:
+# roonda_c39258f878889e31cebbf69971813b0bb66640c0.pl:
 #################################################
-cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_3772d206f212590b290e2779a784416fef72956e.pl
-print "Hello\n";
+cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_c39258f878889e31cebbf69971813b0bb66640c0.pl
+use Encode qw/encode/;
+
+print encode('utf-8', "Hello\n");
 END_OF_ROONDA_SOURCE_FILE
 #################################################
 
-echo 'Hey!' | cat | perl $ROONDA_TMP_PATH/roonda_3772d206f212590b290e2779a784416fef72956e.pl
+echo 'Hey!' | cat | perl $ROONDA_TMP_PATH/roonda_c39258f878889e31cebbf69971813b0bb66640c0.pl
 echo abc > "$ROONDA_TMP_PATH"/abc.txt
 cat < "$ROONDA_TMP_PATH"/abc.txt | cat
 cat < "$ROONDA_TMP_PATH"/abc.txt

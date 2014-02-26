@@ -62,6 +62,8 @@ sub get_source_header {
         "import sys\n\n";
     } elsif ($lang eq $LANG_PHP) {
         "<?php\n\n";
+    } elsif ($lang eq $LANG_PERL) {
+        "use Encode qw/encode/;\n\n"; # TODO 暫定
     } else {
         '';
     }

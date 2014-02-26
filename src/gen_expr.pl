@@ -1,4 +1,5 @@
 
+# return: ($source, $istack)
 sub gent_langs_expr {
     my ($token, $op_order, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
@@ -9,43 +10,44 @@ sub gent_langs_expr {
         }
         my $symbol = astlib_get_symbol($token);
         if ($symbol eq $KEYWD_TRUE) {
-            gent_langs_boolean(1, $lang, $ver);
+            (gent_langs_boolean(1, $lang, $ver), $istack); # TODO istack
         } elsif ($symbol eq $KEYWD_FALSE) {
-            gent_langs_boolean('', $lang, $ver);
-        } elsif (istack_var_exists($istack, $symbol)) {
-            if ($lang eq $LANG_PERL) {
-                if (istack_perl_var_is_scalar($istack, $symbol)) {
-                    genl_langs_ref_varname($symbol, $istack, $lang, $ver);
-                } else {
-                    die;
-                }
-            } else {
-                die create_dying_msg_unexpected($token); # TODO
-            }
+            (gent_langs_boolean('', $lang, $ver), $istack); # TODO istack
         } else {
+            if ($lang eq $LANG_PERL) {
+                if (istack_perl_var_exists($istack, $symbol)) {
+                    if (istack_perl_var_is_scalar($istack, $symbol)) {
+                        return (genl_langs_ref_varname($symbol, $istack, $lang, $ver), $istack); # TODO istack
+                    } else {
+                        die;
+                    }
+                }
+            }
             die create_dying_msg_unexpected($token);
         }
     } elsif (astlib_is_string($token)) {
         if ($lang eq $LANG_SH) {
             die create_dying_msg_unexpected($token);
         } elsif ($lang eq $LANG_PERL) {
-            escape_perl_string(astlib_get_string($token));
+            my $str = astlib_get_string($token);
+            $istack = istack_perl_check_string_utf8($istack, $str);
+            (escape_perl_string($str), $istack);
         } elsif ($lang eq $LANG_RUBY) {
-            escape_ruby_string(astlib_get_string($token));
+            (escape_ruby_string(astlib_get_string($token)), $istack); # TODO istack
         } elsif ($lang eq $LANG_PYTHON2) {
-            escape_python2_string(astlib_get_string($token));
+            (escape_python2_string(astlib_get_string($token)), $istack); # TODO istack
         } elsif ($lang eq $LANG_PYTHON3) {
-            escape_python3_string(astlib_get_string($token));
+            (escape_python3_string(astlib_get_string($token)), $istack); # TODO istack
         } elsif ($lang eq $LANG_PHP) {
-            escape_php_string(astlib_get_string($token));
+            (escape_php_string(astlib_get_string($token)), $istack); # TODO istack
         } else {
             die "Died: $lang";
         }
     } elsif (astlib_is_integer($token)) {
-        astlib_get_integer($token);
+        (astlib_get_integer($token), $istack); # TODO istack
     } elsif (astlib_is_list($token)) {
-        genl_langs_expr(astlib_get_list($token), $op_order,
-                        astlib_get_close_line_no($token), $istack, $lang, $ver);
+        (genl_langs_expr(astlib_get_list($token), $op_order,
+                         astlib_get_close_line_no($token), $istack, $lang, $ver), $istack); # TODO istack
     } else {
         die create_dying_msg_unexpected($token);
     }
@@ -160,7 +162,7 @@ sub genl_langs_apply_1 {
     }
     my $result = '';
     foreach my $elem (@list) {
-        my $source = gent_langs_argument($elem, $OP_ORDER_ARG_COMMA, $lang, $ver);
+        my ($source, $istack) = gent_langs_argument($elem, $OP_ORDER_ARG_COMMA, $lang, $ver); # TODO istack
         $result = $result . ', ' if ($result);
         $result = $result . $source;
     }
@@ -189,7 +191,7 @@ sub genl_langs_stdin_data {
 
 sub genl_langs_binop {
     my ($op, $op_order, $outer_op_order, $is_bin_only, $list, $list_close_line_no, $lang, $ver) = @_;
-    my $istack = istack_create(); # TODO istack
+    my $istack = istack_create($lang, $ver); # TODO istack
     die if ($lang eq $LANG_SEXPR);
     # LANG_SH では expr コマンドのパラメータとして計算式を組み立てる
     my @list = @$list;
@@ -212,7 +214,8 @@ sub genl_langs_binop {
                 return $result;
             }
         }
-        my $source = gent_langs_expr($head, $op_order, $istack, $lang, $ver);
+        my $source;
+        ($source, $istack) = gent_langs_expr($head, $op_order, $istack, $lang, $ver); # TODO istack
         if ($result) {
             if ($lang eq $LANG_SH) {
                 $result = $result . ' ' . escape_sh_string($op) . ' ';
@@ -224,9 +227,10 @@ sub genl_langs_binop {
     }
 }
 
+# return: ($source, $istack)
 sub gent_langs_argument {
     my ($token, $op_order, $lang, $ver) = @_;
-    my $istack = istack_create(); # TODO istack
+    my $istack = istack_create($lang, $ver); # TODO istack
     die if ($lang eq $LANG_SEXPR);
     die if ($lang eq $LANG_SH);
     gent_langs_expr($token, $op_order, $istack, $lang, $ver);

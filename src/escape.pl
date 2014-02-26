@@ -47,6 +47,15 @@ sub escape_sh_multiline_comment {
     $str;
 }
 
+sub exists_perl_wide_char {
+    my ($str) = @_;
+    if ($str =~ /\A[\x00-\x7F]*\z/) {
+        '';
+    } else {
+        1;
+    }
+}
+
 sub escape_perl_string {
     my ($str) = @_;
     $str =~ s/\\/\\\\/g;

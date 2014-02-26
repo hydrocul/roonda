@@ -67,10 +67,15 @@ sub genl_exec_lang_ver {
     my ($list, $list_close_line_no, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     my $result_head = get_source_header($lang, $ver);
-    my $istack = istack_create();
-    my $result = '';
-    $result = $result . genl_langs_statements($list, $list_close_line_no, $istack, $lang, $ver);
+    my $istack = istack_create($lang, $ver);
+    my $result;
+    ($result, $istack) = genl_langs_statements($list, $list_close_line_no, $istack, $lang, $ver);
     $result = $result . "\n";
+    if ($lang eq $LANG_PERL) {
+        if (istack_perl_needs_use_utf8($istack)) {
+            $result = "use utf8;\n\n" . $result;
+        }
+    }
     ($result_head, $result);
 }
 
