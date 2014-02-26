@@ -46,7 +46,9 @@ sub genl_sh_command {
             return "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
         }
         if ($symbol eq $KEYWD_IF) {
-            return genl_langs_if(\@list, $list_close_line_no, $istack, $LANG_SH, $ver);
+            my $source;
+            ($source, $istack) = genl_langs_if(\@list, $list_close_line_no, $istack, $LANG_SH, $ver); # TODO istack
+            return $source;
         } elsif ($symbol eq $KEYWD_PRINT) {
             my $source;
             ($source, $istack) = genl_langs_print(\@list, $list_close_line_no, $istack, $LANG_SH, $ver); # TODO istack

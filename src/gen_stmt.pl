@@ -1,13 +1,11 @@
 
+# return: ($source, $istack)
 sub gent_langs_statements {
     my ($token, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     if (astlib_is_list($token)) {
-        my $source;
-        ($source, $istack) =
-            genl_langs_statements(astlib_get_list($token),
-                                  astlib_get_close_line_no($token), $istack, $lang, $ver); # TODO istack
-        $source;
+        genl_langs_statements(astlib_get_list($token),
+                              astlib_get_close_line_no($token), $istack, $lang, $ver);
     } else {
         die create_dying_msg_unexpected($token);
     }
@@ -57,7 +55,8 @@ sub genl_langs_statement {
     if (astlib_is_symbol($head)) {
         my $symbol = astlib_get_symbol($head);
         if ($symbol eq $KEYWD_IF) {
-            $expr_source = genl_langs_if(\@list, $list_close_line_no, $istack, $lang, $ver);
+            ($expr_source, $istack) =
+                genl_langs_if(\@list, $list_close_line_no, $istack, $lang, $ver);
         } elsif ($symbol eq $KEYWD_PRINT) {
             ($expr_source, $istack) =
                 genl_langs_print(\@list, $list_close_line_no, $istack, $lang, $ver);
@@ -83,11 +82,12 @@ sub genl_langs_statement {
     }
 }
 
+# return: ($source, $istack)
 sub genl_langs_if {
     my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
-    my $cond_istack = istack_append_indent($istack, get_source_indent($lang, $ver));
-    my $then_istack = istack_append_indent($istack, get_source_indent($lang, $ver));
+    my $cond_istack = istack_if_cond_stack($istack, $lang, $ver);
+    my $then_istack = istack_if_then_else_stack($istack, $lang, $ver);
     my $then_indent = istack_get_indent($then_istack);
     my @list = @$list;
     my $cond_elem = shift(@list);
@@ -102,44 +102,97 @@ sub genl_langs_if {
     if (@list) {
         die create_dying_msg_unexpected(shift(@list));
     }
-    my $indent = istack_get_indent($istack); # TODO
+    my $if_indent = istack_get_indent($istack);
 
     my $cond_source;
     if ($lang eq $LANG_SH) {
         $cond_source = gent_sh_command($cond_elem, '', '', '', 1, '', $istack, $ver);
     } else {
-        ($cond_source, $cond_istack) = gent_langs_expr($cond_elem, $OP_ORDER_MIN, $cond_istack, $lang, $ver); # TODO istack
+        ($cond_source, $cond_istack) =
+            gent_langs_expr($cond_elem, $OP_ORDER_MIN, $cond_istack, $lang, $ver);
     }
-    my $then_source = gent_langs_statements($then_elem, $then_istack, $lang, $ver);
+    my $then_source;
+    ($then_source, $then_istack) =
+        gent_langs_statements($then_elem, $then_istack, $lang, $ver);
+    my $else_source;
     if (defined($else_elem)) {
-        my $else_source = gent_langs_statements($else_elem, $then_istack, $lang, $ver);
-        if ($lang eq $LANG_SH) {
-            "if $cond_source; then\n$then_indent$then_source\n${indent}else\n$then_indent$else_source\n${indent}fi";
-        } elsif ($lang eq $LANG_PERL) {
-            "if ($cond_source) {\n$then_indent$then_source\n$indent} else {\n$then_indent$else_source\n$indent}";
-        } elsif ($lang eq $LANG_RUBY) {
-            "if $cond_source\n$then_indent$then_source\n${indent}else\n$then_indent$else_source\n${indent}end";
-        } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
-            "if $cond_source:\n$then_indent$then_source\nelse:\n$then_indent$else_source";
-        } elsif ($lang eq $LANG_PHP) {
-            "if ($cond_source) {\n$then_indent$then_source\n$indent} else {\n$then_indent$else_source\n$indent}";
+        my $else_istack = $then_istack;
+        ($else_source, $else_istack) =
+            gent_langs_statements($else_elem, $else_istack, $lang, $ver);
+        $istack = istack_if_result($istack, $cond_istack, $then_istack, $else_istack, $lang, $ver);
+    } else {
+        $istack = istack_if_result($istack, $cond_istack, $then_istack, undef, $lang, $ver);
+    }
+    if ($lang eq $LANG_SH) {
+        if (defined($else_source)) {
+            ("if $cond_source; then\n" .
+             "$then_indent$then_source\n" .
+             "${if_indent}else\n" .
+             "$then_indent$else_source\n" .
+             "${if_indent}fi",
+             $istack);
         } else {
-            die;
+            ("if $cond_source; then\n" .
+             "$then_indent$then_source\n" .
+             "${if_indent}fi",
+             $istack);
+        }
+    } elsif ($lang eq $LANG_PERL) {
+        if (defined($else_source)) {
+            ("if ($cond_source) {\n" .
+             "$then_indent$then_source\n" .
+             "$if_indent} else {\n" .
+             "$then_indent$else_source\n" .
+             "$if_indent}",
+             $istack);
+        } else {
+            ("if ($cond_source) {\n" .
+             "$then_indent$then_source\n" .
+             "$if_indent}",
+             $istack);
+        }
+    } elsif ($lang eq $LANG_RUBY) {
+        if (defined($else_source)) {
+            ("if $cond_source\n" .
+             "$then_indent$then_source\n" .
+             "${if_indent}else\n" .
+             "$then_indent$else_source\n" .
+             "${if_indent}end",
+             $istack);
+        } else {
+            ("if $cond_source\n" .
+             "$then_indent$then_source\n" .
+             "${if_indent}end",
+             $istack);
+        }
+    } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+        if (defined($else_source)) {
+            ("if $cond_source:\n" .
+             "$then_indent$then_source\n" .
+             "${if_indent}else:\n" .
+             "$then_indent$else_source",
+             $istack);
+        } else {
+            ("if $cond_source:\n" .
+             "$then_indent$then_source",
+             $istack);
+        }
+    } elsif ($lang eq $LANG_PHP) {
+        if (defined($else_source)) {
+            ("if ($cond_source) {\n" .
+             "$then_indent$then_source\n" .
+             "$if_indent} else {\n" .
+             "$then_indent$else_source\n" .
+             "$if_indent}",
+             $istack);
+        } else {
+            ("if ($cond_source) {\n" .
+             "$then_indent$then_source\n" .
+             "$if_indent}",
+             $istack);
         }
     } else {
-        if ($lang eq $LANG_SH) {
-            "if $cond_source; then\n$then_indent$then_source\n${indent}fi";
-        } elsif ($lang eq $LANG_PERL) {
-            "if ($cond_source) {\n$then_indent$then_source\n$indent}";
-        } elsif ($lang eq $LANG_RUBY) {
-            "if $cond_source\n$then_indent$then_source\n${indent}end";
-        } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
-            "if $cond_source:\n$then_indent$then_source";
-        } elsif ($lang eq $LANG_PHP) {
-            "if ($cond_source) {\n$then_indent$then_source\n$indent}";
-        } else {
-            die;
-        }
+        die;
     }
 }
 
