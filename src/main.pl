@@ -97,7 +97,7 @@ if ($source_from eq 'file') {
 }
 @lines = map { decode('utf-8', $_) } @lines;
 
-$ENV{$ENV_SELF_PATH} = $0;
+$ENV{$ENV_SELF_PATH} = File::Spec->rel2abs($0);
 $ENV{$ENV_TMP_PATH} = tempdir(CLEANUP => 1);
 
 my $ast;
