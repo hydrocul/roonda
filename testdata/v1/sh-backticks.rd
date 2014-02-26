@@ -1,3 +1,5 @@
 sh v1
 
-(echo (backticks date))
+(cd (ref ROONDA_TMP_PATH))
+
+(echo (backticks ls))

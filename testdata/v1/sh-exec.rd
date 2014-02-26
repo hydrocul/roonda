@@ -1,4 +1,4 @@
 sh v1
 
-(exec ls -al)
+(exec ls (ref ROONDA_TMP_PATH))
 

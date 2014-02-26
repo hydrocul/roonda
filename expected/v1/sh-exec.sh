@@ -1,3 +1,3 @@
 #!/bin/sh
 
-exec ls -al
+exec ls "$ROONDA_TMP_PATH"

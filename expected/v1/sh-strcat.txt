@@ -1,1 +1,4 @@
+#!/bin/sh
+
+echo Hey.' ''uh... '"`echo aaa`"' '"$ROONDA_TEST"
 Hey. uh... aaa Hello
