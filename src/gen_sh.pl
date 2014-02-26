@@ -37,13 +37,17 @@ sub genl_sh_command {
             if ($ver < 2 && $target_lang ne $LANG_SH) {
                 die "Unsupported language: $target_lang";
             }
-            my ($source_head, $source_body) = genl_exec_lang(\@list, $list_close_line_no, $target_lang, $ver);
-            my $source = $source_head . $source_body;
-            my ($lang, $bin_path, $bin_path_for_sh, $ext) = bin_path_to_lang($target_lang);
+            my ($_lang, $bin_path, $bin_path_for_sh, $ext) = bin_path_to_lang($target_lang);
             my $bin_path_escaped = escape_sh_string($bin_path_for_sh);
-            my $script_path = save_file($source, $ext, 1, '');
-            my $script_path_escaped = escape_sh_string($script_path);
-            return "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
+            if (@list && astlib_is_heredoc($list[0])) {
+                # nop
+            } else {
+                my ($source_head, $source_body) = genl_exec_lang(\@list, $list_close_line_no, $target_lang, $ver);
+                my $source = $source_head . $source_body;
+                my $script_path = save_file($source, $ext, 1, '');
+                my $script_path_escaped = escape_sh_string($script_path);
+                return "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
+            }
         }
         if ($symbol eq $KEYWD_IF) {
             my $source;

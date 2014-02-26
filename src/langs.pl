@@ -1,7 +1,7 @@
 
 my %bin_path_map = ();
 
-# return: $bin_path, $ext
+# return: ($bin_path, $ext)
 sub lang_to_bin_path {
     my ($lang) = @_;
     if ($lang eq $LANG_SEXPR) {

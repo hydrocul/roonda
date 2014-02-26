@@ -1,7 +1,6 @@
 sh v1
 
-("sh" main.sh)
-# TODO "sh" のように文字列にしないとエラーになってしまう
+(sh main.sh)
 
 << main.sh
 
