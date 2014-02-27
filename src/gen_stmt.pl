@@ -43,7 +43,7 @@ sub genl_langs_statement {
     my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     if ($lang eq $LANG_SH) {
-        return (genl_sh_statement($list, $list_close_line_no, $istack, $ver), $istack); # TODO istack
+        return genl_sh_statement($list, $list_close_line_no, $istack, $ver);
     }
     my $indent = istack_get_indent($istack); # TODO istack
     my @list = @$list;
@@ -106,7 +106,8 @@ sub genl_langs_if {
 
     my $cond_source;
     if ($lang eq $LANG_SH) {
-        $cond_source = gent_sh_command($cond_elem, '', '', '', 1, '', $istack, $ver);
+        ($cond_source, $cond_istack)  =
+            gent_sh_command($cond_elem, '', '', '', 1, '', $istack, $ver);
     } else {
         ($cond_source, $cond_istack) =
             gent_langs_expr($cond_elem, $OP_ORDER_MIN, $cond_istack, $lang, $ver);

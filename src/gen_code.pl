@@ -22,14 +22,17 @@ sub genl_exec {
     if (astlib_is_symbol($head)) {
         my $symbol = astlib_get_symbol($head);
         my $lang = get_dst_format_label($symbol);
-        if (!defined($lang) || $lang eq $LANG_SEXPR) {
+        if (!defined($lang)) {
+            die create_dying_msg_unexpected($head);
+        }
+        if ($lang eq $LANG_SEXPR) {
             die create_dying_msg_unexpected($head);
         }
         if ($ver < 2 && $lang ne $LANG_SH) {
             die "Unsupported language: $lang";
         }
         my ($source_head, $source_body) = genl_exec_lang(\@list, $list_close_line_no, $lang, $ver);
-        my ($lang_, $bin_path, $bin_path_for_sh, $ext) = bin_path_to_lang($lang);
+        my ($bin_path, $bin_path_for_sh, $ext) = lang_to_bin_path($lang);
         ($lang, $bin_path, $bin_path_for_sh, $source_head, $source_body, $ext);
     } else {
         die create_dying_msg_unexpected($head);

@@ -57,6 +57,7 @@ sub get_saved_file {
     $saved_files_content{$name};
 }
 
+# return: ($lang, $bin_path, $ext, $source)
 sub gen_print_saved_files {
     my ($source_head, $source_body, $lang, $bin_path, $ext) = @_;
     if (!@saved_files) {
@@ -68,14 +69,16 @@ sub gen_print_saved_files {
     my $main_filename = save_file($source_head . $source_body, $ext, 1, undef);
     my $sh_source = escape_sh_string($bin_path) . ' ' .
         '$' . $ENV_TMP_PATH . '/' . escape_sh_string($main_filename) . "\n";
-    ($bin_path, $ext) = lang_to_bin_path($LANG_SH);
+    my $_bin_path_for_sh;
+    ($bin_path, $_bin_path_for_sh, $ext) = lang_to_bin_path($LANG_SH);
     ($LANG_SH, $bin_path, $ext, gen_print_saved_files_by_sh(get_source_header($LANG_SH, 1),
                                                             $sh_source));
 }
 
+#return: $source
 sub gen_print_saved_files_by_sh {
     my ($source_head, $source_body) = @_;
-    my ($bin_path, $ext) = lang_to_bin_path($LANG_SH);
+    my ($_bin_path, $_bin_path_for_sh, $ext) = lang_to_bin_path($LANG_SH);
     my $result = "";
     my $splitter = "#################################################";
     foreach my $file_name (@saved_files) {

@@ -1,44 +1,25 @@
 
 my %bin_path_map = ();
 
-# return: ($bin_path, $ext)
+# return: ($bin_path, $bin_path_for_sh, $ext)
 sub lang_to_bin_path {
     my ($lang) = @_;
     if ($lang eq $LANG_SEXPR) {
-        ($ENV{$ENV_SELF_PATH}, 'rd');
+        ($ENV{$ENV_SELF_PATH}, undef, 'rd');
     } elsif ($lang eq $LANG_SH) {
-        ('/bin/sh', 'sh');
+        ('/bin/sh', 'sh', 'sh');
     } elsif ($lang eq $LANG_PERL) {
-        (_get_cmd_path('perl'), 'pl');
+        (_get_cmd_path('perl'), 'perl', 'pl');
     } elsif ($lang eq $LANG_RUBY) {
-        (_get_cmd_path('ruby'), 'rb');
+        (_get_cmd_path('ruby'), 'ruby', 'rb');
     } elsif ($lang eq $LANG_PYTHON2) {
-        (_get_cmd_path('python2'), 'py');
+        (_get_cmd_path('python2'), 'python2', 'py');
     } elsif ($lang eq $LANG_PYTHON3) {
-        (_get_cmd_path('python3'), 'py');
+        (_get_cmd_path('python3'), 'python3', 'py');
     } elsif ($lang eq $LANG_PHP) {
-        (_get_cmd_path('php'), 'php');
+        (_get_cmd_path('php'), 'php', 'php');
     } else {
-        die;
-    }
-}
-
-sub bin_path_to_lang {
-    my ($bin_path) = @_;
-    if ($bin_path eq 'sh') {
-        ($LANG_SH, '/bin/sh', 'sh', 'sh');
-    } elsif ($bin_path eq 'perl') {
-        ($LANG_PERL, _get_cmd_path('perl'), 'perl', 'pl');
-    } elsif ($bin_path eq 'ruby') {
-        ($LANG_RUBY, _get_cmd_path('ruby'), 'ruby', 'rb');
-    } elsif ($bin_path eq 'python2') {
-        ($LANG_PYTHON2, _get_cmd_path('python2'), 'python2', 'py');
-    } elsif ($bin_path eq 'python3') {
-        ($LANG_PYTHON3, _get_cmd_path('python3'), 'python3', 'py');
-    } elsif ($bin_path eq 'php') {
-        ($LANG_PHP, _get_cmd_path('php'), 'php', 'php');
-    } else {
-        (undef, undef, undef, undef);
+        (undef, undef, undef);
     }
 }
 
