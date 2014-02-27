@@ -107,7 +107,7 @@ sub genl_langs_if {
     my $cond_source;
     if ($lang eq $LANG_SH) {
         ($cond_source, $cond_istack)  =
-            gent_sh_command($cond_elem, '', '', '', 1, '', $istack, $ver);
+            gent_sh_command($cond_elem, '', '', '', 1, '', 1, 1, $istack, $ver);
     } else {
         ($cond_source, $cond_istack) =
             gent_langs_expr($cond_elem, $OP_ORDER_MIN, $cond_istack, $lang, $ver);

@@ -2,17 +2,21 @@
 # return: ($source, $istack)
 sub genl_sh_statement {
     my ($list, $list_close_line_no, $istack, $ver) = @_;
-    genl_sh_command($list, $list_close_line_no, 1, 1, 1, 1, '', $istack, $ver);
+    genl_sh_command($list, $list_close_line_no, 1, 1, 1, 1, '', 1, 1, $istack, $ver);
 }
 
 # return: ($source, $istack)
 sub gent_sh_command {
     my ($token,
-        $enable_assign, $enable_export, $enable_exec, $enable_pipe, $enable_redirect_only,
+        $enable_assign, $enable_export, $enable_exec,
+        $enable_pipe, $enable_redirect_only,
+        $enable_subsh, $enable_group,
         $istack, $ver) = @_;
     if (astlib_is_list($token)) {
         genl_sh_command(astlib_get_list($token), astlib_get_close_line_no($token),
-                        $enable_assign, $enable_export, $enable_exec, $enable_pipe, $enable_redirect_only,
+                        $enable_assign, $enable_export, $enable_exec,
+                        $enable_pipe, $enable_redirect_only,
+                        $enable_subsh, $enable_group,
                         $istack, $ver);
     } else {
         die create_dying_msg_unexpected($token);
@@ -24,6 +28,7 @@ sub genl_sh_command {
     my ($list, $list_close_line_no,
         $enable_assign, $enable_export, $enable_exec,
         $enable_pipe, $enable_redirect_only,
+        $enable_subsh, $enable_group,
         $istack, $ver) = @_;
     my @list = @$list;
     my $head = shift(@list);
@@ -35,6 +40,7 @@ sub genl_sh_command {
             _genl_sh_command_head($head, \@list, $list_close_line_no,
                                   $enable_assign, $enable_export, $enable_exec,
                                   $enable_pipe, $enable_redirect_only,
+                                  $enable_subsh, $enable_group,
                                   $istack, $ver);
         if (defined($source)) {
             return ($source, $istack); # TODO istack
@@ -47,6 +53,7 @@ sub _genl_sh_command_head {
     my ($head, $list, $list_close_line_no,
         $enable_assign, $enable_export, $enable_exec,
         $enable_pipe, $enable_redirect_only,
+        $enable_subsh, $enable_group,
         $istack, $ver) = @_;
     die unless (astlib_is_symbol($head));
     my $head_symbol = astlib_get_symbol($head);
@@ -79,7 +86,7 @@ sub _genl_sh_command_head {
         }
         my $source;
         ($source, $istack) =
-            genl_sh_command($list, $list_close_line_no, '', '', '', '', 1, $istack, $ver); # TODO istack
+            genl_sh_command($list, $list_close_line_no, '', '', '', '', 1, '', '', $istack, $ver); # TODO istack
         'exec ' . $source;
     } elsif ($head_symbol eq $KEYWD_SH_EXPORT) {
         unless ($enable_export) {
@@ -90,7 +97,23 @@ sub _genl_sh_command_head {
         unless ($enable_pipe) {
             die create_dying_msg_unexpected($head);
         }
-        genl_sh_pipe($list, $list_close_line_no, $ver);
+        genl_sh_pipe($list, $list_close_line_no, $istack, $ver); # TODO istack
+    } elsif ($head_symbol eq $KEYWD_SH_SUBSH) {
+        unless ($enable_subsh) {
+            die create_dying_msg_unexpected($head);
+        }
+        my $source;
+        ($source, $istack) =
+            genl_sh_subsh($list, $list_close_line_no, $istack, $ver); # TODO istack
+        $source;
+    } elsif ($head_symbol eq $KEYWD_SH_GROUP) {
+        unless ($enable_group) {
+            die create_dying_msg_unexpected($head);
+        }
+        my $source;
+        ($source, $istack) =
+            genl_sh_group($list, $list_close_line_no, $istack, $ver); # TODO istack
+        $source;
     } elsif ($head_symbol eq $KEYWD_SH_ROONDA) {
         genl_sh_command_roonda($list, $list_close_line_no, $ver);
     } else {
@@ -162,7 +185,7 @@ sub genl_sh_assign_1 {
     if (@list) {
         my $source;
         ($source, $istack) =
-            genl_sh_command(\@list, $list_close_line_no, 1, 1, 1, 1, '', $istack, $ver); # TODO istack
+            genl_sh_command(\@list, $list_close_line_no, 1, 1, 1, 1, '', '', '', $istack, $ver); # TODO istack
         $result = $result . ' ' . $source;
         # TODO パイプの時に括弧が必要
     }
@@ -175,17 +198,47 @@ sub genl_sh_export {
 }
 
 sub genl_sh_pipe {
-    my ($list, $list_close_line_no, $ver) = @_;
-    my $istack = istack_create($LANG_SH, $ver); # TODO istack
-    my @list = @$list;
+    my ($list, $list_close_line_no, $istack, $ver) = @_;
     my $result = '';
-    foreach my $elem (@list) {
+    foreach my $elem (@$list) {
         my $source;
-        ($source, $istack) = gent_sh_command($elem, 1, 1, '', '', '', $istack, $ver);
+        ($source, $istack) = gent_sh_command($elem, 1, 1, '', '', '', 1, 1, $istack, $ver);
         $result = $result . ' | ' if ($result ne '');
         $result = $result . $source;
     }
     $result;
+}
+
+# return: ($source, $istack)
+sub genl_sh_subsh {
+    my ($list, $list_close_line_no, $istack, $ver) = @_;
+    my $indent = istack_get_indent($istack);
+    my $indent2 = $indent . get_source_indent($LANG_SH);
+    my $result = '(';
+    foreach my $elem (@$list) {
+        my $source;
+        ($source, $istack) = gent_sh_command($elem, 1, 1, '', '', '', 1, 1, $istack, $ver);
+        $result = $result . "\n$indent2";
+        $result = $result . $source;
+    }
+    $result = $result . "\n$indent)";
+    ($result, $istack); # TODO istack
+}
+
+# return: ($source, $istack)
+sub genl_sh_group {
+    my ($list, $list_close_line_no, $istack, $ver) = @_;
+    my $indent = istack_get_indent($istack);
+    my $indent2 = $indent . get_source_indent($LANG_SH);
+    my $result = '{';
+    foreach my $elem (@$list) {
+        my $source;
+        ($source, $istack) = gent_sh_command($elem, 1, 1, '', '', '', 1, 1, $istack, $ver);
+        $result = $result . "\n$indent2";
+        $result = $result . $source;
+    }
+    $result = $result . "\n$indent}";
+    ($result, $istack); # TODO istack
 }
 
 sub genl_sh_command_roonda {
@@ -304,7 +357,7 @@ sub genl_sh_argument_backticks {
     my $istack = istack_create($LANG_SH, $ver); # TODO istack
     my $source;
     ($source, $istack) =
-        genl_sh_command($list, $list_close_line_no, 1, 1, '', 1, '', $istack, $ver); # TODO istack
+        genl_sh_command($list, $list_close_line_no, 1, 1, '', 1, '', 1, 1, $istack, $ver); # TODO istack
     escape_sh_backticks($source);
 }
 
