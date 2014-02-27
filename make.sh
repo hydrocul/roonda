@@ -11,7 +11,10 @@ mkdir -p target
     cat ./src/sha1.pl
     cat ./src/save.pl
     cat ./src/astlib.pl
-    cat ./src/stack.pl
+    cat ./src/st_common.pl
+    cat ./src/st_var.pl
+    cat ./src/st_stmt.pl
+    cat ./src/st_perl.pl
     cat ./src/parse_sexpr.pl
     cat ./src/parse_json.pl
     cat ./src/build_ast.pl

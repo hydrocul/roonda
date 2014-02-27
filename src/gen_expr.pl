@@ -15,8 +15,8 @@ sub gent_langs_expr {
             (gent_langs_boolean('', $lang, $ver), $istack); # TODO istack
         } else {
             if ($lang eq $LANG_PERL) {
-                if (istack_perl_var_exists($istack, $symbol)) {
-                    if (istack_perl_var_is_scalar($istack, $symbol)) {
+                if (istack_var_perl_exists($istack, $symbol)) {
+                    if (istack_var_perl_is_scalar($istack, $symbol)) {
                         return (genl_langs_ref_varname($symbol, $istack, $lang, $ver), $istack); # TODO istack
                     } else {
                         die;

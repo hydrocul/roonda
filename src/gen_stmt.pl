@@ -255,15 +255,15 @@ sub genl_langs_assign_1 {
     ($source, $istack) = gent_langs_expr($head, $OP_ORDER_MIN, $istack, $lang, $ver);
     my $result;
     if ($lang eq $LANG_PERL) {
-        if (istack_perl_var_exists($istack, $varname)) {
-            if (istack_perl_var_is_scalar($istack, $varname)) {
+        if (istack_var_perl_exists($istack, $varname)) {
+            if (istack_var_perl_is_scalar($istack, $varname)) {
                 $result = '$' . $varname . ' = ' . $source;
             } else {
                 die; # TODO
             }
         } else {
             $result = 'my $' . $varname . ' = ' . $source;
-            $istack = istack_perl_var_declare_scalar($istack, $varname);
+            $istack = istack_var_perl_declare_scalar($istack, $varname);
         }
     } elsif ($lang eq $LANG_RUBY) {
         $result = $varname . ' = ' . $source;
