@@ -2,6 +2,7 @@
 # return: ($source, $istack)
 sub gent_langs_statements {
     my ($token, $istack, $lang, $ver) = @_;
+    die unless (defined($istack));
     die if ($lang eq $LANG_SEXPR);
     if (astlib_is_list($token)) {
         genl_langs_statements(astlib_get_list($token),
@@ -14,6 +15,7 @@ sub gent_langs_statements {
 # return: ($source, $istack)
 sub genl_langs_statements {
     my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
+    die unless (defined($istack));
     die if ($lang eq $LANG_SEXPR);
     my $indent = istack_get_indent($istack);
     my $result = '';
@@ -29,6 +31,7 @@ sub genl_langs_statements {
 # return: ($source, $istack)
 sub gent_langs_statement {
     my ($token, $istack, $lang, $ver) = @_;
+    die unless (defined($istack));
     die if ($lang eq $LANG_SEXPR);
     if (astlib_is_list($token)) {
         genl_langs_statement(astlib_get_list($token),
@@ -41,6 +44,7 @@ sub gent_langs_statement {
 # return: ($source, $istack)
 sub genl_langs_statement {
     my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
+    die unless (defined($istack));
     die if ($lang eq $LANG_SEXPR);
     if ($lang eq $LANG_SH) {
         return genl_sh_statement($list, $list_close_line_no, $istack, $ver);
@@ -69,6 +73,7 @@ sub genl_langs_statement {
         unshift(@list, $head);
         $expr_source = genl_langs_expr(\@list, $OP_ORDER_MIN, $list_close_line_no, $istack, $lang, $ver);
     }
+    die unless (defined($istack));
     if ($lang eq $LANG_PERL) {
         ($expr_source . ";", $istack);
     } elsif ($lang eq $LANG_RUBY) {
@@ -85,6 +90,7 @@ sub genl_langs_statement {
 # return: ($source, $istack)
 sub genl_langs_if {
     my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
+    die unless (defined($istack));
     die if ($lang eq $LANG_SEXPR);
     my $cond_istack = istack_if_cond_stack($istack, $lang, $ver);
     my $then_istack = istack_if_then_else_stack($istack, $lang, $ver);
@@ -200,13 +206,14 @@ sub genl_langs_if {
 # return: ($source, $istack)
 sub genl_langs_print {
     my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
+    die unless (defined($istack));
     die if ($lang eq $LANG_SEXPR);
     my @list = @$list;
     my $elem = shift(@list);
     die create_dying_msg_unexpected_closing($list_close_line_no) unless ($elem);
     my $source;
     if ($lang eq $LANG_SH) {
-        $source = gent_sh_argument($elem, $ver);
+        $source = gent_sh_argument($elem, $istack, $ver);
     } else {
         ($source, $istack) = gent_langs_expr($elem, $OP_ORDER_ARG_COMMA, $istack, $lang, $ver);
     }
@@ -245,7 +252,7 @@ sub genl_langs_assign_1 {
     my ($varname, $list, $list_close_line_no, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     if ($lang eq $LANG_SH) {
-        return (genl_sh_assign_1($varname, $list, $list_close_line_no, $istack, $ver), $istack); # TODO istack
+        return genl_sh_assign_1($varname, $list, $list_close_line_no, $istack, $ver);
     }
     my @list = @$list;
     my $head = shift(@list);

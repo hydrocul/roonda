@@ -2,6 +2,7 @@
 # return: ($source, $istack)
 sub genl_sh_statement {
     my ($list, $list_close_line_no, $istack, $ver) = @_;
+    die unless (defined($istack));
     genl_sh_command($list, $list_close_line_no, 1, 1, 1, 1, '', 1, 1, $istack, $ver);
 }
 
@@ -12,6 +13,7 @@ sub gent_sh_command {
         $enable_pipe, $enable_redirect_only,
         $enable_subsh, $enable_group,
         $istack, $ver) = @_;
+    die unless (defined($istack));
     if (astlib_is_list($token)) {
         genl_sh_command(astlib_get_list($token), astlib_get_close_line_no($token),
                         $enable_assign, $enable_export, $enable_exec,
@@ -30,31 +32,35 @@ sub genl_sh_command {
         $enable_pipe, $enable_redirect_only,
         $enable_subsh, $enable_group,
         $istack, $ver) = @_;
+    die unless (defined($istack));
     my @list = @$list;
     my $head = shift(@list);
     unless (defined($head)) {
         die create_dying_msg_unexpected_closing($list_close_line_no);
     }
     if (astlib_is_symbol($head)) {
-        my $source =
+        my $source;
+        ($source, $istack) =
             _genl_sh_command_head($head, \@list, $list_close_line_no,
                                   $enable_assign, $enable_export, $enable_exec,
                                   $enable_pipe, $enable_redirect_only,
                                   $enable_subsh, $enable_group,
                                   $istack, $ver);
         if (defined($source)) {
-            return ($source, $istack); # TODO istack
+            return ($source, $istack);
         }
     }
-    (_genl_sh_command_arguments($list, $enable_redirect_only, $ver), $istack); # TODO istack
+    _genl_sh_command_arguments($list, $enable_redirect_only, $istack, $ver);
 }
 
+# return: ($source, $istack)
 sub _genl_sh_command_head {
     my ($head, $list, $list_close_line_no,
         $enable_assign, $enable_export, $enable_exec,
         $enable_pipe, $enable_redirect_only,
         $enable_subsh, $enable_group,
         $istack, $ver) = @_;
+    die unless (defined($istack));
     die unless (astlib_is_symbol($head));
     my $head_symbol = astlib_get_symbol($head);
     my $target_lang = get_dst_format_label($head_symbol);
@@ -63,68 +69,54 @@ sub _genl_sh_command_head {
                               $enable_redirect_only,
                               $istack, $ver);
     } elsif ($head_symbol eq $KEYWD_IF) {
-        my $source;
-        ($source, $istack) =
-            genl_langs_if($list, $list_close_line_no, $istack, $LANG_SH, $ver); # TODO istack
-        $source;
+        genl_langs_if($list, $list_close_line_no, $istack, $LANG_SH, $ver);
     } elsif ($head_symbol eq $KEYWD_PRINT) {
-        my $source;
-        ($source, $istack) =
-            genl_langs_print($list, $list_close_line_no, $istack, $LANG_SH, $ver); # TODO istack
-        $source;
+        genl_langs_print($list, $list_close_line_no, $istack, $LANG_SH, $ver);
     } elsif ($head_symbol eq $KEYWD_ASSIGN) {
         unless ($enable_assign) {
             die create_dying_msg_unexpected($head);
         }
-        my $source;
-        ($source, $istack) =
-            genl_langs_assign($list, $list_close_line_no, $istack, $LANG_SH, $ver); # TODO istack
-        $source;
+        genl_langs_assign($list, $list_close_line_no, $istack, $LANG_SH, $ver);
     } elsif ($head_symbol eq $KEYWD_SH_EXEC) {
         unless ($enable_exec) {
             die create_dying_msg_unexpected($head);
         }
-        my $source;
-        ($source, $istack) =
-            genl_sh_command($list, $list_close_line_no, '', '', '', '', 1, '', '', $istack, $ver); # TODO istack
-        'exec ' . $source;
+        my ($source, $_istack) =
+            genl_sh_command($list, $list_close_line_no, '', '', '', '', 1, '', '', $istack, $ver);
+        ('exec ' . $source, $istack);
     } elsif ($head_symbol eq $KEYWD_SH_EXPORT) {
         unless ($enable_export) {
             die create_dying_msg_unexpected($head);
         }
-        genl_sh_export($list, $list_close_line_no, $ver);
+        genl_sh_export($list, $list_close_line_no, $istack, $ver);
     } elsif ($head_symbol eq $KEYWD_SH_PIPE) {
         unless ($enable_pipe) {
             die create_dying_msg_unexpected($head);
         }
-        genl_sh_pipe($list, $list_close_line_no, $istack, $ver); # TODO istack
+        genl_sh_pipe($list, $list_close_line_no, $istack, $ver);
     } elsif ($head_symbol eq $KEYWD_SH_SUBSH) {
         unless ($enable_subsh) {
             die create_dying_msg_unexpected($head);
         }
-        my $source;
-        ($source, $istack) =
-            genl_sh_subsh($list, $list_close_line_no, $istack, $ver); # TODO istack
-        $source;
+        genl_sh_subsh($list, $list_close_line_no, $istack, $ver);
     } elsif ($head_symbol eq $KEYWD_SH_GROUP) {
         unless ($enable_group) {
             die create_dying_msg_unexpected($head);
         }
-        my $source;
-        ($source, $istack) =
-            genl_sh_group($list, $list_close_line_no, $istack, $ver); # TODO istack
-        $source;
+        genl_sh_group($list, $list_close_line_no, $istack, $ver);
     } elsif ($head_symbol eq $KEYWD_SH_ROONDA) {
-        genl_sh_command_roonda($list, $list_close_line_no, $ver);
+        genl_sh_command_roonda($list, $list_close_line_no, $istack, $ver);
     } else {
-        undef;
+        (undef, $istack);
     }
 }
 
+# return: ($source, $istack)
 sub _genl_sh_command_lang {
     my ($target_lang, $target_lang_token, $list, $list_close_line_no,
         $enable_redirect_only,
         $istack, $ver) = @_;
+    die unless (defined($istack));
     if ($target_lang eq $LANG_SEXPR) {
         die create_dying_msg_unexpected($target_lang_token);
     }
@@ -135,25 +127,27 @@ sub _genl_sh_command_lang {
     my $bin_path_escaped = escape_sh_string($bin_path_for_sh);
     if (@$list && astlib_is_heredoc($list->[0])) {
         my @list = ($target_lang_token, @$list);
-        _genl_sh_command_arguments(\@list, $enable_redirect_only, $ver);
+        _genl_sh_command_arguments(\@list, $enable_redirect_only, $istack, $ver);
     } else {
         my ($source_head, $source_body) =
             genl_exec_lang($list, $list_close_line_no, $target_lang, $ver);
         my $source = $source_head . $source_body;
         my $script_path = save_file($source, $ext, 1, '');
         my $script_path_escaped = escape_sh_string($script_path);
-        "$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped";
+        ("$bin_path_escaped \$ROONDA_TMP_PATH/$script_path_escaped", $istack);
     }
 }
 
+# return: ($source, $istack)
 sub _genl_sh_command_arguments {
-    my ($args_list, $enable_redirect_only, $ver) = @_;
+    my ($args_list, $enable_redirect_only, $istack, $ver) = @_;
+    die unless (defined($istack));
     my @args_list = @$args_list;
     my $result = '';
     my $result_redirect = '';
     unless ($enable_redirect_only) {
         my $head = shift(@args_list);
-        $result = gent_sh_argument($head, $ver);
+        $result = gent_sh_argument($head, $istack, $ver); # TODO istack
     }
     foreach my $elem (@args_list) {
         my ($source, $is_redirect) = gent_sh_argument_or_redirect($elem, $ver);
@@ -166,21 +160,23 @@ sub _genl_sh_command_arguments {
         }
     }
     if ($result_redirect eq '') {
-        $result;
+        ($result, $istack)
     } elsif ($result eq '') {
-        $result_redirect;
+        ($result_redirect, $istack)
     } else {
-        $result . ' ' . $result_redirect;
+        ($result . ' ' . $result_redirect, $istack);
     }
 }
 
+# return: ($source, $istack)
 sub genl_sh_assign_1 {
     my ($varname, $list, $list_close_line_no, $istack, $ver) = @_;
     # TODO indent
+    die unless (defined($istack));
     my @list = @$list;
     my $head = shift(@list);
     die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
-    my $source = gent_sh_argument($head);
+    my $source = gent_sh_argument($head, $istack, $ver);
     my $result = $varname . '=' . $source;
     if (@list) {
         my $source;
@@ -188,15 +184,19 @@ sub genl_sh_assign_1 {
             genl_sh_command(\@list, $list_close_line_no, 1, 1, 1, 1, '', '', '', $istack, $ver); # TODO istack
         $result = $result . ' ' . $source;
         # TODO パイプの時に括弧が必要
+    } else {
+        $istack = istack_var_sh_declare_shell($istack, $varname);
     }
-    $result;
+    ($result, $istack);
 }
 
+# return: ($source, $istack)
 sub genl_sh_export {
-    my ($list, $list_close_line_no, $ver) = @_;
+    my ($list, $list_close_line_no, $istack, $ver) = @_;
     die "TODO genl_sh_export";
 }
 
+# return: ($source, $istack)
 sub genl_sh_pipe {
     my ($list, $list_close_line_no, $istack, $ver) = @_;
     my $result = '';
@@ -206,23 +206,25 @@ sub genl_sh_pipe {
         $result = $result . ' | ' if ($result ne '');
         $result = $result . $source;
     }
-    $result;
+    ($result, $istack);
 }
 
 # return: ($source, $istack)
 sub genl_sh_subsh {
     my ($list, $list_close_line_no, $istack, $ver) = @_;
     my $indent = istack_get_indent($istack);
-    my $indent2 = $indent . get_source_indent($LANG_SH);
+    my $inner_istack = istack_append_indent($istack, get_source_indent($LANG_SH, $ver));
+    my $indent2 = istack_get_indent($inner_istack);
     my $result = '(';
     foreach my $elem (@$list) {
         my $source;
-        ($source, $istack) = gent_sh_command($elem, 1, 1, '', '', '', 1, 1, $istack, $ver);
+        ($source, $inner_istack) =
+            gent_sh_command($elem, 1, 1, '', '', '', 1, 1, $inner_istack, $ver);
         $result = $result . "\n$indent2";
         $result = $result . $source;
     }
     $result = $result . "\n$indent)";
-    ($result, $istack); # TODO istack
+    ($result, $istack);
 }
 
 # return: ($source, $istack)
@@ -241,8 +243,10 @@ sub genl_sh_group {
     ($result, $istack); # TODO istack
 }
 
+# return: ($source, $istack)
 sub genl_sh_command_roonda {
-    my ($list, $list_close_line_no, $ver) = @_;
+    my ($list, $list_close_line_no, $istack, $ver) = @_;
+    die unless (defined($istack));
     my @list = @$list;
     my $head = shift(@list);
     if ($head && astlib_is_symbol_or_string($head)) {
@@ -252,25 +256,30 @@ sub genl_sh_command_roonda {
             my $lang_to = get_dst_format_label($2);
             if (defined($format_from) && defined($lang_to)) {
                 return genl_sh_command_roonda_convert($format_from, $lang_to,
-                                                      \@list, $list_close_line_no, $ver);
+                                                      \@list, $list_close_line_no, $istack, $ver);
             }
         }
     }
     unshift(@list, $head) if ($head);
     my $result = "\$$ENV_SELF_PATH";
     if (@list) {
-        $result = $result . ' ' . _genl_sh_command_arguments(\@list, 1, $ver);
+        my ($source, $_istack) =
+            _genl_sh_command_arguments(\@list, 1, $istack, $ver);
+        $result = $result . ' ' . $source;
     }
-    return $result;
+    ($result, $istack);
 }
 
+# return: ($source, $istack)
 sub genl_sh_command_roonda_convert {
-    my ($format_from, $lang_to, $list, $list_close_line_no, $ver) = @_;
+    my ($format_from, $lang_to, $list, $list_close_line_no, $istack, $ver) = @_;
     my @list = @$list;
     if (@list) {
         die create_dying_msg_unexpected(shift(@list));
     }
-    "\$$ENV_SELF_PATH --v$ver " . escape_sh_string("--$format_from-to-$lang_to") . "-obj";
+    my $source = "\$$ENV_SELF_PATH --v$ver " .
+        escape_sh_string("--$format_from-to-$lang_to") . "-obj";
+    ($source, $istack);
 }
 
 # return ($source, $is_redirect)
@@ -280,7 +289,8 @@ sub gent_sh_argument_or_redirect {
         genl_sh_argument_or_redirect(astlib_get_list($token),
                                      astlib_get_close_line_no($token), $ver);
     } else {
-        (gent_sh_argument($token, $ver), '');
+        my $istack = istack_create($LANG_SH, $ver); # TODO istack
+        (gent_sh_argument($token, $istack, $ver), '');
     }
 }
 
@@ -306,7 +316,23 @@ sub genl_sh_argument_or_redirect {
 }
 
 sub gent_sh_argument {
-    my ($token, $ver) = @_;
+    my ($token, $istack, $ver) = @_;
+    die unless (defined($istack));
+    if (astlib_is_symbol($token)) {
+        my $symbol = astlib_get_symbol($token);
+        if ($symbol eq $KEYWD_TRUE) {
+            die create_dying_msg_unexpected($token); # TODO
+        } elsif ($symbol eq $KEYWD_FALSE) {
+            die create_dying_msg_unexpected($token); # TODO
+        } else {
+            if (istack_var_sh_exists($istack, $symbol)) {
+                my $source;
+                ($source, $istack) = genl_langs_ref_varname($symbol, $istack, $LANG_SH, $ver); # TODO istack
+                $source = '"' . $source . '"';
+                return $source;
+            }
+        }
+    }
     if (astlib_is_symbol_or_string($token)) {
         escape_sh_string(astlib_get_symbol_or_string($token));
     } elsif (astlib_is_heredoc($token)) {
@@ -366,7 +392,8 @@ sub genl_sh_argument_strcat {
     my @list = @$list;
     my $result = '';
     foreach my $elem (@list) {
-        $result = $result . gent_sh_argument($elem, $ver);
+        my $istack = istack_create($LANG_SH, $ver); # TODO istack
+        $result = $result . gent_sh_argument($elem, $istack, $ver);
     }
     $result;
 }
@@ -412,7 +439,8 @@ sub _genl_sh_redirect_in_out_sub {
         my $num = astlib_get_integer($head2);
         $h . $op . '&' . $num;
     } else {
-        $h . $op . ' ' . gent_sh_argument($head2, $ver);
+        my $istack = istack_create($LANG_SH, $ver); # TODO istack
+        $h . $op . ' ' . gent_sh_argument($head2, $istack, $ver);
     }
 }
 

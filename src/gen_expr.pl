@@ -17,7 +17,7 @@ sub gent_langs_expr {
             if ($lang eq $LANG_PERL) {
                 if (istack_var_perl_exists($istack, $symbol)) {
                     if (istack_var_perl_is_scalar($istack, $symbol)) {
-                        return (genl_langs_ref_varname($symbol, $istack, $lang, $ver), $istack); # TODO istack
+                        return genl_langs_ref_varname($symbol, $istack, $lang, $ver);
                     } else {
                         die;
                     }
@@ -281,26 +281,29 @@ sub genl_langs_ref {
             die create_dying_msg_unexpected(shift(@list));
         }
         my $varname = astlib_get_symbol($head);
-        genl_langs_ref_varname($varname, $istack, $lang, $ver);
+        my $source;
+        ($source, $istack) = genl_langs_ref_varname($varname, $istack, $lang, $ver); # TODO istack
+        $source;
     } else {
         die create_dying_msg_unexpected($head);
     }
 }
 
+# return: ($source, $istack)
 sub genl_langs_ref_varname {
     my ($varname, $istack, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
     die if ($lang ne $LANG_SH && $ver < 2);
     if ($lang eq $LANG_SH) {
-        '$' . $varname;
+        ('$' . $varname, $istack);
     } elsif ($lang eq $LANG_PERL) {
-        '$' . $varname;
+        ('$' . $varname, $istack);
     } elsif ($lang eq $LANG_RUBY) {
-        $varname;
+        ($varname, $istack);
     } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
-        $varname;
+        ($varname, $istack);
     } elsif ($lang eq $LANG_PHP) {
-        '$' . $varname;
+        ('$' . $varname, $istack);
     } else {
         die;
     }
