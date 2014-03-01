@@ -51,6 +51,9 @@ sub _parse_sexpr_get_heredoc {
         }
         push(@new_lines, $line);
     }
+    if ($heredoc) {
+        die "Can't find here-document terminator";
+    }
     (\@new_lines, \%fname_map);
 }
 
