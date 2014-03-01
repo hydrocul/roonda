@@ -12,9 +12,6 @@ mkdir -p target
     cat ./src/save.pl
     cat ./src/astlib.pl
     cat ./src/st_common.pl
-    cat ./src/st_var.pl
-    cat ./src/st_stmt.pl
-    cat ./src/st_perl.pl
     cat ./src/parse_sexpr.pl
     cat ./src/parse_json.pl
     cat ./src/build_ast.pl
@@ -23,11 +20,13 @@ mkdir -p target
     cat ./src/escape.pl
     cat ./src/gen_code.pl
     cat ./src/gen_stmt.pl
+    cat ./src/gen_print.pl
+    cat ./src/gen_if.pl
     cat ./src/gen_expr.pl
+    cat ./src/gen_var.pl
     cat ./src/gen_embed.pl
     cat ./src/gen_sh.pl
     cat ./src/gen_perl.pl
-    cat ./src/gen_ruby.pl
     cat ./src/build_by_template.pl
     cat ./src/main.pl
 } > ./target/roonda
