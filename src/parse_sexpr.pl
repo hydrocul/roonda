@@ -22,7 +22,9 @@ sub _parse_sexpr_get_heredoc {
     my $heredoc_content = '';
     foreach my $line (@lines) {
         if ($heredoc) {
-            if ($line =~ ('\A' . quotemeta($heredoc) . '\s*>>\s*\z')) {
+            my $f = ($line =~ ('\A' . quotemeta($heredoc) . '\s*>>\s*\z'));
+            $f ||= ($line =~ ('\A>>\s*' . quotemeta($heredoc) . '\s*\z'));
+            if ($f) {
                 my $ext = '';
                 my $name;
                 if ($heredoc =~ /\A(.+)\.([-_a-zA-Z0-9]+)\z/) {
