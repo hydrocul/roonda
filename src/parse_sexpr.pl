@@ -19,7 +19,8 @@ sub _parse_sexpr_get_heredoc {
     my @new_lines = ();
     my %fname_map = ();
     my $heredoc = '';
-    my $heredoc_content = '';
+    my $indent_flag = '';
+    my @heredoc_content = ();
     foreach my $line (@lines) {
         if ($heredoc) {
             my $f = ($line =~ ('\A' . quotemeta($heredoc) . '\s*>>\s*\z'));
@@ -31,19 +32,30 @@ sub _parse_sexpr_get_heredoc {
                     $name = $1;
                     $ext = $2;
                 }
-                my $fname = save_file($heredoc_content, $ext, 1, $name);
+                if ($indent_flag) {
+                    @heredoc_content = _parse_sexpr_trim_here_doc_indent(@heredoc_content);
+                }
+                my $content = join('', @heredoc_content);
+                my $fname = save_file($content, $ext, 1, $name);
                 $fname_map{$heredoc} = $fname;
                 push(@new_lines, "\n");
                 $heredoc = '';
-                $heredoc_content = '';
+                $indent_flag = '';
+                @heredoc_content = ();
                 next;
             }
-            $heredoc_content .= $line;
+            push(@heredoc_content, $line);
             push(@new_lines, "\n");
             next;
         }
         if ($line =~ /\A<<\s*([-+*\/._a-zA-Z0-9]+)\s*\z/) {
             $heredoc = $1;
+            push(@new_lines, "\n");
+            next;
+        }
+        if ($line =~ /\A<<\s*([-+*\/._a-zA-Z0-9]+)\s*\\\s*\z/) {
+            $heredoc = $1;
+            $indent_flag = 1;
             push(@new_lines, "\n");
             next;
         }
@@ -57,6 +69,29 @@ sub _parse_sexpr_get_heredoc {
         die "Can't find here-document terminator";
     }
     (\@new_lines, \%fname_map);
+}
+
+sub _parse_sexpr_trim_here_doc_indent {
+    my @lines = @_;
+    my $indent;
+    foreach my $line (@lines) {
+        if ($line =~ /\A\s*\z/) {
+            next;
+        }
+        $line =~ /\A(\s*)/;
+        $indent = $1;
+        last;
+    }
+    my $indent_regexp = '(?s:\A' . quotemeta($indent) . '(.*)\z)';
+    my @new_lines = ();
+    foreach my $line (@lines) {
+        if ($line =~ $indent_regexp) {
+            push(@new_lines, $1);
+        } else {
+            push(@new_lines, $line);
+        }
+    }
+    @new_lines;
 }
 
 sub _parse_sexpr_line {

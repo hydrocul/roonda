@@ -5,16 +5,23 @@ sh v1
 
 (cat attachedfile.txt)
 (cat attachedfile-2.txt)
+(cat attachedfile-3.txt)
 
 << attachedfile.txt
 
-Hello Hello
+    Hello Hello
 
 attachedfile.txt >>
 
 << attachedfile-2.txt
 
-Hello Hello 2
+    Hello Hello 2
 
 >> attachedfile-2.txt
+
+<< attachedfile-3.txt \
+
+    Hello Hello 3
+
+>> attachedfile-3.txt
 

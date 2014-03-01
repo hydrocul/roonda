@@ -5,7 +5,7 @@
 #################################################
 cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/attachedfile.txt
 
-Hello Hello
+    Hello Hello
 
 END_OF_ROONDA_SOURCE_FILE
 #################################################
@@ -13,7 +13,15 @@ END_OF_ROONDA_SOURCE_FILE
 #################################################
 cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/attachedfile-2.txt
 
-Hello Hello 2
+    Hello Hello 2
+
+END_OF_ROONDA_SOURCE_FILE
+#################################################
+# attachedfile-3.txt:
+#################################################
+cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/attachedfile-3.txt
+
+Hello Hello 3
 
 END_OF_ROONDA_SOURCE_FILE
 #################################################
@@ -23,3 +31,4 @@ echo Hello World
 echo 'Hello   World!'
 cat $ROONDA_TMP_PATH/attachedfile.txt
 cat $ROONDA_TMP_PATH/attachedfile-2.txt
+cat $ROONDA_TMP_PATH/attachedfile-3.txt
