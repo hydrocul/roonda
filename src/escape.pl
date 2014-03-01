@@ -11,13 +11,31 @@ sub escape_sexpr_string {
 
 sub unescape_sexpr_string {
     my ($str) = @_;
-    $str =~ s/\\n/\n/g;
-    $str =~ s/\\r/\r/g;
-    $str =~ s/\\t/\t/g;
-    $str =~ s/\\"/"/g;
+    $str =~ s/(\\+)n/_unescape_sexpr_string_replace($1,'n',"\n")/ge;
+    $str =~ s/(\\+)r/_unescape_sexpr_string_replace($1,'r',"\r")/ge;
+    $str =~ s/(\\+)t/_unescape_sexpr_string_replace($1,'t',"\t")/ge;
+    $str =~ s/(\\+)"/_unescape_sexpr_string_replace($1,'"',"\"")/ge;
+    $str =~ s/(\\+)u([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])/
+              _unescape_sexpr_string_replace($1,"u$2",chr(hex($1)))/ge;
     $str =~ s/\\\\/\\/g;
-    $str =~ s/\\u([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])/chr(hex($1))/ge;
     $str;
+}
+
+sub _unescape_sexpr_string_replace {
+    my ($s1, $s2, $s3) = @_;
+    if (length($s1) % 2 == 0) {
+        "$s1$s2";
+    } else {
+        ('\\' x (length($s1) - 1)) . $s3;
+    }
+}
+sub _unescape_sexpr_string_replace_unicode {
+    my ($s1, $s2, $s3, $s4) = @_;
+    if (length($s1) % 2 == 0) {
+        "$s1$s2";
+    } else {
+        ('\\' x (length($s1) - 1)) . $s3;
+    }
 }
 
 sub escape_sh_string {

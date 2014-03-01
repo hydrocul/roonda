@@ -1,21 +1,27 @@
 Hello, world!
 Say "Hello, world!"
 \
+\nx
 あ
 Hello, world!
 Say "Hello, world!"
 \
+\nx
 あ
 Hello, world!
 Say "Hello, world!"
 \
+\nx
 Hello, world!
 Say "Hello, world!"
 \
+\nx
 Hello, world!
 Say "Hello, world!"
 \
+\nx
 Hello, world!
 Say "Hello, world!"
 \
+\nx
 あ
