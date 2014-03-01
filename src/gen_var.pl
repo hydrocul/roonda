@@ -13,6 +13,13 @@ sub genl_var_ref {
         }
         my $varname = astlib_get_symbol($head);
         genl_var_ref_varname($varname, $istack, $lang, $ver);
+    } elsif (astlib_is_string($head)) {
+        if ($lang eq $LANG_SH) {
+            my $varname = astlib_get_string($head);
+            genl_var_ref_varname($varname, $istack, $lang, $ver);
+        } else {
+            die create_dying_msg_unexpected($head);
+        }
     } else {
         die create_dying_msg_unexpected($head);
     }
