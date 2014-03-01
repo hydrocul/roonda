@@ -52,7 +52,7 @@ if (defined($ENV{$ENV_EXPERIMENTAL}) && $ENV{$ENV_EXPERIMENTAL} ne '') {
 }
 
 if ($is_version) {
-    print "roonda $MAJOR_VERSION.$MINOR_VERSION\n";
+    print_version_info();
     exit 0;
 }
 
