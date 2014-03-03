@@ -28,7 +28,7 @@ sub genl_exec {
         if ($lang eq $LANG_SEXPR) {
             die create_dying_msg_unexpected($head);
         }
-        if ($ver < 2 && $lang ne $LANG_SH) {
+        if (!is_lang_support($lang, $ver)) {
             die "Unsupported language: $lang";
         }
         my ($source_head, $source_body) = genl_exec_lang(\@list, $list_close_line_no, $lang, $ver);

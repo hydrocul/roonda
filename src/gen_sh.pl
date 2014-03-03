@@ -71,9 +71,9 @@ sub _genl_sh_command_head {
         genl_if($list, $list_close_line_no, $istack, $LANG_SH, $ver);
     } elsif ($head_symbol eq $KEYWD_PRINT) {
         genl_print($head_symbol, $list, $list_close_line_no, $istack, $LANG_SH, $ver);
-    } elsif ($head_symbol eq $KEYWD_PRINTLN && $ver >= 2) {
+    } elsif ($ver >= 2 && $head_symbol eq $KEYWD_PRINTLN) {
         genl_print($head_symbol, $list, $list_close_line_no, $istack, $LANG_SH, $ver);
-    } elsif ($head_symbol eq $KEYWD_DUMP && $ver >= 2) {
+    } elsif ($ver >= 2 && $head_symbol eq $KEYWD_DUMP) {
         genl_print($head_symbol, $list, $list_close_line_no, $istack, $LANG_SH, $ver);
     } elsif ($head_symbol eq $KEYWD_ASSIGN) {
         unless ($enable_assign) {
@@ -123,7 +123,7 @@ sub _genl_sh_command_lang {
     if ($target_lang eq $LANG_SEXPR) {
         die create_dying_msg_unexpected($target_lang_token);
     }
-    if ($ver < 2 && $target_lang ne $LANG_SH) {
+    if (!is_lang_support($target_lang, $ver)) {
         die "Unsupported language: $target_lang";
     }
     my ($bin_path, $bin_path_for_sh, $ext) = lang_to_bin_path($target_lang);
@@ -358,11 +358,8 @@ sub _genl_sh_argument_head {
         ('"' . $source . '"', $istack);
     } elsif ($head_symbol eq $KEYWD_STRCAT) {
         genl_sh_argument_strcat($list, $list_close_line_no, $istack, $ver);
-    } elsif ($head_symbol eq '+' || $head_symbol eq '-' ||
-        $head_symbol eq '*' || $head_symbol eq '/' || $head_symbol eq '%') {
-        if ($ver < 2) {
-            die "Unsupported: $head_symbol";
-        }
+    } elsif ($ver >= 2 && ($head_symbol eq '+' || $head_symbol eq '-' ||
+                           $head_symbol eq '*' || $head_symbol eq '/' || $head_symbol eq '%')) {
         my @list = @$list;
         unshift(@list, $head);
         my $source;

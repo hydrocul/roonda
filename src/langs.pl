@@ -93,3 +93,16 @@ sub get_dst_format_label {
     }
 }
 
+sub is_lang_support {
+    my ($lang, $ver) = @_;
+    if ($lang eq $LANG_SH ||
+        $ver >= 2 && ($lang eq $LANG_PERL ||
+                      $lang eq $LANG_RUBY ||
+                      $lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3 ||
+                      $lang eq $LANG_PHP)) {
+        1;
+    } else {
+        '';
+    }
+}
+
