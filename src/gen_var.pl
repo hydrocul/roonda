@@ -92,28 +92,43 @@ sub genl_var_assign_1 {
     my @list = @$list;
     my $head = shift(@list);
     die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
+    my $operator = '';
+    if (astlib_is_symbol($head)) {
+        my $symbol = astlib_get_symbol($head);
+        if (($lang eq $LANG_PERL ||
+             $lang eq $LANG_RUBY ||
+             $lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3 ||
+             $lang eq $LANG_PHP) &&
+            ($symbol eq '+' || $symbol eq '-' ||
+             $symbol eq '*' || $symbol eq '/' ||
+             $symbol eq '%')) {
+            $operator = $symbol;
+            $head = shift(@list);
+            die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
+        }
+    }
     die create_dying_msg_unexpected(shift(@list)) if (@list);
-    my ($source, $_istack) = gent_expr($head, $OP_ORDER_MIN, $istack, $lang, $ver);
+    my ($source, $_istack) = gent_expr($head, $OP_ORDER_ASSIGN, $istack, $lang, $ver);
     my $result;
     if ($lang eq $LANG_PERL) {
         if (st_var_exists($istack, $varname)) {
             if (st_var_perl_is_scalar($istack, $varname)) {
-                $result = '$' . $varname . ' = ' . $source;
+                $result = '$' . $varname . " $operator= " . $source;
             } else {
                 die; # TODO
             }
         } else {
-            $result = 'my $' . $varname . ' = ' . $source;
+            $result = 'my $' . $varname . " $operator= " . $source;
             $istack = st_var_perl_declare_scalar($istack, $varname);
         }
     } elsif ($lang eq $LANG_RUBY) {
-        $result = $varname . ' = ' . $source;
+        $result = $varname . " $operator= " . $source;
         $istack = st_var_ruby_declare($istack, $varname);
     } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
-        $result = $varname . ' = ' . $source;
+        $result = $varname . " $operator= " . $source;
         $istack = st_var_python_declare($istack, $varname);
     } elsif ($lang eq $LANG_PHP) {
-        $result = '$' . $varname . ' = ' . $source;
+        $result = '$' . $varname . " $operator= " . $source;
         $istack = st_var_php_declare($istack, $varname);
     } else {
         die;

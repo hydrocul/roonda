@@ -26,6 +26,7 @@ my $FORMAT_SEXPR = 'sexpr';
 my $FORMAT_JSON  = 'json';
 
 my $OP_ORDER_MIN       = 0;
+my $OP_ORDER_ASSIGN    = 1;
 my $OP_ORDER_ARG_COMMA = 5;
 my $OP_ORDER_PLUS      = 10;
 my $OP_ORDER_MULTIPLY  = 20;
