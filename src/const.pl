@@ -51,4 +51,5 @@ my $KEYWD_REF          = 'ref';
 my $KEYWD_STRCAT       = 'strcat';
 my $KEYWD_TRUE         = 'true';
 my $KEYWD_FALSE        = 'false';
+my $KEYWD_LIST         = 'list';
 

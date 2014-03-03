@@ -1,0 +1,20 @@
+perl
+$VAR1 = [
+          1,
+          2,
+          3,
+          'abc'
+        ];
+ruby
+[1, 2, 3, "abc"]
+python2
+[1, 2, 3, 'abc']
+python3
+[1, 2, 3, 'abc']
+php
+array (
+  0 => 1,
+  1 => 2,
+  2 => 3,
+  3 => 'abc',
+)

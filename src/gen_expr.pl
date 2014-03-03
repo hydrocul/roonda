@@ -22,6 +22,9 @@ sub gent_expr {
             die create_dying_msg_unexpected($token);
         }
     } elsif (astlib_is_string($token)) {
+        if ($lang eq $LANG_SH) {
+            die create_dying_msg_unexpected($token);
+        }
         gent_expr_string($token, $istack, $lang, $ver)
     } elsif (astlib_is_integer($token)) {
         (astlib_get_integer($token), $istack);
@@ -80,13 +83,13 @@ sub _genl_expr_head {
         genl_expr_stdin_data($list, $list_close_line_no, $istack, $lang, $ver);
     } elsif ($head_symbol eq '+' || $head_symbol eq '-') {
         genl_expr_binop($head_symbol, $OP_ORDER_PLUS, $op_order, '',
-                         $list, $list_close_line_no, $istack, $lang, $ver);
+                        $list, $list_close_line_no, $istack, $lang, $ver);
     } elsif ($head_symbol eq '*' || $head_symbol eq '/') {
         genl_expr_binop($head_symbol, $OP_ORDER_MULTIPLY, $op_order, '',
-                         $list, $list_close_line_no, $istack, $lang, $ver);
+                        $list, $list_close_line_no, $istack, $lang, $ver);
     } elsif ($head_symbol eq '%') {
         genl_expr_binop($head_symbol, $OP_ORDER_MULTIPLY, $op_order, 1,
-                         $list, $list_close_line_no, $istack, $lang, $ver);
+                        $list, $list_close_line_no, $istack, $lang, $ver);
     } elsif ($head_symbol eq '**') {
         if ($lang eq $LANG_SH) {
             die create_dying_msg_unexpected($head);
@@ -94,7 +97,7 @@ sub _genl_expr_head {
         if ($lang eq $LANG_PERL || $lang eq $LANG_RUBY ||
             $lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
             genl_expr_binop($head_symbol, $OP_ORDER_POWER, $op_order, '',
-                             $list, $list_close_line_no, $istack, $lang, $ver);
+                            $list, $list_close_line_no, $istack, $lang, $ver);
         } elsif ($lang eq $LANG_PHP) {
             genl_expr_apply_1('pow', $list, $list_close_line_no, 2, $istack, $lang, $ver);
         }
@@ -106,32 +109,13 @@ sub _genl_expr_head {
             die create_dying_msg_unexpected($head);
         }
         genl_expr_strcat($op_order, $list, $list_close_line_no, $istack, $lang, $ver);
+    } elsif ($head_symbol eq $KEYWD_LIST) {
+        if ($lang eq $LANG_SH) {
+            die create_dying_msg_unexpected($head);
+        }
+        genl_expr_list($list, $list_close_line_no, $istack, $lang, $ver);
     } else {
         (undef, $istack);
-    }
-}
-
-# return: ($source, $istack)
-sub gent_expr_string {
-    my ($str_token, $istack, $lang, $ver) = @_;
-    die if ($lang eq $LANG_SEXPR);
-    # LANG_SH では expr コマンドのパラメータとして計算式を組み立てる
-    if ($lang eq $LANG_SH) {
-        die create_dying_msg_unexpected($str_token);
-    } elsif ($lang eq $LANG_PERL) {
-        my $str = astlib_get_string($str_token);
-        $istack = st_perl_check_string_utf8($istack, $str);
-        (escape_perl_string($str), $istack);
-    } elsif ($lang eq $LANG_RUBY) {
-        (escape_ruby_string(astlib_get_string($str_token)), $istack);
-    } elsif ($lang eq $LANG_PYTHON2) {
-        (escape_python2_string(astlib_get_string($str_token)), $istack);
-    } elsif ($lang eq $LANG_PYTHON3) {
-        (escape_python3_string(astlib_get_string($str_token)), $istack);
-    } elsif ($lang eq $LANG_PHP) {
-        (escape_php_string(astlib_get_string($str_token)), $istack);
-    } else {
-        die;
     }
 }
 
@@ -156,7 +140,7 @@ sub genl_expr_strcat {
         die;
     }
     genl_expr_binop($op, $op_order_plus, $op_order, '',
-                     $list, $list_close_line_no, $istack, $lang, $ver);
+                    $list, $list_close_line_no, $istack, $lang, $ver);
 }
 
 # return: ($source, $istack)
@@ -295,6 +279,52 @@ sub gent_expr_boolean {
         } else {
             ('FALSE', $istack);
         }
+    } else {
+        die;
+    }
+}
+
+# return: ($source, $istack)
+sub gent_expr_string {
+    my ($str_token, $istack, $lang, $ver) = @_;
+    die if ($lang eq $LANG_SEXPR);
+    die if ($lang eq $LANG_SH);
+    if ($lang eq $LANG_PERL) {
+        my $str = astlib_get_string($str_token);
+        $istack = st_perl_check_string_utf8($istack, $str);
+        (escape_perl_string($str), $istack);
+    } elsif ($lang eq $LANG_RUBY) {
+        (escape_ruby_string(astlib_get_string($str_token)), $istack);
+    } elsif ($lang eq $LANG_PYTHON2) {
+        (escape_python2_string(astlib_get_string($str_token)), $istack);
+    } elsif ($lang eq $LANG_PYTHON3) {
+        (escape_python3_string(astlib_get_string($str_token)), $istack);
+    } elsif ($lang eq $LANG_PHP) {
+        (escape_php_string(astlib_get_string($str_token)), $istack);
+    } else {
+        die;
+    }
+}
+
+# return: ($source, $istack)
+sub genl_expr_list {
+    my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
+    die if ($lang eq $LANG_SEXPR);
+    die if ($lang eq $LANG_SH);
+    my $child_istack = st_expr_child($istack);
+    my $source;
+    ($source, $child_istack) =
+        genl_expr_binop(',', $OP_ORDER_ARG_COMMA, $OP_ORDER_MIN, '',
+                        $list, $list_close_line_no, $child_istack, $lang, $ver);
+    $istack = st_expr_parent($istack, $child_istack);
+    if ($lang eq $LANG_PERL) {
+        ("[$source]", $istack);
+    } elsif ($lang eq $LANG_RUBY) {
+        ("[$source]", $istack);
+    } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+        ("[$source]", $istack);
+    } elsif ($lang eq $LANG_PHP) {
+        ("array($source)", $istack);
     } else {
         die;
     }
