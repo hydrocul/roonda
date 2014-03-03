@@ -10,10 +10,11 @@ echo -n '
 '
 END_OF_ROONDA_SOURCE_FILE
 #################################################
-# roonda_a45f6d18d2c4da58c7cb453d4a57746ef9b8a1a5.pl:
+# roonda_cd7ce4ddf9a473bbc0b3da0687a2a1f7897a0905.pl:
 #################################################
-cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_a45f6d18d2c4da58c7cb453d4a57746ef9b8a1a5.pl
+cat <<\END_OF_ROONDA_SOURCE_FILE > $ROONDA_TMP_PATH/roonda_cd7ce4ddf9a473bbc0b3da0687a2a1f7897a0905.pl
 use Encode qw/encode/;
+use Data::Dumper;
 
 print("Hello, world!\n");
 print encode('utf-8', 1 + 2);
@@ -50,7 +51,7 @@ END_OF_ROONDA_SOURCE_FILE
 #################################################
 
 sh $ROONDA_TMP_PATH/roonda_1350897e53a3e64060c977ce2a724e19d937e0f6.sh
-perl $ROONDA_TMP_PATH/roonda_a45f6d18d2c4da58c7cb453d4a57746ef9b8a1a5.pl
+perl $ROONDA_TMP_PATH/roonda_cd7ce4ddf9a473bbc0b3da0687a2a1f7897a0905.pl
 ruby $ROONDA_TMP_PATH/roonda_1f4bc1c636ef5be569ef1edaf9d224bdf5901c42.rb
 python2 $ROONDA_TMP_PATH/roonda_297ebd45cf2756ecad4107087f0dbeeeb734dba8.py
 python3 $ROONDA_TMP_PATH/roonda_297ebd45cf2756ecad4107087f0dbeeeb734dba8.py

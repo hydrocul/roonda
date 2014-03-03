@@ -46,11 +46,11 @@ sub genl_print {
         if ($lang eq $LANG_SH) {
             ("echo $source", $istack); # TODO
         } elsif ($lang eq $LANG_PERL) {
-            ("print encode('utf-8', $source . \"\\n\")", $istack); # TODO
+            ("print Dumper($source)", $istack);
         } elsif ($lang eq $LANG_RUBY) {
             ("p $source", $istack);
         } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
-            ("print(str($source))", $istack); # TODO
+            ("print($source)", $istack);
         } elsif ($lang eq $LANG_PHP) {
             ("var_export($source)", $istack);
         } else {

@@ -6,8 +6,8 @@ def
 perl
 123
 abc
-def
-
+$VAR1 = 'def
+';
 ruby
 123
 abc

@@ -71,9 +71,9 @@ sub _genl_sh_command_head {
         genl_if($list, $list_close_line_no, $istack, $LANG_SH, $ver);
     } elsif ($head_symbol eq $KEYWD_PRINT) {
         genl_print($head_symbol, $list, $list_close_line_no, $istack, $LANG_SH, $ver);
-    } elsif ($head_symbol eq $KEYWD_PRINTLN) {
+    } elsif ($head_symbol eq $KEYWD_PRINTLN && $ver >= 2) {
         genl_print($head_symbol, $list, $list_close_line_no, $istack, $LANG_SH, $ver);
-    } elsif ($head_symbol eq $KEYWD_DUMP) {
+    } elsif ($head_symbol eq $KEYWD_DUMP && $ver >= 2) {
         genl_print($head_symbol, $list, $list_close_line_no, $istack, $LANG_SH, $ver);
     } elsif ($head_symbol eq $KEYWD_ASSIGN) {
         unless ($enable_assign) {

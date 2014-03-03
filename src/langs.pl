@@ -44,7 +44,9 @@ sub get_source_header {
     } elsif ($lang eq $LANG_PHP) {
         "<?php\n\n";
     } elsif ($lang eq $LANG_PERL) {
-        "use Encode qw/encode/;\n\n"; # TODO 暫定
+        "use Encode qw/encode/;\n" .
+        "use Data::Dumper;\n" .
+        "\n"; # TODO 暫定
     } else {
         '';
     }
