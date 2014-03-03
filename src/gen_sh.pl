@@ -243,19 +243,6 @@ sub genl_sh_command_roonda {
     my ($list, $list_close_line_no, $istack, $ver) = @_;
     die unless (defined($istack));
     my @list = @$list;
-    my $head = shift(@list);
-    if ($head && astlib_is_symbol_or_string($head)) {
-        my $symbol = astlib_get_symbol_or_string($head);
-        if ($symbol =~ /\A([a-z0-9]+)-to-([a-z0-9]+)\z/) {
-            my $format_from = get_src_format_label($1);
-            my $lang_to = get_dst_format_label($2);
-            if (defined($format_from) && defined($lang_to)) {
-                return genl_sh_command_roonda_convert($format_from, $lang_to,
-                                                      \@list, $list_close_line_no, $istack, $ver);
-            }
-        }
-    }
-    unshift(@list, $head) if ($head);
     my $result = "\$$ENV_SELF_PATH";
     if (@list) {
         my ($source, $_istack) =
@@ -263,18 +250,6 @@ sub genl_sh_command_roonda {
         $result = $result . ' ' . $source;
     }
     ($result, $istack);
-}
-
-# return: ($source, $istack)
-sub genl_sh_command_roonda_convert {
-    my ($format_from, $lang_to, $list, $list_close_line_no, $istack, $ver) = @_;
-    my @list = @$list;
-    if (@list) {
-        die create_dying_msg_unexpected(shift(@list));
-    }
-    my $source = "\$$ENV_SELF_PATH --v$ver " .
-        escape_sh_string("--$format_from-to-$lang_to") . "-obj";
-    ($source, $istack);
 }
 
 # return ($source, $istack, $is_redirect)

@@ -5,34 +5,19 @@
 #   from_stdin: 標準入力からオブジェクトを受け取って、オブジェクト生成
 #   from_file:  標準入力からオブジェクトを受け取って、オブジェクト生成
 
-my $ver = '';
+my $ver = 0;
 my $format_from = '';
 my $source_filepath = '';
-my $format_to = ''; # オブジェクト生成の場合のみ
 my $is_dryrun = '';
 my $is_version = '';
 
 while () {
     last if (!@ARGV);
     my $arg = shift;
-    if ($arg =~ /\A--v(\d+)\z/) {
-        die if ($ver ne '');
-        $ver = $1;
-    } elsif ($arg =~ /\A--from-([a-z0-9]+)\z/) {
+    if ($arg =~ /\A--from-([a-z0-9]+)\z/) {
         die if ($format_from ne '');
         $format_from = get_src_format_label($1);
         die "Unknown argument: $arg" unless (defined($format_from));
-    } elsif ($arg =~ /\A--([a-z0-9]+)-to-([a-z0-9]+)-obj\z/) {
-        die if ($format_from ne '');
-        $format_from = get_src_format_label($1);
-        die "Unknown argument: $arg" unless (defined($format_from));
-        die if ($format_to ne '');
-        $format_to = get_dst_format_label($2);
-        die "Unknown argument: $arg" unless (defined($format_to));
-    } elsif ($arg =~ /\A--to-([a-z0-9]+)-obj\z/) {
-        die if ($format_to ne '');
-        $format_to = get_dst_format_label($1);
-        die "Unknown argument: $arg" unless (defined($format_to));
     } elsif ($arg eq '--dry-run') {
         $is_dryrun = 1;
     } elsif ($arg eq '--experimental') {
@@ -57,22 +42,6 @@ if ($is_version) {
 }
 
 my $run_type = '';
-
-if ($ver eq '') {
-    $ver = 0;
-} else {
-    my $ver2 = $ver + 0;
-    if ($ver2 ne $ver) {
-        die "Unknown argument: --v$ver";
-    }
-    $ver = $ver2;
-    if ($ver > $MAX_VERSION) {
-        die "Unknown version: $ver";
-    }
-    if ($ver == $MAX_VERSION && !$is_experimental) {
-        die "version $ver is experimental";
-    }
-}
 
 if ($source_filepath eq '') {
     $run_type = 'from_stdin';
@@ -114,15 +83,6 @@ if ($source_format eq $FORMAT_SEXPR) {
     $ast = parse_json(\@lines);
 } else {
     die;
-}
-
-if ($format_to) {
-    die "Unspecified version" if $ver < 1;
-    my $source = gent_obj($ast, $format_to, $ver);
-
-    print encode('utf-8', $source);
-    print "\n";
-    exit(0);
 }
 
 my ($exec_source, $ext) = sub {

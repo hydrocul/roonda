@@ -1,5 +1,0 @@
-[["abc","Hey",10],["def","Hello",30],["ghi","Hello",50],["jk","Hello   World!",100]]
-[["abc","Hey",10],["def","Hello",30],["ghi","Hello",50],["jk","Hello   World!",100]]
-[["abc","Hey",10],["def","Hello",30],["ghi","Hello",50],["jk","Hello   World!",100]]
-[["abc","Hey",10],["def","Hello",30],["ghi","Hello",50],["jk","Hello   World!",100]]
-array(array("abc","Hey",10),array("def","Hello",30),array("ghi","Hello",50),array("jk","Hello   World!",100))

@@ -17,7 +17,6 @@ mkdir -p target
     cat ./src/parse_json.pl
     cat ./src/build_ast.pl
     cat ./src/langs.pl
-    cat ./src/gen_obj.pl
     cat ./src/escape.pl
     cat ./src/gen_code.pl
     cat ./src/gen_stmt.pl
@@ -26,7 +25,6 @@ mkdir -p target
     cat ./src/gen_foreach.pl
     cat ./src/gen_expr.pl
     cat ./src/gen_var.pl
-    cat ./src/gen_embed.pl
     cat ./src/gen_sh.pl
     cat ./src/gen_perl.pl
     cat ./src/build_by_template.pl

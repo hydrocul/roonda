@@ -28,9 +28,6 @@ sub genl_exec {
         if ($lang eq $LANG_SEXPR) {
             die create_dying_msg_unexpected($head);
         }
-        if (!is_lang_support($lang, $ver)) {
-            die "Unsupported language: $lang";
-        }
         my ($source_head, $source_body) = genl_exec_lang(\@list, $list_close_line_no, $lang, $ver);
         my ($bin_path, $bin_path_for_sh, $ext) = lang_to_bin_path($lang);
         ($lang, $bin_path, $bin_path_for_sh, $source_head, $source_body, $ext);
@@ -71,6 +68,9 @@ sub genl_exec_lang {
 sub genl_exec_lang_ver {
     my ($list, $list_close_line_no, $lang, $ver) = @_;
     die if ($lang eq $LANG_SEXPR);
+    if (!is_lang_support($lang, $ver)) {
+        die "Unsupported language: $lang";
+    }
     my $result_head = get_source_header($lang, $ver);
     my $istack = istack_create($lang, $ver);
     my $result;

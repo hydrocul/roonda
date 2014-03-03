@@ -76,11 +76,6 @@ sub _genl_expr_head {
             die create_dying_msg_unexpected($head);
         }
         genl_expr_apply($list, $list_close_line_no, $istack, $lang, $ver);
-    } elsif ($head_symbol eq $KEYWD_STDIN_DATA) {
-        if ($lang eq $LANG_SH) {
-            die create_dying_msg_unexpected($head);
-        }
-        genl_expr_stdin_data($list, $list_close_line_no, $istack, $lang, $ver);
     } elsif ($head_symbol eq '+' || $head_symbol eq '-') {
         genl_expr_binop($head_symbol, $OP_ORDER_PLUS, $op_order, '',
                         $list, $list_close_line_no, $istack, $lang, $ver);
@@ -183,30 +178,6 @@ sub genl_expr_apply_1 {
         $result = $result . $source;
     }
     ("$funcname($result)", $istack);
-}
-
-# return: ($source, $istack)
-sub genl_expr_stdin_data {
-    my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
-    die if ($lang eq $LANG_SEXPR);
-    die if ($lang eq $LANG_SH);
-    my @list = @$list;
-    my $head = shift(@list);
-    unless (defined($head)) {
-        die create_dying_msg_unexpected_closing($list_close_line_no);
-    }
-    if (@list) {
-        die create_dying_msg_unexpected(shift(@list));
-    }
-    if (astlib_is_symbol_or_string($head)) {
-        my $format_from = astlib_get_symbol_or_string($head);
-        if ($lang eq $LANG_PERL) {
-            $istack = st_perl_set_needs_use_utf8($istack);
-        }
-        (gent_embed_simple_obj($format_from, $lang, $ver), $istack);
-    } else {
-        die create_dying_msg_unexpected($head);
-    }
 }
 
 # return: ($source, $istack)
