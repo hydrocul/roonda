@@ -14,16 +14,11 @@ sub gent_expr {
         } elsif ($symbol eq $KEYWD_FALSE) {
             gent_expr_boolean('', $istack, $lang, $ver);
         } else {
-            if ($lang eq $LANG_PERL) {
-                if (st_var_perl_exists($istack, $symbol)) {
-                    if (st_var_perl_is_scalar($istack, $symbol)) {
-                        return genl_var_ref_varname($symbol, $istack, $lang, $ver);
-                    } else {
-                        die;
-                    }
-                }
+            my $source;
+            ($source, $istack) = gent_var_ref($symbol, $token, $istack, $lang, $ver);
+            if (defined($source)) {
+                return ($source, $istack);
             }
-            # TODO
             die create_dying_msg_unexpected($token);
         }
     } elsif (astlib_is_string($token)) {

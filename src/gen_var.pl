@@ -1,5 +1,27 @@
 
 # return: ($source, $istack)
+# 変数名として認識できない場合は (undef, $istack) を返す
+sub gent_var_ref {
+    my ($symbol, $token, $istack, $lang, $ver) = @_;
+    if (st_var_exists($istack, $symbol)) {
+        if ($lang eq $LANG_PERL) {
+                if (st_var_perl_is_scalar($istack, $symbol)) {
+                return genl_var_ref_varname($symbol, $istack, $lang, $ver);
+            } else {
+                die;
+            }
+        } elsif ($lang eq $LANG_RUBY) {
+            return genl_var_ref_varname($symbol, $istack, $lang, $ver);
+        } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+            return genl_var_ref_varname($symbol, $istack, $lang, $ver);
+        } elsif ($lang eq $LANG_PHP) {
+            return genl_var_ref_varname($symbol, $istack, $lang, $ver);
+        }
+    }
+    (undef, $istack);
+}
+
+# return: ($source, $istack)
 sub genl_var_ref {
     my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
     my @list = @$list;
@@ -74,7 +96,7 @@ sub genl_var_assign_1 {
     my ($source, $_istack) = gent_expr($head, $OP_ORDER_MIN, $istack, $lang, $ver);
     my $result;
     if ($lang eq $LANG_PERL) {
-        if (st_var_perl_exists($istack, $varname)) {
+        if (st_var_exists($istack, $varname)) {
             if (st_var_perl_is_scalar($istack, $varname)) {
                 $result = '$' . $varname . ' = ' . $source;
             } else {
@@ -86,10 +108,13 @@ sub genl_var_assign_1 {
         }
     } elsif ($lang eq $LANG_RUBY) {
         $result = $varname . ' = ' . $source;
+        $istack = st_var_ruby_declare($istack, $varname);
     } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
         $result = $varname . ' = ' . $source;
+        $istack = st_var_python_declare($istack, $varname);
     } elsif ($lang eq $LANG_PHP) {
         $result = '$' . $varname . ' = ' . $source;
+        $istack = st_var_php_declare($istack, $varname);
     } else {
         die;
     }
@@ -117,6 +142,15 @@ sub genl_var_sh_assign_1 {
     ($result, $istack);
 }
 
+sub st_var_exists {
+    my ($istack, $varname) = @_;
+    if (defined(istack_sub_get_var_info($istack, $varname))) {
+        1;
+    } else {
+        '';
+    }
+}
+
 sub st_var_perl_declare_scalar {
     my ($istack, $varname) = @_;
     die if ($istack->{lang} ne $LANG_PERL);
@@ -127,26 +161,6 @@ sub st_var_sh_declare_shell {
     my ($istack, $varname) = @_;
     die if ($istack->{lang} ne $LANG_SH);
     istack_sub_set_var_info($istack, $varname, 'shell');
-}
-
-sub st_var_sh_exists {
-    my ($istack, $varname) = @_;
-    die if ($istack->{lang} ne $LANG_SH);
-    if (defined(istack_sub_get_var_info($istack, $varname))) {
-        1;
-    } else {
-        '';
-    }
-}
-
-sub st_var_perl_exists {
-    my ($istack, $varname) = @_;
-    die if ($istack->{lang} ne $LANG_PERL);
-    if (defined(istack_sub_get_var_info($istack, $varname))) {
-        1;
-    } else {
-        '';
-    }
 }
 
 sub st_var_perl_is_scalar {
@@ -160,5 +174,23 @@ sub st_var_perl_is_scalar {
     } else {
         '';
     }
+}
+
+sub st_var_ruby_declare {
+    my ($istack, $varname) = @_;
+    die if ($istack->{lang} ne $LANG_RUBY);
+    istack_sub_set_var_info($istack, $varname, 1);
+}
+
+sub st_var_python_declare {
+    my ($istack, $varname) = @_;
+    die if ($istack->{lang} ne $LANG_PYTHON2 && $istack->{lang} ne $LANG_PYTHON3);
+    istack_sub_set_var_info($istack, $varname, 1);
+}
+
+sub st_var_php_declare {
+    my ($istack, $varname) = @_;
+    die if ($istack->{lang} ne $LANG_PHP);
+    istack_sub_set_var_info($istack, $varname, 1);
 }
 

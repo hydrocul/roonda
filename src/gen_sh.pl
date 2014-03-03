@@ -305,7 +305,7 @@ sub gent_sh_argument {
             die create_dying_msg_unexpected($token); # TODO
         } elsif ($symbol eq $KEYWD_FALSE) {
             die create_dying_msg_unexpected($token); # TODO
-        } elsif (st_var_sh_exists($istack, $symbol)) {
+        } elsif (st_var_exists($istack, $symbol)) {
             my ($source, $_istack) = genl_var_ref_varname($symbol, $istack, $LANG_SH, $ver);
             return ('"' . $source . '"', $istack);
         }
