@@ -23,6 +23,7 @@ mkdir -p target
     cat ./src/gen_stmt.pl
     cat ./src/gen_print.pl
     cat ./src/gen_if.pl
+    cat ./src/gen_foreach.pl
     cat ./src/gen_expr.pl
     cat ./src/gen_var.pl
     cat ./src/gen_embed.pl

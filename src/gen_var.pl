@@ -75,8 +75,8 @@ sub genl_var_assign {
     my $head = shift(@list);
     die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
     if (astlib_is_symbol($head)) {
-        my $source;
-        genl_var_assign_1(astlib_get_symbol($head), \@list, $list_close_line_no, $istack, $lang, $ver);
+        my $varname = astlib_get_symbol($head);
+        genl_var_assign_1($varname, \@list, $list_close_line_no, $istack, $lang, $ver);
     } else {
         die create_dying_msg_unexpected($head);
     }
