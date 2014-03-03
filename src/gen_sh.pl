@@ -175,7 +175,17 @@ sub _genl_sh_command_arguments {
 # return: ($source, $istack)
 sub genl_sh_export {
     my ($list, $list_close_line_no, $istack, $ver) = @_;
-    die "TODO genl_sh_export";
+    my @list = @$list;
+    my $head = shift(@list);
+    die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));
+    die create_dying_msg_unexpected(shift(@list)) if (@list);
+    if (astlib_is_symbol($head)) {
+        my $varname = astlib_get_symbol($head);
+        my $source = "export $varname";
+        ($source, $istack);
+    } else {
+        die create_dying_msg_unexpected($head);
+    }
 }
 
 # return: ($source, $istack)
