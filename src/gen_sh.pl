@@ -70,7 +70,11 @@ sub _genl_sh_command_head {
     } elsif ($head_symbol eq $KEYWD_IF) {
         genl_if($list, $list_close_line_no, $istack, $LANG_SH, $ver);
     } elsif ($head_symbol eq $KEYWD_PRINT) {
-        genl_print($list, $list_close_line_no, $istack, $LANG_SH, $ver);
+        genl_print($head_symbol, $list, $list_close_line_no, $istack, $LANG_SH, $ver);
+    } elsif ($head_symbol eq $KEYWD_PRINTLN) {
+        genl_print($head_symbol, $list, $list_close_line_no, $istack, $LANG_SH, $ver);
+    } elsif ($head_symbol eq $KEYWD_DUMP) {
+        genl_print($head_symbol, $list, $list_close_line_no, $istack, $LANG_SH, $ver);
     } elsif ($head_symbol eq $KEYWD_ASSIGN) {
         unless ($enable_assign) {
             die create_dying_msg_unexpected($head);

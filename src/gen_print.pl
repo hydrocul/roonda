@@ -1,7 +1,7 @@
 
 # return: ($source, $istack)
 sub genl_print {
-    my ($list, $list_close_line_no, $istack, $lang, $ver) = @_;
+    my ($funcname, $list, $list_close_line_no, $istack, $lang, $ver) = @_;
     die unless (defined($istack));
     die if ($lang eq $LANG_SEXPR);
     my @list = @$list;
@@ -14,16 +14,48 @@ sub genl_print {
     } else {
         ($source, $istack) = gent_expr($elem, $OP_ORDER_ARG_COMMA, $istack, $lang, $ver);
     }
-    if ($lang eq $LANG_SH) {
-        ("echo -n $source", $istack);
-    } elsif ($lang eq $LANG_PERL) {
-        ("print encode('utf-8', $source)", $istack);
-    } elsif ($lang eq $LANG_RUBY) {
-        ("print $source", $istack);
-    } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
-        ("sys.stdout.write(str($source))", $istack);
-    } elsif ($lang eq $LANG_PHP) {
-        ("echo $source", $istack);
+    if ($funcname eq $KEYWD_PRINT) {
+        if ($lang eq $LANG_SH) {
+            ("echo -n $source", $istack);
+        } elsif ($lang eq $LANG_PERL) {
+            ("print encode('utf-8', $source)", $istack);
+        } elsif ($lang eq $LANG_RUBY) {
+            ("print $source", $istack);
+        } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+            ("sys.stdout.write(str($source))", $istack);
+        } elsif ($lang eq $LANG_PHP) {
+            ("echo $source", $istack);
+        } else {
+            die;
+        }
+    } elsif ($funcname eq $KEYWD_PRINTLN) {
+        if ($lang eq $LANG_SH) {
+            ("echo $source", $istack);
+        } elsif ($lang eq $LANG_PERL) {
+            ("print encode('utf-8', $source . \"\\n\")", $istack);
+        } elsif ($lang eq $LANG_RUBY) {
+            ("puts $source", $istack);
+        } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+            ("print(str($source))", $istack);
+        } elsif ($lang eq $LANG_PHP) {
+            ("echo $source . \"\\n\"", $istack);
+        } else {
+            die;
+        }
+    } elsif ($funcname eq $KEYWD_DUMP) {
+        if ($lang eq $LANG_SH) {
+            ("echo $source", $istack); # TODO
+        } elsif ($lang eq $LANG_PERL) {
+            ("print encode('utf-8', $source . \"\\n\")", $istack); # TODO
+        } elsif ($lang eq $LANG_RUBY) {
+            ("p $source", $istack);
+        } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+            ("print(str($source))", $istack); # TODO
+        } elsif ($lang eq $LANG_PHP) {
+            ("var_export($source)", $istack);
+        } else {
+            die;
+        }
     } else {
         die;
     }

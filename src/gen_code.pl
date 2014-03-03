@@ -45,7 +45,9 @@ sub genl_exec_lang {
     die if ($lang eq $LANG_SEXPR);
     my @list = @$list;
     my $head = shift(@list);
-    if (astlib_is_symbol($head)) {
+    if (!defined($head)) {
+        # nop
+    } elsif (astlib_is_symbol($head)) {
         my $symbol = astlib_get_symbol($head);
         if ($symbol =~ /\Av([1-9][0-9]*)\z/) {
             $ver = $1;

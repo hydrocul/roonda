@@ -86,7 +86,11 @@ sub _genl_stmt_statement_head {
     if ($head_symbol eq $KEYWD_IF) {
         genl_if($list, $list_close_line_no, $istack, $lang, $ver);
     } elsif ($head_symbol eq $KEYWD_PRINT) {
-        genl_print($list, $list_close_line_no, $istack, $lang, $ver);
+        genl_print($head_symbol, $list, $list_close_line_no, $istack, $lang, $ver);
+    } elsif ($head_symbol eq $KEYWD_PRINTLN) {
+        genl_print($head_symbol, $list, $list_close_line_no, $istack, $lang, $ver);
+    } elsif ($head_symbol eq $KEYWD_DUMP) {
+        genl_print($head_symbol, $list, $list_close_line_no, $istack, $lang, $ver);
     } elsif ($head_symbol eq $KEYWD_ASSIGN) {
         genl_var_assign($list, $list_close_line_no, $istack, $lang, $ver);
     } else {
