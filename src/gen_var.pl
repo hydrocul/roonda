@@ -95,13 +95,24 @@ sub genl_var_assign_1 {
     my $operator = '';
     if (astlib_is_symbol($head)) {
         my $symbol = astlib_get_symbol($head);
-        if (($lang eq $LANG_PERL ||
+        my $f = '';
+        if ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+            if ($symbol eq '+' || $symbol eq '-' ||
+                $symbol eq '*' || $symbol eq '/' || $symbol eq '//' || $symbol eq '%' || $symbol eq '**' ||
+                $symbol eq '>>' || $symbol eq '<<' || $symbol eq '&' || $symbol eq '^' || $symbol eq '|') {
+                $f = 1;
+            }
+        } elsif (($lang eq $LANG_PERL ||
              $lang eq $LANG_RUBY ||
              $lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3 ||
              $lang eq $LANG_PHP) &&
             ($symbol eq '+' || $symbol eq '-' ||
              $symbol eq '*' || $symbol eq '/' ||
              $symbol eq '%')) {
+            # TODO python以外の代入演算子は未調査
+            $f = 1;
+        }
+        if ($f) {
             $operator = $symbol;
             $head = shift(@list);
             die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($head));

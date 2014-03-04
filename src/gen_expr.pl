@@ -77,13 +77,17 @@ sub _genl_expr_head {
         }
         genl_expr_apply($list, $list_close_line_no, $istack, $lang, $ver);
     } elsif ($head_symbol eq '+' || $head_symbol eq '-') {
-        genl_expr_binop($head_symbol, $OP_ORDER_PLUS, $op_order, '',
+        genl_expr_binop($head_symbol, $OP_ORDER_ADDITION, $op_order, '',
                         $list, $list_close_line_no, $istack, $lang, $ver);
     } elsif ($head_symbol eq '*' || $head_symbol eq '/') {
-        genl_expr_binop($head_symbol, $OP_ORDER_MULTIPLY, $op_order, '',
+        genl_expr_binop($head_symbol, $OP_ORDER_MULTIPLICATION, $op_order, '',
+                        $list, $list_close_line_no, $istack, $lang, $ver);
+    } elsif (($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) &&
+             $head_symbol eq '//') {
+        genl_expr_binop($head_symbol, $OP_ORDER_MULTIPLICATION, $op_order, '',
                         $list, $list_close_line_no, $istack, $lang, $ver);
     } elsif ($head_symbol eq '%') {
-        genl_expr_binop($head_symbol, $OP_ORDER_MULTIPLY, $op_order, 1,
+        genl_expr_binop($head_symbol, $OP_ORDER_MULTIPLICATION, $op_order, 1,
                         $list, $list_close_line_no, $istack, $lang, $ver);
     } elsif ($head_symbol eq '**') {
         if ($lang eq $LANG_SH) {
@@ -121,16 +125,16 @@ sub genl_expr_strcat {
     my $op_order_plus;
     if ($lang eq $LANG_PERL) {
         $op = '.';
-        $op_order_plus = $OP_ORDER_PLUS;
+        $op_order_plus = $OP_ORDER_ADDITION;
     } elsif ($lang eq $LANG_RUBY) {
         $op = '+';
-        $op_order_plus = $OP_ORDER_PLUS;
+        $op_order_plus = $OP_ORDER_ADDITION;
     } elsif ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
         $op = '+';
-        $op_order_plus = $OP_ORDER_PLUS;
+        $op_order_plus = $OP_ORDER_ADDITION;
     } elsif ($lang eq $LANG_PHP) {
         $op = '.';
-        $op_order_plus = $OP_ORDER_PLUS;
+        $op_order_plus = $OP_ORDER_ADDITION;
     } else {
         die;
     }

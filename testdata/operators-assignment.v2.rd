@@ -16,12 +16,16 @@ sh v2
 (python2
  (assign a 1)
  (assign a + (* 2 3))
+ (println a)
+ (assign a ** 3)
  (println a))
 
 (println "python3")
 (python3
  (assign a 1)
  (assign a + (* 2 3))
+ (println a)
+ (assign a ** 3)
  (println a))
 
 (println "php")
