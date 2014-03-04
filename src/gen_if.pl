@@ -126,14 +126,14 @@ sub st_if_then_else_stack {
 sub st_if_result {
     my ($parent_istack, $cond_istack, $then_istack, $else_istack, $lang, $ver) = @_;
     if ($lang eq $LANG_PERL) {
-        st_perl_if_result($parent_istack, $cond_istack, $then_istack, $else_istack, $ver);
+        st_if_perl_result($parent_istack, $cond_istack, $then_istack, $else_istack, $ver);
     } else {
         $parent_istack;
     }
     # TODO ruby, python, php
 }
 
-sub st_perl_if_result {
+sub st_if_perl_result {
     my ($parent_istack, $cond_istack, $then_istack, $else_istack) = @_;
     $parent_istack = st_perl_report_use_utf8($parent_istack, $cond_istack);
     $parent_istack = st_perl_report_use_utf8($parent_istack, $then_istack);

@@ -85,6 +85,12 @@ sub _genl_stmt_statement_head {
     my $head_symbol = astlib_get_symbol($head);
     if ($head_symbol eq $KEYWD_IF) {
         genl_if($list, $list_close_line_no, $istack, $lang, $ver);
+    } elsif ($head_symbol eq $KEYWD_IMPORT) {
+        if ($lang ne $LANG_PYTHON2 && $lang ne $LANG_PYTHON3) {
+            die create_dying_msg_unexpected($head);
+        }
+        # TODO python以外でのimport
+        genl_import($list, $list_close_line_no, $istack, $lang, $ver);
     } elsif ($head_symbol eq $KEYWD_FUNCTION) {
         if ($lang ne $LANG_PYTHON2 && $lang ne $LANG_PYTHON3) {
             die create_dying_msg_unexpected($head);

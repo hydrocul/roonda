@@ -64,6 +64,7 @@ my $OP_ORDER_PERL_PRINT_LEFT    = 144; # Perl print etc.
 my $OP_ORDER_LIST_INDEX         = 150; # PHP [], Ruby [], Python [] ()
 my $OP_ORDER_NAMESPACE          = 151; # Ruby ::
 my $OP_ORDER_PHP_NEW            = 152; # PHP new
+my $OP_ORDER_DOT                = 160; # 未調査
 
 my $KEYWD_SH_EXEC      = 'exec';
 my $KEYWD_SH_EXPORT    = 'export';
@@ -73,6 +74,7 @@ my $KEYWD_SH_SUBSH     = 'subsh';
 my $KEYWD_SH_GROUP     = 'group';
 my $KEYWD_SH_BACKTICKS = 'backticks';
 
+my $KEYWD_IMPORT       = 'import';
 my $KEYWD_FUNCTION     = 'function';
 my $KEYWD_IF           = 'if';
 my $KEYWD_FOREACH      = 'foreach';
@@ -82,6 +84,7 @@ my $KEYWD_PRINTLN      = 'println';
 my $KEYWD_DUMP         = 'dump';
 my $KEYWD_ASSIGN       = 'assign';
 my $KEYWD_REF          = 'ref';
+my $KEYWD_DOT          = 'dot';
 my $KEYWD_STRCAT       = 'strcat';
 my $KEYWD_TRUE         = 'true';
 my $KEYWD_FALSE        = 'false';

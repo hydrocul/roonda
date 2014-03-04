@@ -103,6 +103,13 @@ sub _genl_expr_head {
         # TODO pythonの演算子優先順位は確認済み、perl, rubyは未確認
     } elsif ($head_symbol eq $KEYWD_REF) {
         genl_var_ref($list, $list_close_line_no, $istack, $lang, $ver);
+    } elsif ($head_symbol eq $KEYWD_DOT) {
+        if ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+            genl_expr_dot($op_order, $list, $list_close_line_no, $istack, $lang, $ver);
+        } else {
+            # TODO python以外での . 演算子
+            (undef, $istack);
+        }
     } elsif ($head_symbol eq $KEYWD_STRCAT) {
         if ($lang eq $LANG_SH) {
             die create_dying_msg_unexpected($head);
@@ -155,6 +162,18 @@ sub genl_expr_apply {
     if (astlib_is_symbol_or_string($head)) {
         my $funcname = astlib_get_symbol_or_string($head);
         genl_expr_apply_1($funcname, \@list, $close_line_no, -1, $istack, $lang, $ver);
+    } elsif (astlib_is_list($head)) {
+        if ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3) {
+            my $func_source;
+            my $child_istack = st_expr_child($istack);
+            ($func_source, $child_istack) = genl_expr(astlib_get_list($head), astlib_get_close_line_no($head),
+                                                      $OP_ORDER_LIST_INDEX, $child_istack, $lang, $ver);
+            $istack = st_expr_parent($istack, $child_istack);
+            genl_expr_apply_1($func_source, \@list, $close_line_no, -1, $istack, $lang, $ver);
+        } else {
+            # TODO python以外の関数オブジェクトの呼び出し
+            die create_dying_msg_unexpected($head);
+        }
     } else {
         die create_dying_msg_unexpected($head);
     }
@@ -223,6 +242,33 @@ sub genl_expr_binop {
         }
         $result = $result . $source;
     }
+}
+
+# return: ($source, $istack)
+sub genl_expr_dot {
+    my ($outer_op_order, $list, $list_close_line_no, $istack, $lang, $ver) = @_;
+    die unless ($lang eq $LANG_PYTHON2 || $lang eq $LANG_PYTHON3);
+    my @list = @$list;
+    my $expr_token = shift(@list);
+    die create_dying_msg_unexpected_closing($list_close_line_no) unless (defined($expr_token));
+    my $child_istack = st_expr_child($istack);
+    my $result;
+    if (astlib_is_symbol($expr_token)) {
+        my $symbol = astlib_get_symbol($expr_token);
+        ($result, $child_istack) = genl_var_ref_varname($symbol, $child_istack, $lang, $ver);
+    } else {
+        ($result, $child_istack) = gent_expr($expr_token, $OP_ORDER_DOT, $child_istack, $lang, $ver);
+    }
+    foreach my $elem (@list) {
+        die create_dying_msg_unexpected($elem) unless (astlib_is_symbol($elem));
+        my $symbol = astlib_get_symbol($elem);
+        $result = $result . '.' . $symbol;
+    }
+    $istack = st_expr_parent($istack, $child_istack);
+    if ($outer_op_order >= $OP_ORDER_DOT) {
+        $result = "($result)";
+    }
+    ($result, $istack);
 }
 
 # return: ($source, $istack)
