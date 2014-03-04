@@ -42,12 +42,12 @@ sub genl_if {
     } else {
         $istack = st_if_result($istack, $cond_istack, $then_istack, undef, $lang, $ver);
     }
-    (_gent_if_sub($cond_source, $then_source, $else_source, $indent, $then_indent, $lang), $istack);
+    (_gent_if_sub($cond_source, $then_source, $else_source, $indent, $then_indent, $lang, $ver), $istack);
 }
 
 # return: $source
 sub _gent_if_sub {
-    my ($cond_source, $then_source, $else_source, $indent, $then_indent, $lang) = @_;
+    my ($cond_source, $then_source, $else_source, $indent, $then_indent, $lang, $ver) = @_;
     if ($lang eq $LANG_SH) {
         if (defined($else_source)) {
             "if $cond_source; then\n" .

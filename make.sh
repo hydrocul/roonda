@@ -20,6 +20,7 @@ mkdir -p target
     cat ./src/escape.pl
     cat ./src/gen_code.pl
     cat ./src/gen_stmt.pl
+    cat ./src/gen_function.pl
     cat ./src/gen_print.pl
     cat ./src/gen_if.pl
     cat ./src/gen_foreach.pl

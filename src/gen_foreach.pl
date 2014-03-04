@@ -78,6 +78,6 @@ sub st_foreach_body_stack {
 sub st_foreach_result {
     my ($parent_istack, $list_istack, $body_istack, $lang, $ver) = @_;
     $parent_istack;
-    # TODO perl, ruby, python, php
+    # TODO perl, ruby, python, php のforeachにおけるistackの扱い
 }
 
