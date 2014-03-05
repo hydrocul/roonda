@@ -213,7 +213,7 @@ sub genl_sh_subsh {
     foreach my $elem (@$list) {
         my $source;
         ($source, $inner_istack) =
-            gent_sh_command($elem, 1, 1, '', '', '', 1, 1, $inner_istack, $ver);
+            gent_sh_command($elem, 1, 1, '', 1, '', 1, 1, $inner_istack, $ver);
         $result = $result . "\n$inner_indent";
         $result = $result . $source;
     }
@@ -230,7 +230,7 @@ sub genl_sh_group {
     my $result = '{';
     foreach my $elem (@$list) {
         my $source;
-        ($source, $istack) = gent_sh_command($elem, 1, 1, '', '', '', 1, 1, $istack, $ver);
+        ($source, $istack) = gent_sh_command($elem, 1, 1, '', 1, '', 1, 1, $istack, $ver);
         $result = $result . "\n$inner_indent";
         $result = $result . $source;
     }
