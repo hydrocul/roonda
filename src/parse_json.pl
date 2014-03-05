@@ -38,6 +38,7 @@ sub _parse_json_add_meta {
             # string
             [$TOKEN_TYPE_SYMBOL, 0, $json_data, $json_data, 0];
         }
+        # TODO jsonの TOKEN_TYPE_FLOAT への対応
     }
 }
 

@@ -303,8 +303,8 @@ sub gent_sh_argument {
         (escape_sh_string(astlib_get_symbol_or_string($token)), $istack);
     } elsif (astlib_is_heredoc($token)) {
         ("\$$ENV_TMP_PATH/" . escape_sh_string(astlib_get_heredoc_name($token)), $istack);
-    } elsif (astlib_is_integer($token)) {
-        (escape_sh_string(astlib_get_integer($token)), $istack);
+    } elsif (astlib_is_number($token)) {
+        (escape_sh_string(astlib_get_number($token)), $istack);
     } elsif (astlib_is_list($token)) {
         genl_sh_argument(astlib_get_list($token), astlib_get_close_line_no($token), $istack, $ver);
     } else {

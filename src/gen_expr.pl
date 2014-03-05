@@ -28,6 +28,12 @@ sub gent_expr {
         gent_expr_string($token, $istack, $lang, $ver)
     } elsif (astlib_is_integer($token)) {
         (astlib_get_integer($token), $istack);
+    } elsif (astlib_is_float($token)) {
+        if ($lang eq $LANG_SH) {
+            die create_dying_msg_unexpected($token);
+        }
+        (astlib_get_float($token), $istack);
+        # TODO 指数表記は言語によって違うかもしれないので要調査
     } elsif (astlib_is_list($token)) {
         genl_expr(astlib_get_list($token), astlib_get_close_line_no($token),
                   $op_order, $istack, $lang, $ver);

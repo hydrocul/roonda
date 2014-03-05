@@ -100,8 +100,9 @@ sub _parse_sexpr_line {
     while () {
         my $f = ($line =~ ('\A\s*(' . '\(' . '|' .
                                       '\)' . '|' .
+                                      '-?0\.[0-9]*([eE][-+]?[1-9][0-9]*)?' . '|' .
+                                      '-?[1-9][0-9]*(\.[0-9]*)?([eE][-+]?[1-9][0-9]*)?' . '|' .
                                       '0' . '|' .
-                                      '-?[1-9][0-9]*' . '|' .
                                       '"(([^"\\\\]|\\\\[nrt"u\\\\])*)"' . '|' .
                                       ':[^ ]+' . '|' .
                                       '<+' . '|' .
@@ -131,6 +132,12 @@ sub _parse_sexpr_line {
         } elsif ($token =~ /\A-?[1-9][0-9]*\z/) {
             $token = $token + 0; # convert to integer
             $token_type = $TOKEN_TYPE_INTEGER;
+        } elsif ($token =~ /\A-?[1-9][0-9]*(\.[0-9]*)?([eE][-+]?[1-9][0-9]*)?\z/) {
+            $token = $token + 0.0; # convert to float
+            $token_type = $TOKEN_TYPE_FLOAT;
+        } elsif ($token =~ /\A-?0\.[0-9]*([eE][-+]?[1-9][0-9]*)?\z/) {
+            $token = $token + 0.0; # convert to float
+            $token_type = $TOKEN_TYPE_FLOAT;
         } elsif ($token =~ /\A"(.*)"\z/) {
             $token = unescape_sexpr_string($1);
             $token_type = $TOKEN_TYPE_STRING;

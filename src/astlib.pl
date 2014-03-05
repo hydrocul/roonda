@@ -151,5 +151,45 @@ sub astlib_get_integer {
     }
 }
 
+sub astlib_is_float {
+    my ($token_ref) = @_;
+    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
+    if ($type eq $TOKEN_TYPE_FLOAT) {
+        1;
+    } else {
+        '';
+    }
+}
+
+sub astlib_get_float {
+    my ($token_ref) = @_;
+    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
+    if ($type eq $TOKEN_TYPE_FLOAT) {
+        $token;
+    } else {
+        die;
+    }
+}
+
+sub astlib_is_number {
+    my ($token_ref) = @_;
+    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
+    if ($type eq $TOKEN_TYPE_INTEGER || $type eq $TOKEN_TYPE_FLOAT) {
+        1;
+    } else {
+        '';
+    }
+}
+
+sub astlib_get_number {
+    my ($token_ref) = @_;
+    my ($type, $line_no, $token, $token_str, $line_no_2) = @$token_ref;
+    if ($type eq $TOKEN_TYPE_INTEGER || $type eq $TOKEN_TYPE_FLOAT) {
+        $token;
+    } else {
+        die;
+    }
+}
+
 
 
