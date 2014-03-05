@@ -214,13 +214,6 @@ sub st_var_python_declare {
     istack_sub_set_var_info($istack, $varname, 1);
 }
 
-sub st_var_python_declare_module {
-    my ($istack, $modulename) = @_;
-    die if ($istack->{lang} ne $LANG_PYTHON2 && $istack->{lang} ne $LANG_PYTHON3);
-    istack_sub_set_var_info($istack, $modulename, 1);
-    # TODO pythonでインポートしているモジュール名には代入をできないようにする
-}
-
 sub st_var_php_declare {
     my ($istack, $varname) = @_;
     die if ($istack->{lang} ne $LANG_PHP);

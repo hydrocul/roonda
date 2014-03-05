@@ -1,19 +1,36 @@
 sh v2
 
 (println "python")
+
 (python2
- (import () math)
+ (import math)
  (println (apply (dot math sin) 1)))
+
+(python2
+ (import math ())
+ (println (apply (dot math sin) 1)))
+
+(python2
+ (import math () m)
+ (println (apply (dot m sin) 1)))
+
 (python2
  (import math *)
  (println (sin 1)))
+
+(python2
+ (import math sin)
+ (println (sin 1)))
+
 (python2
  (import os path)
  (println (apply (dot path basename) "/aa/bb")))
+
 (python2
- (import () os)
+ (import os ())
  (println (apply (dot os path basename) "/aa/bb")))
+
 (python2
- (import () (os path))
+ (import (os path) ())
  (println (apply (dot os path basename) "/aa/bb")))
 
