@@ -50,12 +50,12 @@ sub _parse_sexpr_get_heredoc {
         }
         if ($line =~ /\A<<\s*([-+*\/._a-zA-Z0-9]+)\s*\z/) {
             $heredoc = $1;
+            $indent_flag = 1;
             push(@new_lines, "\n");
             next;
         }
         if ($line =~ /\A<<\s*([-+*\/._a-zA-Z0-9]+)\s*\\\s*\z/) {
             $heredoc = $1;
-            $indent_flag = 1;
             push(@new_lines, "\n");
             next;
         }
